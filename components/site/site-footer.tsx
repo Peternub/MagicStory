@@ -2,9 +2,11 @@ import Link from "next/link";
 
 const productLinks = [
   { href: "/", label: "Главная" },
-  { href: "/about", label: "Что мы создаем" },
-  { href: "/pricing", label: "Цены" },
-  { href: "/reviews", label: "Отзывы" }
+  { href: "/#about", label: "О сервисе" },
+  { href: "/#pricing", label: "Цены" },
+  { href: "/#reviews", label: "Отзывы" },
+  { href: "/#contact", label: "Контакты" },
+  { href: "/#site-map", label: "Карта сайта" }
 ];
 
 const appLinks = [
@@ -28,7 +30,7 @@ export function SiteFooter() {
 
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.22em] text-brand-200">
-            О продукте
+            Навигация
           </p>
           <div className="mt-4 flex flex-col gap-3 text-sm text-white/70">
             {productLinks.map((link) => (
@@ -57,9 +59,8 @@ export function SiteFooter() {
             Связь
           </p>
           <div className="mt-4 space-y-3 text-sm text-white/70">
-            <p>Форма обратной связи доступна на странице контактов.</p>
-            <p>В демо-версии заявки обрабатываются вручную.</p>
-            <Link href="/contact" className="inline-flex text-white hover:text-brand-200">
+            <p>Форма обратной связи находится на главной странице ниже.</p>
+            <Link href="/#contact" className="inline-flex text-white hover:text-brand-200">
               Перейти к контактам
             </Link>
           </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContactForm } from "@/components/site/contact-form";
 import { MarketingPlanCard } from "@/components/site/marketing-plan-card";
 
 const highlights = [
@@ -22,17 +23,33 @@ const reviews = [
   "Это уже полноценный семейный сервис, а не просто генератор фраз."
 ];
 
+const siteMapGroups = [
+  {
+    title: "Публичный сайт",
+    links: ["Главная", "О сервисе", "Цены", "Отзывы", "Контакты", "Карта сайта"]
+  },
+  {
+    title: "Личный кабинет",
+    links: ["Профили детей", "Библиотека сказок", "Тарифы и лимиты"]
+  },
+  {
+    title: "Основной сценарий",
+    links: [
+      "Регистрация",
+      "Добавление ребенка",
+      "Создание сказки",
+      "Прослушивание аудио"
+    ]
+  }
+];
+
 export default function HomePage() {
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col px-6 py-10 sm:px-10">
       <section className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
         <div>
-          <p className="text-sm uppercase tracking-[0.28em] text-brand-200">
-            B2C SaaS для родителей
-          </p>
           <h1 className="mt-5 max-w-4xl font-display text-4xl leading-tight text-white sm:text-6xl">
-            Полноценный сервис персональных сказок с аудио, тарифами, отзывами
-            и личным кабинетом
+            Мама отдыхает, ребёнок засыпает
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">
             Магические Сказки помогают родителям превращать реальные детские
@@ -48,7 +65,7 @@ export default function HomePage() {
               Зарегистрироваться
             </Link>
             <Link
-              href="/pricing"
+              href="/#pricing"
               className="inline-flex rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-white/85"
             >
               Посмотреть цены
@@ -112,25 +129,31 @@ export default function HomePage() {
         ))}
       </section>
 
-      <section className="mt-16 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
+      <section
+        id="about"
+        className="mt-16 rounded-[2rem] border border-white/10 bg-white/5 p-8"
+      >
+        <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
+          О сервисе
+        </p>
+        <h2 className="mt-4 font-display text-3xl text-white">
+          Семейный digital-продукт, а не одностраничную заглушку
+        </h2>
+        <p className="mt-5 max-w-3xl text-sm leading-7 text-white/70">
+          Мы собираем сайт и приложение как единый продукт: публичные блоки для
+          знакомства с сервисом, понятные цены, отзывы, контакты и полноценный
+          кабинет внутри с профилями детей, сказками и аудио.
+        </p>
+      </section>
+
+      <section id="pricing" className="mt-16">
+        <div className="mb-8">
           <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
-            Что мы представляем
+            Цены
           </p>
-          <h2 className="mt-4 font-display text-3xl text-white">
-            Семейный digital-продукт, а не одностраничную заглушку
+          <h2 className="mt-3 font-display text-3xl text-white">
+            Прозрачные тарифы без перегруза
           </h2>
-          <p className="mt-5 text-sm leading-7 text-white/70">
-            Мы собираем сайт и приложение как единый продукт: публичные страницы
-            для знакомства с сервисом, отдельные разделы с ценами, отзывами и
-            контактами, а внутри — полноценный кабинет с генерацией сказок.
-          </p>
-          <Link
-            href="/about"
-            className="mt-8 inline-flex rounded-full border border-brand-400/40 px-5 py-3 text-sm font-medium text-brand-100"
-          >
-            Подробнее о сервисе
-          </Link>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
@@ -156,29 +179,22 @@ export default function HomePage() {
               после запуска базовой оплаты через YooKassa.
             </p>
             <Link
-              href="/contact"
+              href="/billing"
               className="mt-8 inline-flex rounded-full bg-white px-5 py-3 text-sm font-medium text-brand-900"
             >
-              Обсудить запуск
+              Открыть кабинет тарифов
             </Link>
           </article>
         </div>
       </section>
 
-      <section className="mt-16 rounded-[2rem] border border-white/10 bg-white/5 p-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
-              Отзывы
-            </p>
-            <h2 className="mt-3 font-display text-3xl text-white">
-              Как родители описывают сервис
-            </h2>
-          </div>
-          <Link href="/reviews" className="text-sm text-brand-100 hover:text-white">
-            Смотреть все отзывы
-          </Link>
-        </div>
+      <section id="reviews" className="mt-16 rounded-[2rem] border border-white/10 bg-white/5 p-8">
+        <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
+          Отзывы
+        </p>
+        <h2 className="mt-3 font-display text-3xl text-white">
+          Как родители описывают сервис
+        </h2>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {reviews.map((review) => (
@@ -192,32 +208,66 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mt-16 rounded-[2.5rem] border border-brand-400/30 bg-gradient-to-r from-brand-800/60 to-[#0c0715] p-8 shadow-glow sm:p-10">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
-              Сайт и приложение вместе
+      <section id="contact" className="mt-16">
+        <div className="mb-8">
+          <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
+            Контакты
+          </p>
+          <h2 className="mt-3 font-display text-3xl text-white">
+            Связаться с нами и обсудить проект
+          </h2>
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
+            <p className="text-sm leading-7 text-white/70">
+              На этой странице можно оставить сообщение о продукте, партнерстве,
+              семейном использовании сервиса или будущем запуске оплаты.
             </p>
-            <h2 className="mt-3 font-display text-3xl text-white">
-              Открывайте сервис, регистрируйтесь и переходите в кабинет без
-              ощущения, что вы попали в черновик
-            </h2>
+
+            <div className="mt-8 grid gap-4">
+              <div className="rounded-2xl border border-white/10 bg-[#0d0818] p-5">
+                <p className="text-sm font-medium text-white">Для родителей</p>
+                <p className="mt-2 text-sm text-white/65">
+                  Вопросы по регистрации, кабинетам детей, сказкам и подписке.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-[#0d0818] p-5">
+                <p className="text-sm font-medium text-white">Для партнеров</p>
+                <p className="mt-2 text-sm text-white/65">
+                  Интерес к совместным проектам, пакетам для студий и семейных
+                  клубов.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/auth/sign-up"
-              className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-medium text-brand-900"
+          <ContactForm />
+        </div>
+      </section>
+
+      <section id="site-map" className="mt-16 rounded-[2rem] border border-white/10 bg-white/5 p-8">
+        <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
+          Карта сайта
+        </p>
+        <h2 className="mt-3 font-display text-3xl text-white">
+          Все разделы проекта на одной странице
+        </h2>
+
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
+          {siteMapGroups.map((group) => (
+            <article
+              key={group.title}
+              className="rounded-[1.75rem] border border-white/10 bg-[#0d0818] p-6"
             >
-              Создать аккаунт
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-white"
-            >
-              Связаться с нами
-            </Link>
-          </div>
+              <h3 className="font-display text-xl text-white">{group.title}</h3>
+              <div className="mt-4 flex flex-col gap-3 text-sm text-white/70">
+                {group.links.map((link) => (
+                  <span key={link}>{link}</span>
+                ))}
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </main>
