@@ -27,9 +27,15 @@ export default async function DashboardPage() {
             Профили детей
           </h2>
           <p className="mt-3 text-sm leading-6 text-brand-900/70">
-            Следующим шагом здесь появится управление профилями детей и их
-            параметрами для генерации сказок.
+            Добавляйте и храните профили детей, чтобы использовать их в
+            генерации персональных сказок.
           </p>
+          <Link
+            href="/children"
+            className="mt-6 inline-flex rounded-full bg-brand-700 px-5 py-3 text-sm font-medium text-white"
+          >
+            Открыть раздел детей
+          </Link>
         </article>
 
         <article className="rounded-[2rem] bg-brand-900 p-8 text-brand-50">
