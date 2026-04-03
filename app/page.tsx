@@ -23,38 +23,18 @@ const reviews = [
   "Это уже полноценный семейный сервис, а не просто генератор фраз."
 ];
 
-const siteMapGroups = [
-  {
-    title: "Публичный сайт",
-    links: ["Главная", "О сервисе", "Цены", "Отзывы", "Контакты", "Карта сайта"]
-  },
-  {
-    title: "Личный кабинет",
-    links: ["Профили детей", "Библиотека сказок", "Тарифы и лимиты"]
-  },
-  {
-    title: "Основной сценарий",
-    links: [
-      "Регистрация",
-      "Добавление ребенка",
-      "Создание сказки",
-      "Прослушивание аудио"
-    ]
-  }
-];
-
 export default function HomePage() {
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col px-6 py-10 sm:px-10">
       <section className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
         <div>
           <h1 className="mt-5 max-w-4xl font-display text-4xl leading-tight text-white sm:text-6xl">
-            Мама отдыхает, ребёнок засыпает
+            Мама отдыхает, ребенок засыпает
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">
             Магические Сказки помогают родителям превращать реальные детские
-            ситуации в добрые истории с озвучкой, библиотекой сказок и понятным
-            пользовательским сценарием от регистрации до прослушивания.
+            ситуации в добрые персональные истории с озвучкой, библиотекой сказок
+            и понятным сценарием от регистрации до прослушивания.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -86,9 +66,9 @@ export default function HomePage() {
               </p>
             </div>
             <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
-              <p className="text-3xl font-semibold text-white">RF</p>
+              <p className="text-3xl font-semibold text-white">RU</p>
               <p className="mt-2 text-sm text-white/60">
-                сервис адаптирован под российский рынок
+                сервис адаптирован под русский язык и рынок РФ
               </p>
             </div>
           </div>
@@ -137,7 +117,7 @@ export default function HomePage() {
           О сервисе
         </p>
         <h2 className="mt-4 font-display text-3xl text-white">
-          Семейный digital-продукт, а не одностраничную заглушку
+          Семейный digital-продукт, а не одностраничная заглушка
         </h2>
         <p className="mt-5 max-w-3xl text-sm leading-7 text-white/70">
           Мы собираем сайт и приложение как единый продукт: публичные блоки для
@@ -188,7 +168,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="reviews" className="mt-16 rounded-[2rem] border border-white/10 bg-white/5 p-8">
+      <section
+        id="reviews"
+        className="mt-16 rounded-[2rem] border border-white/10 bg-white/5 p-8"
+      >
         <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
           Отзывы
         </p>
@@ -235,39 +218,13 @@ export default function HomePage() {
               <div className="rounded-2xl border border-white/10 bg-[#0d0818] p-5">
                 <p className="text-sm font-medium text-white">Для партнеров</p>
                 <p className="mt-2 text-sm text-white/65">
-                  Интерес к совместным проектам, пакетам для студий и семейных
-                  клубов.
+                  Интерес к совместным проектам, пакетам для студий и семейных клубов.
                 </p>
               </div>
             </div>
           </div>
 
           <ContactForm />
-        </div>
-      </section>
-
-      <section id="site-map" className="mt-16 rounded-[2rem] border border-white/10 bg-white/5 p-8">
-        <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
-          Карта сайта
-        </p>
-        <h2 className="mt-3 font-display text-3xl text-white">
-          Все разделы проекта на одной странице
-        </h2>
-
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {siteMapGroups.map((group) => (
-            <article
-              key={group.title}
-              className="rounded-[1.75rem] border border-white/10 bg-[#0d0818] p-6"
-            >
-              <h3 className="font-display text-xl text-white">{group.title}</h3>
-              <div className="mt-4 flex flex-col gap-3 text-sm text-white/70">
-                {group.links.map((link) => (
-                  <span key={link}>{link}</span>
-                ))}
-              </div>
-            </article>
-          ))}
         </div>
       </section>
     </main>

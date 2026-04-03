@@ -5,8 +5,7 @@ const productLinks = [
   { href: "/#about", label: "О сервисе" },
   { href: "/#pricing", label: "Цены" },
   { href: "/#reviews", label: "Отзывы" },
-  { href: "/#contact", label: "Контакты" },
-  { href: "/#site-map", label: "Карта сайта" }
+  { href: "/#contact", label: "Контакты" }
 ];
 
 const appLinks = [

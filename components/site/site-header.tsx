@@ -8,8 +8,7 @@ const navigation = [
   { href: "/#about", label: "О сервисе" },
   { href: "/#pricing", label: "Цены" },
   { href: "/#reviews", label: "Отзывы" },
-  { href: "/#contact", label: "Контакты" },
-  { href: "/#site-map", label: "Карта сайта" }
+  { href: "/#contact", label: "Контакты" }
 ];
 
 function formatPlanLabel(status?: string | null) {
