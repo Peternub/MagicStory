@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getStoryAudioBucket } from "@/lib/supabase/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,17 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
       ? String(story.children.name)
       : "ребенка";
 
+  let signedAudioUrl: string | null = null;
+
+  if (story.audio_url) {
+    const bucket = getStoryAudioBucket();
+    const { data: signedUrlData } = await supabase.storage
+      .from(bucket)
+      .createSignedUrl(story.audio_url, 3600);
+
+    signedAudioUrl = signedUrlData?.signedUrl ?? null;
+  }
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-6 py-10 sm:px-10">
       <Link
@@ -81,9 +93,13 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
         </article>
 
         <div className="mt-8 rounded-2xl border border-brand-200 bg-white px-5 py-4 text-sm text-brand-900/70">
-          {story.audio_url
-            ? "Аудио будет подключено на следующем шаге интеграции."
-            : "Аудио еще не сгенерировано. Следующим шагом подключим TTS-пайплайн."}
+          {signedAudioUrl ? (
+            <audio controls className="w-full" src={signedAudioUrl}>
+              Ваш браузер не поддерживает встроенное аудио.
+            </audio>
+          ) : (
+            "Аудио пока недоступно. Для генерации нужно указать ключ Yandex SpeechKit."
+          )}
         </div>
       </section>
     </main>

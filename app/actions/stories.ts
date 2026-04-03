@@ -3,8 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { generateStory } from "@/lib/ai/generate-story";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { buildStoryAudioPath, getStoryAudioBucket } from "@/lib/supabase/storage";
+import { generateAudio } from "@/lib/tts/generate-audio";
 import { storySchema } from "@/lib/validators/stories";
 
 type StoryActionState = {
@@ -89,6 +92,57 @@ export async function createStory(
 
     if (updateError) {
       throw updateError;
+    }
+
+    await supabase
+      .from("stories")
+      .update({
+        status: "audio_generating"
+      })
+      .eq("id", storyRecord.id)
+      .eq("user_id", user.id);
+
+    const generatedAudio = await generateAudio({
+      text: generated.text
+    });
+
+    if (generatedAudio) {
+      const adminClient = createSupabaseAdminClient();
+      const audioPath = buildStoryAudioPath(user.id, storyRecord.id);
+      const bucket = getStoryAudioBucket();
+
+      const { error: uploadError } = await adminClient.storage
+        .from(bucket)
+        .upload(audioPath, generatedAudio.buffer, {
+          contentType: generatedAudio.contentType,
+          upsert: true
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { error: completeError } = await supabase
+        .from("stories")
+        .update({
+          audio_url: audioPath,
+          provider_tts: generatedAudio.provider,
+          status: "completed"
+        })
+        .eq("id", storyRecord.id)
+        .eq("user_id", user.id);
+
+      if (completeError) {
+        throw completeError;
+      }
+    } else {
+      await supabase
+        .from("stories")
+        .update({
+          status: "text_ready"
+        })
+        .eq("id", storyRecord.id)
+        .eq("user_id", user.id);
     }
 
     await supabase.from("usage_events").insert({
