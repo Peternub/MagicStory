@@ -1,17 +1,9 @@
 import { signUp } from "@/app/actions/auth";
 import { AuthForm } from "@/components/auth/auth-form";
-import { getCurrentUser } from "@/lib/supabase/auth";
-import { redirectToNextOnboardingStep } from "@/lib/supabase/onboarding";
 
 export const dynamic = "force-dynamic";
 
-export default async function SignUpPage() {
-  const user = await getCurrentUser();
-
-  if (user) {
-    await redirectToNextOnboardingStep(user.id);
-  }
-
+export default function SignUpPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-10">
       <AuthForm
