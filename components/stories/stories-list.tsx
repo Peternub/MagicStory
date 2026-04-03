@@ -21,6 +21,15 @@ const statusLabels: Record<string, string> = {
   failed: "Ошибка"
 };
 
+const statusClasses: Record<string, string> = {
+  pending: "bg-brand-50 text-brand-900",
+  text_generating: "bg-amber-50 text-amber-800",
+  text_ready: "bg-sky-50 text-sky-800",
+  audio_generating: "bg-violet-50 text-violet-800",
+  completed: "bg-emerald-50 text-emerald-800",
+  failed: "bg-red-50 text-red-700"
+};
+
 export function StoriesList({ stories }: StoriesListProps) {
   if (stories.length === 0) {
     return (
@@ -59,7 +68,11 @@ export function StoriesList({ stories }: StoriesListProps) {
               </p>
             </div>
             <div className="text-sm text-brand-900/70">
-              <p>{statusLabels[story.status] ?? story.status}</p>
+              <p
+                className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusClasses[story.status] ?? "bg-brand-50 text-brand-900"}`}
+              >
+                {statusLabels[story.status] ?? story.status}
+              </p>
               <p className="mt-1">
                 {new Date(story.created_at).toLocaleDateString("ru-RU")}
               </p>

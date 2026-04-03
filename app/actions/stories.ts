@@ -177,3 +177,29 @@ export async function createStory(
   revalidatePath("/dashboard");
   redirect(`/stories/${storyRecord.id}`);
 }
+
+export async function deleteStory(formData: FormData) {
+  const user = await requireUser();
+  const storyId = formData.get("storyId");
+
+  if (typeof storyId !== "string" || !storyId) {
+    return;
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const adminClient = createSupabaseAdminClient();
+  const bucket = getStoryAudioBucket();
+  const audioPath = buildStoryAudioPath(user.id, storyId);
+
+  await adminClient.storage.from(bucket).remove([audioPath]);
+
+  await supabase
+    .from("stories")
+    .delete()
+    .eq("id", storyId)
+    .eq("user_id", user.id);
+
+  revalidatePath("/stories");
+  revalidatePath("/dashboard");
+  redirect("/stories");
+}
