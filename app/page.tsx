@@ -13,7 +13,7 @@ const highlights = [
   },
   {
     title: "Нормальный кабинет, а не хаос",
-    text: "Профили детей, баланс, сказки, тарифы и onboarding собраны в одном интерфейсе."
+    text: "Профили детей, сказки, баланс и тарифы собраны в одном понятном интерфейсе."
   }
 ];
 
@@ -54,79 +54,19 @@ export default function HomePage() {
               Посмотреть цены
             </Link>
           </div>
-
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
-              <p className="text-3xl font-semibold text-white">3 мин</p>
-              <p className="mt-2 text-sm text-white/60">
-                чтобы получить готовую сказку под тему дня
-              </p>
-            </div>
-            <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
-              <p className="text-3xl font-semibold text-white">2 формата</p>
-              <p className="mt-2 text-sm text-white/60">
-                текст и аудио в одном личном кабинете
-              </p>
-            </div>
-            <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
-              <p className="text-3xl font-semibold text-white">RU</p>
-              <p className="mt-2 text-sm text-white/60">
-                сервис адаптирован под русский язык и рынок РФ
-              </p>
-            </div>
-          </div>
         </div>
 
-        <div className="rounded-[2.25rem] border border-brand-400/30 bg-gradient-to-br from-brand-800/60 via-[#130a24] to-[#0a0612] p-8 shadow-glow">
-          <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
-            Что уже внутри
-          </p>
-          <div className="mt-6 space-y-4">
-            {[
-              "Профили детей и их интересов",
-              "Генерация сказки по теме дня",
-              "Озвучка и прослушивание в браузере",
-              "История сказок и лимиты",
-              "Тарифы, onboarding и кабинет"
-            ].map((item) => (
-              <div
-                key={item}
-                className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white/80"
-              >
-                {item}
-              </div>
-            ))}
-          </div>
+        <div className="grid gap-4">
+          {highlights.map((item) => (
+            <article
+              key={item.title}
+              className="rounded-[1.75rem] border border-brand-400/25 bg-gradient-to-br from-brand-800/40 via-[#130a24] to-[#0a0612] p-6 shadow-glow"
+            >
+              <h2 className="font-display text-xl text-white">{item.title}</h2>
+              <p className="mt-3 text-sm leading-7 text-white/75">{item.text}</p>
+            </article>
+          ))}
         </div>
-      </section>
-
-      <section className="mt-16 grid gap-6 lg:grid-cols-3">
-        {highlights.map((item) => (
-          <article
-            key={item.title}
-            className="rounded-[2rem] border border-white/10 bg-white/5 p-8"
-          >
-            <h2 className="font-display text-xl text-white">{item.title}</h2>
-            <p className="mt-4 text-sm leading-7 text-white/70">{item.text}</p>
-          </article>
-        ))}
-      </section>
-
-      <section
-        id="about"
-        className="mt-16 rounded-[2rem] border border-white/10 bg-white/5 p-8"
-      >
-        <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
-          О сервисе
-        </p>
-        <h2 className="mt-4 font-display text-3xl text-white">
-          Семейный digital-продукт, а не одностраничная заглушка
-        </h2>
-        <p className="mt-5 max-w-3xl text-sm leading-7 text-white/70">
-          Мы собираем сайт и приложение как единый продукт: публичные блоки для
-          знакомства с сервисом, понятные цены, отзывы, контакты и полноценный
-          кабинет внутри с профилями детей, сказками и аудио.
-        </p>
       </section>
 
       <section id="pricing" className="mt-16">
