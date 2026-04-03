@@ -81,6 +81,7 @@ export async function createStory(
       .update({
         title: generated.title,
         text_content: generated.text,
+        provider_llm: generated.provider,
         status: "text_ready"
       })
       .eq("id", storyRecord.id)
