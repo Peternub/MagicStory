@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { redirectToNextOnboardingStep } from "@/lib/supabase/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { authSchema } from "@/lib/validators/auth";
 
@@ -32,6 +33,14 @@ export async function signIn(
     };
   }
 
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    await redirectToNextOnboardingStep(user.id);
+  }
+
   redirect("/dashboard");
 }
 
@@ -57,6 +66,14 @@ export async function signUp(
     return {
       error: "Не удалось зарегистрироваться. Попробуйте другой email."
     };
+  }
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    await redirectToNextOnboardingStep(user.id);
   }
 
   redirect("/dashboard");

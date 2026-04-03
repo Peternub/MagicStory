@@ -1,6 +1,8 @@
+import { OnboardingCard } from "@/components/dashboard/onboarding-card";
 import Link from "next/link";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { requireUser } from "@/lib/supabase/auth";
+import { getOnboardingState } from "@/lib/supabase/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +15,7 @@ export default async function DashboardPage() {
     .select("stories_balance")
     .eq("id", user.id)
     .single();
+  const onboarding = await getOnboardingState(user.id);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
@@ -68,6 +71,11 @@ export default async function DashboardPage() {
           </Link>
         </article>
       </section>
+
+      <OnboardingCard
+        hasChildren={onboarding.hasChildren}
+        hasStories={onboarding.hasStories}
+      />
     </main>
   );
 }
