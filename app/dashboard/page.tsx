@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { requireUser } from "@/lib/supabase/auth";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const user = await requireUser();
+  const supabase = await createSupabaseServerClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("stories_balance")
+    .eq("id", user.id)
+    .single();
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
@@ -41,14 +48,23 @@ export default async function DashboardPage() {
         <article className="rounded-[2rem] bg-brand-900 p-8 text-brand-50">
           <h2 className="text-xl font-semibold">Создание сказки</h2>
           <p className="mt-3 text-sm leading-6 text-brand-100/80">
-            После добавления профиля ребенка пользователь сможет выбрать тему
-            дня и запустить генерацию новой истории.
+            После добавления профиля ребенка можно выбрать тему дня и запустить
+            генерацию новой истории.
+          </p>
+          <p className="mt-4 text-sm text-brand-100">
+            Доступный баланс: {profile?.stories_balance ?? 0}
           </p>
           <Link
-            href="/"
+            href="/stories/new"
             className="mt-6 inline-flex rounded-full bg-brand-300 px-5 py-3 text-sm font-medium text-brand-950"
           >
-            Вернуться на главную
+            Создать сказку
+          </Link>
+          <Link
+            href="/stories"
+            className="mt-3 inline-flex rounded-full border border-brand-300 px-5 py-3 text-sm font-medium text-brand-50"
+          >
+            Открыть библиотеку
           </Link>
         </article>
       </section>
