@@ -69,6 +69,12 @@ export default async function DashboardPage() {
           >
             Открыть библиотеку
           </Link>
+          <Link
+            href="/billing"
+            className="mt-3 inline-flex rounded-full border border-brand-300 px-5 py-3 text-sm font-medium text-brand-50"
+          >
+            Тарифы и лимиты
+          </Link>
         </article>
       </section>
 
