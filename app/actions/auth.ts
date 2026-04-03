@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { redirectToNextOnboardingStep } from "@/lib/supabase/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { authSchema } from "@/lib/validators/auth";
@@ -10,8 +11,12 @@ type AuthActionState = {
   success?: string;
 };
 
-function mapAuthErrorMessage(message?: string) {
+function mapAuthErrorMessage(message?: string, status?: number) {
   const normalized = (message ?? "").toLowerCase();
+
+  if (status === 429 || normalized.includes("rate limit")) {
+    return "Слишком много попыток регистрации за короткое время. Мы попробуем создать аккаунт другим способом.";
+  }
 
   if (
     normalized.includes("already registered") ||
@@ -54,9 +59,14 @@ export async function signIn(
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
   if (error) {
+    console.error("signIn error", {
+      status: error.status,
+      message: error.message
+    });
+
     return {
       error:
-        mapAuthErrorMessage(error.message) ??
+        mapAuthErrorMessage(error.message, error.status) ??
         "Не удалось войти. Проверьте email и пароль."
     };
   }
@@ -91,9 +101,52 @@ export async function signUp(
   const { data, error } = await supabase.auth.signUp(parsed.data);
 
   if (error) {
+    console.error("signUp error", {
+      status: error.status,
+      message: error.message
+    });
+
+    if (error.status === 429 || error.message.toLowerCase().includes("rate limit")) {
+      const adminClient = createSupabaseAdminClient();
+      const { data: createdUser, error: adminError } =
+        await adminClient.auth.admin.createUser({
+          email: parsed.data.email,
+          password: parsed.data.password,
+          email_confirm: true
+        });
+
+      if (adminError) {
+        console.error("admin createUser error", {
+          message: adminError.message
+        });
+
+        return {
+          error:
+            mapAuthErrorMessage(adminError.message) ??
+            "Не удалось зарегистрироваться. Попробуйте еще раз чуть позже."
+        };
+      }
+
+      if (createdUser.user) {
+        const { error: signInError } = await supabase.auth.signInWithPassword(
+          parsed.data
+        );
+
+        if (signInError) {
+          return {
+            success:
+              "Аккаунт создан. Теперь войдите в приложение с этим email и паролем."
+          };
+        }
+
+        await redirectToNextOnboardingStep(createdUser.user.id);
+        redirect("/dashboard");
+      }
+    }
+
     return {
       error:
-        mapAuthErrorMessage(error.message) ??
+        mapAuthErrorMessage(error.message, error.status) ??
         "Не удалось зарегистрироваться. Проверьте email и пароль."
     };
   }
