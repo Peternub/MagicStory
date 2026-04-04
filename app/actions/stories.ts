@@ -128,7 +128,8 @@ export async function createStory(
       .eq("user_id", user.id);
 
     const generatedAudio = await generateAudio({
-      text: generated.text
+      text: generated.text,
+      characters: parsed.data.characters
     });
 
     if (generatedAudio) {
