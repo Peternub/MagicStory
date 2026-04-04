@@ -7,6 +7,14 @@ function pickString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : "";
 }
 
+function capitalizeWord(word: string) {
+  if (!word) {
+    return "";
+  }
+
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
+
 function formatEmailFallback(email?: string | null) {
   const localPart = email?.split("@")[0]?.trim();
 
@@ -14,7 +22,17 @@ function formatEmailFallback(email?: string | null) {
     return "Профиль";
   }
 
-  return localPart.replace(/[._-]+/g, " ");
+  const parts = localPart
+    .split(/[._-]+/g)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .slice(0, 2);
+
+  if (!parts.length) {
+    return "Профиль";
+  }
+
+  return parts.map(capitalizeWord).join(" ");
 }
 
 export function getUserDisplayName(user: UserLike) {
@@ -43,7 +61,12 @@ export function getUserInitials(user: UserLike) {
     return `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
   }
 
-  const emailInitial = user.email?.trim()?.[0];
+  const displayName = formatEmailFallback(user.email);
+  const words = displayName.split(" ").filter(Boolean);
 
-  return (emailInitial ?? "U").toUpperCase();
+  if (words.length >= 2) {
+    return `${words[0][0]}${words[1][0]}`.toUpperCase();
+  }
+
+  return (words[0]?.[0] ?? "U").toUpperCase();
 }
