@@ -17,9 +17,9 @@ export default function AboutPage() {
           Мы строим сервис, который соединяет семейную заботу и AI-инструменты
         </h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-white/70">
-          Магические Сказки нужны не для того, чтобы просто удивить текстом. Их
-          задача — помочь родителям быстро собрать добрую историю под реальную
-          ситуацию и встроить ее в семейный вечерний ритуал.
+          MagicStory нужен не для того, чтобы просто удивить текстом. Его задача
+          помочь родителям быстро собрать добрую историю под реальную ситуацию и
+          встроить ее в семейный вечерний ритуал.
         </p>
       </section>
 
@@ -36,9 +36,7 @@ export default function AboutPage() {
 
       <section className="mt-10 grid gap-8 lg:grid-cols-[1fr_1fr]">
         <article className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
-          <h2 className="font-display text-2xl text-white">
-            Что получает семья
-          </h2>
+          <h2 className="font-display text-2xl text-white">Что получает семья</h2>
           <ul className="mt-5 space-y-3 text-sm leading-7 text-white/70">
             <li>Персонализированный сюжет под возраст и интересы ребенка.</li>
             <li>Текст и аудио в одной библиотеке.</li>

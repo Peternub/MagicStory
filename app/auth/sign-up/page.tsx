@@ -9,11 +9,12 @@ export default function SignUpPage() {
       <AuthForm
         action={signUp}
         title="Регистрация"
-        description="Создайте аккаунт родителя, чтобы начать работу с сервисом."
+        description="Создайте аккаунт, чтобы получить доступ к персональным сказкам и аудио."
         submitLabel="Зарегистрироваться"
         alternateHref="/auth/login"
         alternateLabel="Войти"
         alternateText="Уже есть аккаунт?"
+        showNameFields
       />
     </main>
   );

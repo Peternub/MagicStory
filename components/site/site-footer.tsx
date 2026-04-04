@@ -2,7 +2,6 @@ import Link from "next/link";
 
 const productLinks = [
   { href: "/", label: "Главная" },
-  { href: "/#about", label: "О сервисе" },
   { href: "/#pricing", label: "Цены" },
   { href: "/#reviews", label: "Отзывы" },
   { href: "/#contact", label: "Контакты" }
@@ -20,7 +19,7 @@ export function SiteFooter() {
     <footer className="border-t border-white/10 bg-[#06040d]">
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-14 sm:px-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr_1fr]">
         <div>
-          <p className="font-display text-lg text-white">Магические Сказки</p>
+          <p className="font-display text-lg text-white">MagicStory</p>
           <p className="mt-4 max-w-sm text-sm leading-7 text-white/65">
             Онлайн-сервис для родителей, который превращает сложные детские
             ситуации в персональные истории с текстом и аудио.

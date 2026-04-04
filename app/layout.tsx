@@ -4,9 +4,9 @@ import { SiteHeader } from "@/components/site/site-header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Магические Сказки",
+  title: "MagicStory",
   description:
-    "Персональные сказки и аудио для детей на основе реальных ситуаций дня"
+    "Персональные сказки и аудио для детей на основе реальных ситуаций дня."
 };
 
 export default function RootLayout({

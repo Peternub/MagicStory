@@ -4,6 +4,7 @@ import { OnboardingCard } from "@/components/dashboard/onboarding-card";
 import { requireUser } from "@/lib/supabase/auth";
 import { getOnboardingState } from "@/lib/supabase/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getUserDisplayName } from "@/lib/user/display-name";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,7 @@ export default async function DashboardPage() {
     .eq("id", user.id)
     .single();
   const onboarding = await getOnboardingState(user.id);
+  const displayName = getUserDisplayName(user);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
@@ -25,7 +27,7 @@ export default async function DashboardPage() {
             Личный кабинет
           </p>
           <h1 className="mt-2 max-w-4xl break-all text-3xl font-semibold text-white sm:text-4xl">
-            Здравствуйте, <span className="text-brand-100">{user.email}</span>
+            Здравствуйте, <span className="text-brand-100">{displayName}</span>
           </h1>
         </div>
         <SignOutButton />

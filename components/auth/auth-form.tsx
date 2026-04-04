@@ -19,6 +19,7 @@ type AuthFormProps = {
   alternateHref: string;
   alternateLabel: string;
   alternateText: string;
+  showNameFields?: boolean;
 };
 
 const initialState: AuthActionState = {};
@@ -30,7 +31,8 @@ export function AuthForm({
   submitLabel,
   alternateHref,
   alternateLabel,
-  alternateText
+  alternateText,
+  showNameFields = false
 }: AuthFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
@@ -44,6 +46,32 @@ export function AuthForm({
       </div>
 
       <form action={formAction} className="mt-8 space-y-4">
+        {showNameFields ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-2 block text-sm text-brand-900">Имя</span>
+              <input
+                className="w-full rounded-2xl border border-brand-200 bg-white px-4 py-3 outline-none transition focus:border-brand-400"
+                type="text"
+                name="firstName"
+                placeholder="Анна"
+                required
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-sm text-brand-900">Фамилия</span>
+              <input
+                className="w-full rounded-2xl border border-brand-200 bg-white px-4 py-3 outline-none transition focus:border-brand-400"
+                type="text"
+                name="lastName"
+                placeholder="Иванова"
+                required
+              />
+            </label>
+          </div>
+        ) : null}
+
         <label className="block">
           <span className="mb-2 block text-sm text-brand-900">Email</span>
           <input

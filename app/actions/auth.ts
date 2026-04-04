@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { redirectToNextOnboardingStep } from "@/lib/supabase/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { authSchema } from "@/lib/validators/auth";
+import { signInSchema, signUpSchema } from "@/lib/validators/auth";
 
 type AuthActionState = {
   error?: string;
@@ -44,14 +44,14 @@ export async function signIn(
   _prevState: AuthActionState,
   formData: FormData
 ): Promise<AuthActionState> {
-  const parsed = authSchema.safeParse({
+  const parsed = signInSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password")
   });
 
   if (!parsed.success) {
     return {
-      error: parsed.error.issues[0]?.message ?? "Проверьте введенные данные"
+      error: parsed.error.issues[0]?.message ?? "Проверьте введенные данные."
     };
   }
 
@@ -86,19 +86,33 @@ export async function signUp(
   _prevState: AuthActionState,
   formData: FormData
 ): Promise<AuthActionState> {
-  const parsed = authSchema.safeParse({
+  const parsed = signUpSchema.safeParse({
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
     email: formData.get("email"),
     password: formData.get("password")
   });
 
   if (!parsed.success) {
     return {
-      error: parsed.error.issues[0]?.message ?? "Проверьте введенные данные"
+      error: parsed.error.issues[0]?.message ?? "Проверьте введенные данные."
     };
   }
 
+  const userMetadata = {
+    first_name: parsed.data.firstName,
+    last_name: parsed.data.lastName,
+    full_name: `${parsed.data.firstName} ${parsed.data.lastName}`
+  };
+
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signUp(parsed.data);
+  const { data, error } = await supabase.auth.signUp({
+    email: parsed.data.email,
+    password: parsed.data.password,
+    options: {
+      data: userMetadata
+    }
+  });
 
   if (error) {
     console.error("signUp error", {
@@ -112,7 +126,8 @@ export async function signUp(
         await adminClient.auth.admin.createUser({
           email: parsed.data.email,
           password: parsed.data.password,
-          email_confirm: true
+          email_confirm: true,
+          user_metadata: userMetadata
         });
 
       if (adminError) {
@@ -128,9 +143,10 @@ export async function signUp(
       }
 
       if (createdUser.user) {
-        const { error: signInError } = await supabase.auth.signInWithPassword(
-          parsed.data
-        );
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: parsed.data.email,
+          password: parsed.data.password
+        });
 
         if (signInError) {
           return {
@@ -159,7 +175,7 @@ export async function signUp(
   if (data.user && !data.session) {
     return {
       success:
-        "Аккаунт создан. Если письмо подтверждения включено в Supabase, подтвердите email и затем войдите."
+        "Аккаунт создан. Если подтверждение email включено в Supabase, подтвердите адрес и затем войдите."
     };
   }
 
