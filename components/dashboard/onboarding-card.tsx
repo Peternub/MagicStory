@@ -24,34 +24,34 @@ export function OnboardingCard({
   hasStories
 }: OnboardingCardProps) {
   return (
-    <section className="mt-8 rounded-[2.25rem] border border-white/10 bg-white/95 p-6 shadow-[0_20px_60px_rgba(9,5,16,0.2)] sm:p-8">
+    <section className="mt-8 rounded-[2.25rem] border border-white/10 bg-[linear-gradient(135deg,rgba(26,13,43,0.88),rgba(49,21,93,0.78))] p-6 shadow-[0_20px_60px_rgba(9,5,16,0.35)] sm:p-8">
       <div className="flex flex-col gap-2">
-        <p className="text-sm uppercase tracking-[0.22em] text-brand-700">
+        <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
           Быстрый старт
         </p>
-        <h2 className="text-3xl font-semibold text-brand-900">
+        <h2 className="text-3xl font-semibold text-white">
           Что сделать дальше
         </h2>
-        <p className="max-w-2xl text-sm leading-6 text-brand-900/75">
+        <p className="max-w-2xl text-sm leading-6 text-white/70">
           Два шага до первой сказки.
         </p>
       </div>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
-        <article className="rounded-[1.75rem] border border-brand-100 bg-[#f7f3ff] p-6 shadow-[0_10px_30px_rgba(80,26,184,0.06)]">
+        <article className="rounded-[1.75rem] border border-white/10 bg-[#160a27] p-6 shadow-[0_12px_30px_rgba(9,5,16,0.28)]">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm uppercase tracking-[0.18em] text-brand-600">
+              <p className="text-sm uppercase tracking-[0.18em] text-brand-200">
                 Шаг 1
               </p>
-              <h3 className="mt-2 text-2xl font-semibold text-brand-900">
+              <h3 className="mt-2 text-2xl font-semibold text-white">
                 Добавить ребенка
               </h3>
             </div>
             <StatusPill done={hasChildren} />
           </div>
 
-          <p className="mt-4 text-base leading-7 text-brand-900/75">
+          <p className="mt-4 text-base leading-7 text-white/72">
             Заполните профиль ребенка для персональных сказок.
           </p>
 
@@ -63,20 +63,20 @@ export function OnboardingCard({
           </Link>
         </article>
 
-        <article className="rounded-[1.75rem] border border-brand-100 bg-[#f7f3ff] p-6 shadow-[0_10px_30px_rgba(80,26,184,0.06)]">
+        <article className="rounded-[1.75rem] border border-white/10 bg-[#160a27] p-6 shadow-[0_12px_30px_rgba(9,5,16,0.28)]">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm uppercase tracking-[0.18em] text-brand-600">
+              <p className="text-sm uppercase tracking-[0.18em] text-brand-200">
                 Шаг 2
               </p>
-              <h3 className="mt-2 text-2xl font-semibold text-brand-900">
+              <h3 className="mt-2 text-2xl font-semibold text-white">
                 Создать сказку
               </h3>
             </div>
             <StatusPill done={hasStories} />
           </div>
 
-          <p className="mt-4 text-base leading-7 text-brand-900/75">
+          <p className="mt-4 text-base leading-7 text-white/72">
             Выберите тему дня и получите готовую историю с аудио.
           </p>
 

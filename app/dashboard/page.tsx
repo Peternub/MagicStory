@@ -33,14 +33,14 @@ export default async function DashboardPage() {
         </p>
 
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
-          <article className="rounded-[2rem] border border-white/10 bg-white/95 p-6 text-brand-900 shadow-[0_20px_50px_rgba(9,5,16,0.18)]">
-            <p className="text-sm uppercase tracking-[0.2em] text-brand-700">
+          <article className="rounded-[2rem] border border-white/10 bg-[#160a27] p-6 text-white shadow-[0_20px_50px_rgba(9,5,16,0.3)]">
+            <p className="text-sm uppercase tracking-[0.2em] text-brand-200">
               Баланс
             </p>
-            <p className="mt-3 text-5xl font-semibold text-brand-900">
+            <p className="mt-3 text-5xl font-semibold text-white">
               {profile?.stories_balance ?? 0}
             </p>
-            <p className="mt-2 text-sm text-brand-900/75">сказок доступно сейчас</p>
+            <p className="mt-2 text-sm text-white/72">сказок доступно сейчас</p>
           </article>
 
           <article className="rounded-[2rem] border border-white/10 bg-[#160a27] p-6 text-white shadow-[0_20px_50px_rgba(9,5,16,0.3)]">
