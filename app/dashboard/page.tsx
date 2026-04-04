@@ -2,19 +2,12 @@ import Link from "next/link";
 import { OnboardingCard } from "@/components/dashboard/onboarding-card";
 import { requireUser } from "@/lib/supabase/auth";
 import { getOnboardingState } from "@/lib/supabase/onboarding";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getUserDisplayName } from "@/lib/user/display-name";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const user = await requireUser();
-  const supabase = await createSupabaseServerClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stories_balance")
-    .eq("id", user.id)
-    .single();
   const onboarding = await getOnboardingState(user.id);
   const displayName = getUserDisplayName(user);
 
@@ -28,19 +21,19 @@ export default async function DashboardPage() {
           Здравствуйте, <span className="text-brand-100">{displayName}</span>
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-8 text-white/70">
-          Здесь все нужное под рукой: остаток сказок, профили детей и быстрый
-          переход к созданию новой истории.
+          Здесь все нужное под рукой: создание новых сказок, профили детей и быстрый
+          переход в библиотеку.
         </p>
 
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
           <article className="rounded-[2rem] border border-white/10 bg-[#160a27] p-6 text-white shadow-[0_20px_50px_rgba(9,5,16,0.3)]">
             <p className="text-sm uppercase tracking-[0.2em] text-brand-200">
-              Баланс
+              Сказки
             </p>
-            <p className="mt-3 text-5xl font-semibold text-white">
-              {profile?.stories_balance ?? 0}
+            <p className="mt-3 text-4xl font-semibold text-white">Без лимита</p>
+            <p className="mt-2 text-sm text-white/72">
+              можно создавать без ограничений
             </p>
-            <p className="mt-2 text-sm text-white/72">сказок доступно сейчас</p>
           </article>
 
           <article className="rounded-[2rem] border border-white/10 bg-[#160a27] p-6 text-white shadow-[0_20px_50px_rgba(9,5,16,0.3)]">
@@ -65,7 +58,7 @@ export default async function DashboardPage() {
             </p>
             <h2 className="mt-3 text-2xl font-semibold">Новая история</h2>
             <p className="mt-3 text-base leading-7 text-white/72">
-              Запустите генерацию по теме дня или откройте библиотеку уже созданных сказок.
+              Запустите генерацию новой сказки или откройте библиотеку уже созданных историй.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link

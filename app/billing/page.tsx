@@ -25,7 +25,7 @@ export default async function BillingPage() {
         .limit(1),
       supabase
         .from("profiles")
-        .select("stories_balance, subscription_status")
+        .select("subscription_status")
         .eq("id", user.id)
         .single()
     ]);
@@ -45,7 +45,7 @@ export default async function BillingPage() {
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.25em] text-brand-200">
-            Тарифы и лимиты
+            Тарифы
           </p>
           <h1 className="mt-2 text-3xl font-semibold text-white">
             Управление подпиской
@@ -61,14 +61,14 @@ export default async function BillingPage() {
 
       <section className="mt-8 rounded-[2rem] border border-white/10 bg-[#160a27] p-8 text-white">
         <p className="text-sm text-brand-200">
-          Текущий баланс сказок: {profile?.stories_balance ?? 0}
+          Создание сказок сейчас без лимита
         </p>
         <p className="mt-2 text-sm text-white/80">
           Статус подписки: {profile?.subscription_status ?? "free"}
         </p>
         <p className="mt-4 text-sm text-white/70">
-          На этом этапе мы уже сохраняем заявки на подписку в базе. Следующим
-          этапом подключим оплату через YooKassa.
+          На этом этапе мы уже сохраняем заявки на подписку в базе. Следующим этапом
+          подключим оплату через YooKassa.
         </p>
       </section>
 

@@ -54,17 +54,6 @@ export async function createStory(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stories_balance")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile || profile.stories_balance <= 0) {
-    return {
-      error: "Баланс сказок закончился"
-    };
-  }
 
   const { data: child, error: childError } = await supabase
     .from("children")
@@ -175,15 +164,8 @@ export async function createStory(
       user_id: user.id,
       story_id: storyRecord.id,
       event_type: "story_created",
-      amount: -1
+      amount: 0
     });
-
-    await supabase
-      .from("profiles")
-      .update({
-        stories_balance: profile.stories_balance - 1
-      })
-      .eq("id", user.id);
   } catch {
     await supabase
       .from("stories")

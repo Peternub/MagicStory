@@ -27,7 +27,6 @@ export async function SiteHeader() {
   const supabase = await createSupabaseServerClient();
   let profile:
     | {
-        stories_balance: number;
         subscription_status: string;
       }
     | null = null;
@@ -35,7 +34,7 @@ export async function SiteHeader() {
   if (user) {
     const { data } = await supabase
       .from("profiles")
-      .select("stories_balance, subscription_status")
+      .select("subscription_status")
       .eq("id", user.id)
       .single();
 
@@ -89,19 +88,15 @@ export async function SiteHeader() {
                   <p className="text-xs uppercase tracking-[0.18em] text-brand-200">
                     Почта
                   </p>
-                  <p className="mt-2 break-all text-sm text-white">
-                    {user.email}
-                  </p>
+                  <p className="mt-2 break-all text-sm text-white">{user.email}</p>
                 </div>
 
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl border border-white/10 bg-[#160a27] p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-brand-200">
-                      Сказок осталось
+                      Сказки
                     </p>
-                    <p className="mt-2 text-lg font-semibold text-white">
-                      {profile?.stories_balance ?? 0}
-                    </p>
+                    <p className="mt-2 text-lg font-semibold text-white">Без лимита</p>
                   </div>
 
                   <div className="rounded-2xl border border-white/10 bg-[#160a27] p-4">
