@@ -1,4 +1,5 @@
 import "server-only";
+import type { StoryInput } from "@/lib/validators/stories";
 
 type ChildProfile = {
   name: string;
@@ -10,7 +11,7 @@ type ChildProfile = {
 
 type GenerateStoryParams = {
   child: ChildProfile;
-  theme: string;
+  request: StoryInput;
 };
 
 type GeneratedStory = {
@@ -27,19 +28,55 @@ type OpenAiResponse = {
   }>;
 };
 
-function buildPrompt(child: ChildProfile, theme: string) {
+function getTargetLength(minutes: number) {
+  switch (minutes) {
+    case 3:
+      return "700-900 слов";
+    case 5:
+      return "1000-1300 слов";
+    case 7:
+      return "1300-1700 слов";
+    case 10:
+      return "1700-2200 слов";
+    default:
+      return "1000-1300 слов";
+  }
+}
+
+function buildPrompt(child: ChildProfile, request: StoryInput) {
+  const plotMode =
+    request.mode === "guided"
+      ? `Ситуация дня: ${request.situation}.`
+      : "Сюжет придумай сам, но он должен быть цельным, интересным и не шаблонным.";
+
   return [
-    "Ты детский автор добрых персональных сказок на русском языке.",
-    "Напиши сказку без медицинских и психотерапевтических формулировок.",
-    "Сделай текст мягким, теплым, безопасным и понятным для ребенка.",
+    "Ты сильный детский писатель русскоязычных сказок для вечернего чтения.",
+    "Тебе нельзя писать краткую справку о ребенке или пересказ анкеты.",
+    "Нужна полноценная художественная сказка, где действие начинается сразу, а не с описания кто такой ребенок.",
+    "Пиши мягко, образно, тепло и по-настоящему увлекательно.",
+    "Запрещены медицинские, клинические и психотерапевтические формулировки.",
+    "Главный герой — сам ребенок.",
+    "Интересы ребенка должны быть встроены в сюжет, а не перечислены отдельно.",
+    "Если указаны дополнительные персонажи, они должны участвовать в развитии истории.",
+    "Нужен понятный сюжет с завязкой, развитием, препятствием, добрым преодолением и спокойным финалом.",
     `Имя ребенка: ${child.name}.`,
     `Возраст: ${child.age}.`,
     `Интересы: ${child.interests || "не указаны"}.`,
     `Страхи: ${child.fears || "не указаны"}.`,
     `Дополнительный контекст: ${child.additional_context || "не указан"}.`,
-    `Тема дня: ${theme}.`,
-    "Сначала выведи короткий заголовок на первой строке.",
-    "Дальше после пустой строки выведи саму сказку длиной 8-12 абзацев."
+    `Длительность чтения: около ${request.durationMinutes} минут.`,
+    `Целевая длина: ${getTargetLength(request.durationMinutes)}.`,
+    `Место действия: ${request.setting}.`,
+    `Цель сказки: ${request.goal}.`,
+    `Настроение сказки: ${request.tone}.`,
+    `Дополнительные персонажи: ${request.characters || "придумай сам, если это уместно"}.`,
+    `Пожелания: ${request.extraWishes || "без дополнительных пожеланий"}.`,
+    plotMode,
+    "Сделай заголовок на первой строке.",
+    "После пустой строки дай саму сказку.",
+    "Сказка должна состоять из 8-14 абзацев.",
+    "Не используй формулировки типа 'жил-был ребенок по имени...'.",
+    "Начни с живой сцены, чтобы сразу было интересно."
   ].join("\n");
 }
 
@@ -52,40 +89,54 @@ function parseStoryContent(content: string): Pick<GeneratedStory, "title" | "tex
   return { title, text };
 }
 
-function joinOptionalParts(parts: Array<string | null | undefined>) {
-  return parts.filter(Boolean).join(" ");
+function buildAutoSituation(child: ChildProfile, request: StoryInput) {
+  const interestHook = child.interests
+    ? `всё было связано с тем, что ${child.name.toLowerCase()} очень любит ${child.interests}`
+    : `вокруг происходило нечто необычное`;
+
+  return `в один вечер в месте под названием "${request.setting}" случилось маленькое приключение, и ${interestHook}`;
 }
 
 function generateFallbackStory({
   child,
-  theme
+  request
 }: GenerateStoryParams): GeneratedStory {
-  const title = `Как ${child.name} справился с темой "${theme}"`;
+  const situation =
+    request.mode === "guided" && request.situation
+      ? request.situation
+      : buildAutoSituation(child, request);
+  const companion =
+    request.characters?.split(",")[0]?.trim() || "добрый спутник по имени Лучик";
+  const title =
+    request.mode === "guided"
+      ? `${child.name} и история про ${request.goal}`
+      : `${child.name} и тайна места "${request.setting}"`;
 
+  const intro = `${child.name} уже почти собирался ко сну, когда в ${request.setting} всё вокруг будто чуть-чуть замерцало и подсказало: сегодня начинается особенная история. ${child.name} сразу почувствовал, что рядом произойдет что-то важное именно для него. Воздух был ${request.tone}, а вокруг словно специально оживали детали, которые ребенок любит больше всего.`;
   const interests = child.interests
-    ? `Больше всего ${child.name.toLowerCase()} любит ${child.interests}.`
-    : "";
-  const fears = child.fears
-    ? `Иногда его беспокоит ${child.fears}.`
-    : "";
-  const context = child.additional_context
-    ? `Родители также рассказали, что ${child.additional_context}.`
-    : "";
+    ? `Совсем не случайно рядом оказались именно те вещи и образы, которые радуют ${child.name.toLowerCase()}: ${child.interests}. Они не просто украшали путь, а подсказывали, как смотреть на происходящее смелее и спокойнее.`
+    : `${child.name} замечал вокруг всё самое красивое и интересное, и это постепенно делало его смелее.`;
+  const conflict = `Но вместе с этой красотой пришла и трудность: ${situation}. Сначала ${child.name.toLowerCase()} немного растерялся, потому что такие моменты редко решаются сразу. Внутри хотелось то спрятаться, то обидеться, то просто сделать вид, что ничего не происходит.`;
+  const companionScene = `Именно тогда рядом появился ${companion}. Он не стал читать нотации и не говорил слишком умных слов. Вместо этого он предложил остановиться, оглядеться и понять, что чувствует сердце, когда день оказался труднее, чем хотелось.`;
+  const fearScene = child.fears
+    ? `${companion} мягко напомнил, что даже если иногда рядом ходят страхи вроде "${child.fears}", они не делают ${child.name.toLowerCase()} слабым. Наоборот, они помогают заметить, где особенно нужна поддержка, добрый разговор и маленький смелый шаг.`
+    : `${companion} мягко напомнил, что тревога уходит быстрее, если разбить большую трудность на маленькие понятные шаги.`;
+  const growthScene = `Тогда ${child.name.toLowerCase()} сделал первое важное действие: глубоко вдохнул, посмотрел на ситуацию по-новому и решил не убегать от нее. Потом появился второй шаг, а за ним и третий. Постепенно история перестала быть страшной или обидной и превратилась в настоящее приключение, где можно быть добрым, сильным и внимательным.`;
+  const goalScene = `Именно так в этой истории проявилась главная тема — ${request.goal}. ${child.name} понял, что важные перемены редко приходят громко. Чаще они случаются в тот момент, когда ребенок вдруг сам выбирает более теплый, честный и спокойный способ поступить.`;
+  const resolution = `Когда всё закончилось, ${child.name.toLowerCase()} уже чувствовал себя совсем иначе. Мир вокруг в ${request.setting} словно стал мягче, тише и дружелюбнее. Даже ${companion} улыбнулся так, будто заранее знал: у этой сказки обязательно будет хороший конец.`;
+  const bedtime = `Перед сном ${child.name.toLowerCase()} еще немного посидел в тишине и понял, что день подарил ему не только историю, но и внутреннюю опору. Если завтра снова случится что-то непростое, внутри уже останется память о сегодняшнем пути, о добром спутнике и о том, что любое большое чувство можно прожить бережно. А потом глаза сами начали закрываться, потому что сердце стало спокойным, тёплым и лёгким.`;
 
-  const text = joinOptionalParts([
-    `${child.name} был ребенком ${child.age} лет с очень живым воображением.`,
+  const text = [
+    intro,
     interests,
-    fears,
-    context,
-    `Однажды случилась важная история: ${theme}.`,
-    `Сначала ${child.name.toLowerCase()} не знал, как правильно поступить, и поэтому немного растерялся.`,
-    `Но рядом появился добрый сказочный помощник, который предложил посмотреть на ситуацию спокойно и по шагам.`,
-    `Они вместе заметили, что любой трудный момент становится легче, если назвать свои чувства, попросить помощь и сделать маленький полезный шаг.`,
-    `Тогда ${child.name.toLowerCase()} попробовал поступить по-новому: внимательно выслушал взрослых, вспомнил о том, что важно для близких, и сделал одно доброе действие прямо сейчас.`,
-    `Постепенно тревога ушла, а на ее место пришли уверенность, тепло и гордость за себя.`,
-    `С тех пор ${child.name.toLowerCase()} помнил: даже если тема дня кажется сложной, внутри всегда есть сила выбрать добрый и смелый путь.`,
-    `Вечером ${child.name.toLowerCase()} уснул с ощущением, что стал еще немного взрослее, добрее и мудрее.`
-  ]);
+    conflict,
+    companionScene,
+    fearScene,
+    growthScene,
+    goalScene,
+    resolution,
+    bedtime
+  ].join("\n\n");
 
   return {
     title,
@@ -99,6 +150,7 @@ async function generateWithOpenAiCompatible(
 ): Promise<GeneratedStory | null> {
   const apiKey = process.env.OPENAI_API_KEY;
   const baseUrl = process.env.OPENAI_BASE_URL;
+  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
   if (!apiKey || !baseUrl) {
     return null;
@@ -111,17 +163,17 @@ async function generateWithOpenAiCompatible(
       Authorization: `Bearer ${apiKey}`
     },
     body: JSON.stringify({
-      model: "gpt-4o-mini",
-      temperature: 0.8,
+      model,
+      temperature: 0.9,
       messages: [
         {
           role: "system",
           content:
-            "Ты пишешь добрые русскоязычные персональные сказки для детей."
+            "Ты пишешь сильные русскоязычные сказки для детей и умеешь делать их теплыми, длинными и небанальными."
         },
         {
           role: "user",
-          content: buildPrompt(params.child, params.theme)
+          content: buildPrompt(params.child, params.request)
         }
       ]
     }),
@@ -141,7 +193,7 @@ async function generateWithOpenAiCompatible(
 
   return {
     ...parseStoryContent(content),
-    provider: "openai-compatible"
+    provider: model
   };
 }
 

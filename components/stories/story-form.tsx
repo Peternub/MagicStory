@@ -46,15 +46,115 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
         </select>
       </label>
 
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-white">
+            Режим сюжета
+          </span>
+          <select name="mode" defaultValue="guided" className={fieldClassName}>
+            <option value="guided">Я задам ситуацию дня</option>
+            <option value="auto">Пусть сервис сам придумает сюжет</option>
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-white">
+            Длительность сказки
+          </span>
+          <select
+            name="durationMinutes"
+            defaultValue="5"
+            className={fieldClassName}
+          >
+            <option value="3">3 минуты</option>
+            <option value="5">5 минут</option>
+            <option value="7">7 минут</option>
+            <option value="10">10 минут</option>
+          </select>
+        </label>
+      </div>
+
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-white">
-          Тема сегодняшнего дня
+          Ситуация дня
         </span>
         <textarea
-          name="theme"
-          rows={5}
-          required
-          placeholder="Например: не хотел убирать игрушки и сильно расстроился"
+          name="situation"
+          rows={4}
+          placeholder="Например: поссорился с другом на площадке, а потом не хотел мириться"
+          className={fieldClassName}
+        />
+        <p className="mt-2 text-xs text-white/45">
+          Если выберете автоматический режим, сервис сам придумает сюжет и это
+          поле можно оставить пустым.
+        </p>
+      </label>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-white">
+            Место действия
+          </span>
+          <input
+            name="setting"
+            type="text"
+            required
+            placeholder="Лесной домик, морское дно, космический поезд"
+            className={fieldClassName}
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-white">
+            Главная цель сказки
+          </span>
+          <select name="goal" defaultValue="спокойное засыпание" className={fieldClassName}>
+            <option value="спокойное засыпание">Спокойное засыпание</option>
+            <option value="смелость и уверенность">Смелость и уверенность</option>
+            <option value="доброта и дружба">Доброта и дружба</option>
+            <option value="порядок и ответственность">
+              Порядок и ответственность
+            </option>
+            <option value="самостоятельность">Самостоятельность</option>
+            <option value="хорошее настроение">Хорошее настроение</option>
+          </select>
+        </label>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-white">
+            Настроение сказки
+          </span>
+          <select name="tone" defaultValue="очень спокойная" className={fieldClassName}>
+            <option value="очень спокойная">Очень спокойная</option>
+            <option value="уютная">Уютная</option>
+            <option value="приключенческая">Приключенческая</option>
+            <option value="смешная и добрая">Смешная и добрая</option>
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-white">
+            Дополнительные персонажи
+          </span>
+          <input
+            name="characters"
+            type="text"
+            placeholder="Любимая игрушка Аркадий, говорящий кот, подводный капитан"
+            className={fieldClassName}
+          />
+        </label>
+      </div>
+
+      <label className="block">
+        <span className="mb-2 block text-sm font-medium text-white">
+          Дополнительные пожелания
+        </span>
+        <textarea
+          name="extraWishes"
+          rows={4}
+          placeholder="Например: сделать сказку особенно мягкой перед сном и обязательно добавить сцену примирения"
           className={fieldClassName}
         />
       </label>

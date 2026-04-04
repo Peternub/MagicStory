@@ -14,6 +14,20 @@ type StoryActionState = {
   error?: string;
 };
 
+function buildStorySummary(input: {
+  mode: "guided" | "auto";
+  situation?: string;
+  goal: string;
+  setting: string;
+  durationMinutes: number;
+}) {
+  if (input.mode === "guided" && input.situation) {
+    return `${input.situation}. ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}`;
+  }
+
+  return `Свободный сюжет на ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}`;
+}
+
 export async function createStory(
   _prevState: StoryActionState,
   formData: FormData
@@ -21,7 +35,14 @@ export async function createStory(
   const user = await requireUser();
   const parsed = storySchema.safeParse({
     childId: formData.get("childId"),
-    theme: formData.get("theme")
+    mode: formData.get("mode"),
+    durationMinutes: formData.get("durationMinutes"),
+    situation: formData.get("situation"),
+    setting: formData.get("setting"),
+    goal: formData.get("goal"),
+    tone: formData.get("tone"),
+    characters: formData.get("characters"),
+    extraWishes: formData.get("extraWishes")
   });
 
   if (!parsed.success) {
@@ -56,12 +77,14 @@ export async function createStory(
     };
   }
 
+  const storySummary = buildStorySummary(parsed.data);
+
   const { data: storyRecord, error: insertError } = await supabase
     .from("stories")
     .insert({
       user_id: user.id,
       child_id: child.id,
-      theme: parsed.data.theme,
+      theme: storySummary,
       status: "text_generating"
     })
     .select("id")
@@ -76,7 +99,7 @@ export async function createStory(
   try {
     const generated = await generateStory({
       child,
-      theme: parsed.data.theme
+      request: parsed.data
     });
 
     const { error: updateError } = await supabase

@@ -27,11 +27,12 @@ export default async function NewStoryPage() {
 
       <section className="mt-6 rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(21,11,35,0.96),rgba(40,17,74,0.9))] p-8 shadow-glow">
         <h1 className="text-3xl font-semibold text-white">
-          Создание новой сказки
+          Конструктор новой сказки
         </h1>
         <p className="mt-3 text-sm leading-6 text-white/70">
-          Выберите ребенка и коротко опишите ситуацию дня. На основе этого мы
-          создадим персональную историю.
+          Здесь больше не нужно вручную выдумывать тему одной строкой. Выберите
+          параметры истории, длительность, место действия, героев и настроение,
+          а сервис соберет сказку по этим настройкам.
         </p>
 
         {(childrenItems ?? []).length === 0 ? (
