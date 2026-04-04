@@ -108,7 +108,11 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
           <span className="mb-2 block text-sm font-medium text-white">
             Главная цель сказки
           </span>
-          <select name="goal" defaultValue="спокойное засыпание" className={fieldClassName}>
+          <select
+            name="goal"
+            defaultValue="спокойное засыпание"
+            className={fieldClassName}
+          >
             <option value="спокойное засыпание">Спокойное засыпание</option>
             <option value="смелость и уверенность">Смелость и уверенность</option>
             <option value="доброта и дружба">Доброта и дружба</option>
@@ -126,7 +130,11 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
           <span className="mb-2 block text-sm font-medium text-white">
             Настроение сказки
           </span>
-          <select name="tone" defaultValue="очень спокойная" className={fieldClassName}>
+          <select
+            name="tone"
+            defaultValue="очень спокойная"
+            className={fieldClassName}
+          >
             <option value="очень спокойная">Очень спокойная</option>
             <option value="уютная">Уютная</option>
             <option value="приключенческая">Приключенческая</option>
@@ -136,16 +144,36 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
 
         <label className="block">
           <span className="mb-2 block text-sm font-medium text-white">
-            Дополнительные персонажи
+            Роль ребенка в сказке
           </span>
-          <input
-            name="characters"
-            type="text"
-            placeholder="Любимая игрушка Аркадий, говорящий кот, подводный капитан"
+          <select
+            name="childRole"
+            defaultValue="главный герой"
             className={fieldClassName}
-          />
+          >
+            <option value="главный герой">Главный герой</option>
+            <option value="один из главных героев">
+              Один из главных героев
+            </option>
+            <option value="второстепенный герой">Второстепенный герой</option>
+            <option value="вообще не участвует в сюжете">
+              Вообще не участвует в сюжете
+            </option>
+          </select>
         </label>
       </div>
+
+      <label className="block">
+        <span className="mb-2 block text-sm font-medium text-white">
+          Дополнительные персонажи
+        </span>
+        <input
+          name="characters"
+          type="text"
+          placeholder="Любимая игрушка Аркадий, говорящий кот, подводный капитан"
+          className={fieldClassName}
+        />
+      </label>
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-white">

@@ -16,6 +16,13 @@ const tones = [
   "смешная и добрая"
 ] as const;
 
+const childRoles = [
+  "главный герой",
+  "один из главных героев",
+  "второстепенный герой",
+  "вообще не участвует в сюжете"
+] as const;
+
 export const storySchema = z
   .object({
     childId: z.string().uuid("Выберите ребенка"),
@@ -38,6 +45,9 @@ export const storySchema = z
     }),
     tone: z.enum(tones, {
       message: "Выберите настроение сказки"
+    }),
+    childRole: z.enum(childRoles, {
+      message: "Выберите роль ребенка в сказке"
     }),
     characters: z
       .string()

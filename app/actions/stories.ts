@@ -20,12 +20,13 @@ function buildStorySummary(input: {
   goal: string;
   setting: string;
   durationMinutes: number;
+  childRole: string;
 }) {
   if (input.mode === "guided" && input.situation) {
-    return `${input.situation}. ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}`;
+    return `${input.situation}. ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}, роль ребенка: ${input.childRole}`;
   }
 
-  return `Свободный сюжет на ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}`;
+  return `Свободный сюжет на ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}, роль ребенка: ${input.childRole}`;
 }
 
 export async function createStory(
@@ -41,6 +42,7 @@ export async function createStory(
     setting: formData.get("setting"),
     goal: formData.get("goal"),
     tone: formData.get("tone"),
+    childRole: formData.get("childRole"),
     characters: formData.get("characters"),
     extraWishes: formData.get("extraWishes")
   });
