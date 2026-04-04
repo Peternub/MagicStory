@@ -20,15 +20,16 @@ const initialState: StoryActionState = {};
 const fieldClassName =
   "w-full rounded-2xl border border-white/10 bg-[#0f091a] px-4 py-3 text-base text-white placeholder:text-white/35 caret-white outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20";
 
+const checkboxClassName =
+  "h-5 w-5 rounded border border-white/15 bg-[#0f091a] text-brand-500 focus:ring-2 focus:ring-brand-500/30";
+
 export function StoryForm({ action, childrenItems }: StoryFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
     <form action={formAction} className="space-y-5">
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-white">
-          Ребенок
-        </span>
+        <span className="mb-2 block text-sm font-medium text-white">Ребенок</span>
         <select
           name="childId"
           required
@@ -81,12 +82,11 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
         <textarea
           name="situation"
           rows={4}
-          placeholder="Например: поссорился с другом на площадке, а потом не хотел мириться"
+          placeholder="Например: поссорился с другом в детском саду и не хотел мириться"
           className={fieldClassName}
         />
         <p className="mt-2 text-xs text-white/45">
-          Если выберете автоматический режим, сервис сам придумает сюжет и это
-          поле можно оставить пустым.
+          Если выберете автоматический режим, это поле можно оставить пустым.
         </p>
       </label>
 
@@ -99,7 +99,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
             name="setting"
             type="text"
             required
-            placeholder="Лесной домик, морское дно, космический поезд"
+            placeholder="Детский садик, лесной домик, морское дно"
             className={fieldClassName}
           />
         </label>
@@ -116,9 +116,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
             <option value="спокойное засыпание">Спокойное засыпание</option>
             <option value="смелость и уверенность">Смелость и уверенность</option>
             <option value="доброта и дружба">Доброта и дружба</option>
-            <option value="порядок и ответственность">
-              Порядок и ответственность
-            </option>
+            <option value="порядок и ответственность">Порядок и ответственность</option>
             <option value="самостоятельность">Самостоятельность</option>
             <option value="хорошее настроение">Хорошее настроение</option>
           </select>
@@ -152,9 +150,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
             className={fieldClassName}
           >
             <option value="главный герой">Главный герой</option>
-            <option value="один из главных героев">
-              Один из главных героев
-            </option>
+            <option value="один из главных героев">Один из главных героев</option>
             <option value="второстепенный герой">Второстепенный герой</option>
             <option value="вообще не участвует в сюжете">
               Вообще не участвует в сюжете
@@ -163,6 +159,64 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
         </label>
       </div>
 
+      <section className="rounded-[1.75rem] border border-white/10 bg-[#130b22] p-5">
+        <p className="text-sm font-medium text-white">
+          Что брать из профиля ребенка именно в этой сказке
+        </p>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <label className="flex items-center gap-3 text-sm text-white/80">
+            <input
+              type="checkbox"
+              name="useProfileInterests"
+              className={checkboxClassName}
+            />
+            Использовать интересы
+          </label>
+          <label className="flex items-center gap-3 text-sm text-white/80">
+            <input
+              type="checkbox"
+              name="useProfileFears"
+              className={checkboxClassName}
+            />
+            Использовать страхи
+          </label>
+          <label className="flex items-center gap-3 text-sm text-white/80">
+            <input
+              type="checkbox"
+              name="useProfileContext"
+              className={checkboxClassName}
+            />
+            Использовать доп. контекст
+          </label>
+        </div>
+
+        <div className="mt-4 grid gap-5 md:grid-cols-2">
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-white">
+              Интересы именно для этой сказки
+            </span>
+            <input
+              name="storyInterests"
+              type="text"
+              placeholder="Например: детский садик, лепка, машинки"
+              className={fieldClassName}
+            />
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium text-white">
+              Дополнительный контекст именно для этой сказки
+            </span>
+            <input
+              name="storyContext"
+              type="text"
+              placeholder="Например: сегодня особенно важно, чтобы в центре был детский сад"
+              className={fieldClassName}
+            />
+          </label>
+        </div>
+      </section>
+
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-white">
           Дополнительные персонажи
@@ -170,7 +224,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
         <input
           name="characters"
           type="text"
-          placeholder="Любимая игрушка Аркадий, говорящий кот, подводный капитан"
+          placeholder="Например: мама Марьяна, говорящий кот, подводный капитан"
           className={fieldClassName}
         />
       </label>
@@ -182,7 +236,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
         <textarea
           name="extraWishes"
           rows={4}
-          placeholder="Например: сделать сказку особенно мягкой перед сном и обязательно добавить сцену примирения"
+          placeholder="Например: сделать сказку особенно мягкой перед сном и добавить сцену примирения"
           className={fieldClassName}
         />
       </label>

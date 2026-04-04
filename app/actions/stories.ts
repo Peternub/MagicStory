@@ -8,7 +8,7 @@ import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { buildStoryAudioPath, getStoryAudioBucket } from "@/lib/supabase/storage";
 import { generateAudio } from "@/lib/tts/generate-audio";
-import { storySchema } from "@/lib/validators/stories";
+import { parseStoryFormData } from "@/lib/validators/stories";
 
 type StoryActionState = {
   error?: string;
@@ -29,23 +29,35 @@ function buildStorySummary(input: {
   return `Свободный сюжет на ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}, роль ребенка: ${input.childRole}`;
 }
 
+function normalizeCharacterLabel(value: string) {
+  return value
+    .trim()
+    .replace(/^я\s+/i, "")
+    .replace(/^моя\s+мама\b/i, "мама")
+    .replace(/^мой\s+папа\b/i, "папа")
+    .replace(/^моя\s+бабушка\b/i, "бабушка")
+    .replace(/^мой\s+дедушка\b/i, "дедушка")
+    .replace(/\s+/g, " ");
+}
+
+function normalizeCharacters(value?: string) {
+  if (!value) {
+    return "";
+  }
+
+  return value
+    .split(",")
+    .map(normalizeCharacterLabel)
+    .filter(Boolean)
+    .join(", ");
+}
+
 export async function createStory(
   _prevState: StoryActionState,
   formData: FormData
 ): Promise<StoryActionState> {
   const user = await requireUser();
-  const parsed = storySchema.safeParse({
-    childId: formData.get("childId"),
-    mode: formData.get("mode"),
-    durationMinutes: formData.get("durationMinutes"),
-    situation: formData.get("situation"),
-    setting: formData.get("setting"),
-    goal: formData.get("goal"),
-    tone: formData.get("tone"),
-    childRole: formData.get("childRole"),
-    characters: formData.get("characters"),
-    extraWishes: formData.get("extraWishes")
-  });
+  const parsed = parseStoryFormData(formData);
 
   if (!parsed.success) {
     return {
@@ -69,6 +81,23 @@ export async function createStory(
   }
 
   const storySummary = buildStorySummary(parsed.data);
+  const normalizedCharacters = normalizeCharacters(parsed.data.characters);
+
+  const effectiveChild = {
+    ...child,
+    interests:
+      parsed.data.storyInterests ||
+      (parsed.data.useProfileInterests ? child.interests : null),
+    fears: parsed.data.useProfileFears ? child.fears : null,
+    additional_context:
+      parsed.data.storyContext ||
+      (parsed.data.useProfileContext ? child.additional_context : null)
+  };
+
+  const request = {
+    ...parsed.data,
+    characters: normalizedCharacters
+  };
 
   const { data: storyRecord, error: insertError } = await supabase
     .from("stories")
@@ -89,8 +118,8 @@ export async function createStory(
 
   try {
     const generated = await generateStory({
-      child,
-      request: parsed.data
+      child: effectiveChild,
+      request
     });
 
     const { error: textUpdateError } = await supabase
@@ -120,7 +149,7 @@ export async function createStory(
 
       const generatedAudio = await generateAudio({
         text: generated.text,
-        characters: parsed.data.characters
+        characters: request.characters
       });
 
       if (generatedAudio) {
