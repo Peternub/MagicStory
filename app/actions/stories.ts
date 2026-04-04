@@ -93,68 +93,84 @@ export async function createStory(
       request: parsed.data
     });
 
-    const { error: updateError } = await supabase
+    const { error: textUpdateError } = await supabase
       .from("stories")
       .update({
         title: generated.title,
         text_content: generated.text,
         provider_llm: generated.provider,
-        status: "text_ready"
+        status: "text_ready",
+        error_message: null
       })
       .eq("id", storyRecord.id)
       .eq("user_id", user.id);
 
-    if (updateError) {
-      throw updateError;
+    if (textUpdateError) {
+      throw textUpdateError;
     }
 
-    await supabase
-      .from("stories")
-      .update({
-        status: "audio_generating"
-      })
-      .eq("id", storyRecord.id)
-      .eq("user_id", user.id);
-
-    const generatedAudio = await generateAudio({
-      text: generated.text,
-      characters: parsed.data.characters
-    });
-
-    if (generatedAudio) {
-      const adminClient = createSupabaseAdminClient();
-      const audioPath = buildStoryAudioPath(user.id, storyRecord.id);
-      const bucket = getStoryAudioBucket();
-
-      const { error: uploadError } = await adminClient.storage
-        .from(bucket)
-        .upload(audioPath, generatedAudio.buffer, {
-          contentType: generatedAudio.contentType,
-          upsert: true
-        });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      const { error: completeError } = await supabase
+    try {
+      await supabase
         .from("stories")
         .update({
-          audio_url: audioPath,
-          provider_tts: generatedAudio.provider,
-          status: "completed"
+          status: "audio_generating"
         })
         .eq("id", storyRecord.id)
         .eq("user_id", user.id);
 
-      if (completeError) {
-        throw completeError;
+      const generatedAudio = await generateAudio({
+        text: generated.text,
+        characters: parsed.data.characters
+      });
+
+      if (generatedAudio) {
+        const adminClient = createSupabaseAdminClient();
+        const audioPath = buildStoryAudioPath(user.id, storyRecord.id);
+        const bucket = getStoryAudioBucket();
+
+        const { error: uploadError } = await adminClient.storage
+          .from(bucket)
+          .upload(audioPath, generatedAudio.buffer, {
+            contentType: generatedAudio.contentType,
+            upsert: true
+          });
+
+        if (uploadError) {
+          throw uploadError;
+        }
+
+        const { error: completeError } = await supabase
+          .from("stories")
+          .update({
+            audio_url: audioPath,
+            provider_tts: generatedAudio.provider,
+            status: "completed",
+            error_message: null
+          })
+          .eq("id", storyRecord.id)
+          .eq("user_id", user.id);
+
+        if (completeError) {
+          throw completeError;
+        }
+      } else {
+        await supabase
+          .from("stories")
+          .update({
+            status: "text_ready",
+            error_message: "Аудио не создано: не настроен TTS или он временно недоступен"
+          })
+          .eq("id", storyRecord.id)
+          .eq("user_id", user.id);
       }
-    } else {
+    } catch (audioError) {
+      console.error("TTS generation failed", audioError);
+
       await supabase
         .from("stories")
         .update({
-          status: "text_ready"
+          status: "text_ready",
+          error_message: "Аудио не создано: проблема с Yandex SpeechKit или настройками доступа"
         })
         .eq("id", storyRecord.id)
         .eq("user_id", user.id);
@@ -166,7 +182,9 @@ export async function createStory(
       event_type: "story_created",
       amount: 0
     });
-  } catch {
+  } catch (storyError) {
+    console.error("Story generation failed", storyError);
+
     await supabase
       .from("stories")
       .update({
