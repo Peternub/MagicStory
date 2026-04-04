@@ -20,7 +20,7 @@ export function MarketingPlanCard({
       className={`rounded-[2rem] border p-8 shadow-glow ${
         highlight
           ? "border-brand-400/60 bg-gradient-to-b from-brand-800/60 to-[#0d0816]"
-          : "border-white/10 bg-white/5"
+          : "border-white/10 bg-[#160a27]"
       }`}
     >
       <div className="flex items-center justify-between gap-4">

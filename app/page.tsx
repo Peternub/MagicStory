@@ -93,7 +93,7 @@ export default function HomePage() {
             description="Регулярная подписка для родителей, которые хотят использовать сервис постоянно."
             highlight
           />
-          <article className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
+          <article className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8">
             <h2 className="font-display text-xl text-white">
               Индивидуальный сценарий
             </h2>
@@ -113,7 +113,7 @@ export default function HomePage() {
 
       <section
         id="reviews"
-        className="mt-16 rounded-[2rem] border border-white/10 bg-white/5 p-8"
+        className="mt-16 rounded-[2rem] border border-white/10 bg-[#160a27] p-8"
       >
         <p className="text-sm uppercase tracking-[0.22em] text-brand-200">
           Отзывы
@@ -145,7 +145,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
+          <div className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8">
             <p className="text-sm leading-7 text-white/70">
               На этой странице можно оставить сообщение о продукте, партнерстве,
               семейном использовании сервиса или будущем запуске оплаты.

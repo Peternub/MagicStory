@@ -44,30 +44,30 @@ export default async function BillingPage() {
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm uppercase tracking-[0.25em] text-brand-700">
+          <p className="text-sm uppercase tracking-[0.25em] text-brand-200">
             Тарифы и лимиты
           </p>
-          <h1 className="mt-2 text-3xl font-semibold text-brand-900">
+          <h1 className="mt-2 text-3xl font-semibold text-white">
             Управление подпиской
           </h1>
         </div>
         <Link
           href="/dashboard"
-          className="inline-flex rounded-full border border-brand-300 px-5 py-3 text-sm font-medium text-brand-900"
+          className="inline-flex rounded-full border border-white/10 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/5"
         >
           Вернуться в кабинет
         </Link>
       </header>
 
-      <section className="mt-8 rounded-[2rem] bg-brand-900 p-8 text-brand-50">
+      <section className="mt-8 rounded-[2rem] border border-white/10 bg-[#160a27] p-8 text-white">
         <p className="text-sm text-brand-200">
           Текущий баланс сказок: {profile?.stories_balance ?? 0}
         </p>
-        <p className="mt-2 text-sm text-brand-100/80">
+        <p className="mt-2 text-sm text-white/80">
           Статус подписки: {profile?.subscription_status ?? "free"}
         </p>
-        <p className="mt-4 text-sm text-brand-100/80">
-          На этом шаге мы уже сохраняем заявки на подписку в базе. Следующим
+        <p className="mt-4 text-sm text-white/70">
+          На этом этапе мы уже сохраняем заявки на подписку в базе. Следующим
           этапом подключим оплату через YooKassa.
         </p>
       </section>

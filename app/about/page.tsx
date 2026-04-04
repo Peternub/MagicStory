@@ -9,7 +9,7 @@ const principles = [
 export default function AboutPage() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
-      <section className="rounded-[2.5rem] border border-white/10 bg-white/5 p-8 sm:p-10">
+      <section className="rounded-[2.5rem] border border-white/10 bg-[#160a27] p-8 sm:p-10">
         <p className="text-sm uppercase tracking-[0.24em] text-brand-200">
           О сервисе
         </p>
@@ -27,7 +27,7 @@ export default function AboutPage() {
         {principles.map((item) => (
           <article
             key={item}
-            className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-sm leading-7 text-white/75"
+            className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8 text-sm leading-7 text-white/75"
           >
             {item}
           </article>
@@ -35,7 +35,7 @@ export default function AboutPage() {
       </section>
 
       <section className="mt-10 grid gap-8 lg:grid-cols-[1fr_1fr]">
-        <article className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
+        <article className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8">
           <h2 className="font-display text-2xl text-white">Что получает семья</h2>
           <ul className="mt-5 space-y-3 text-sm leading-7 text-white/70">
             <li>Персонализированный сюжет под возраст и интересы ребенка.</li>
@@ -45,7 +45,7 @@ export default function AboutPage() {
           </ul>
         </article>
 
-        <article className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
+        <article className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8">
           <h2 className="font-display text-2xl text-white">
             Как мы подаем продукт
           </h2>

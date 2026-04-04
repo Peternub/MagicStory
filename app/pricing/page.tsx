@@ -4,7 +4,7 @@ import { MarketingPlanCard } from "@/components/site/marketing-plan-card";
 export default function PricingPage() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
-      <section className="rounded-[2.5rem] border border-white/10 bg-white/5 p-8 sm:p-10">
+      <section className="rounded-[2.5rem] border border-white/10 bg-[#160a27] p-8 sm:p-10">
         <p className="text-sm uppercase tracking-[0.24em] text-brand-200">
           Цены
         </p>
@@ -31,7 +31,7 @@ export default function PricingPage() {
           description="Основной семейный план для постоянного использования и вечерних ритуалов."
           highlight
         />
-        <article className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
+        <article className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8">
           <h2 className="font-display text-xl text-white">
             Что дальше
           </h2>

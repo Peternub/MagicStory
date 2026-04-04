@@ -62,7 +62,7 @@ export async function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
-              className="whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/5 hover:text-white"
+              className="whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-brand-500/10 hover:text-white"
             >
               {item.label}
             </Link>
@@ -72,7 +72,7 @@ export async function SiteHeader() {
         <div className="ml-auto flex shrink-0 items-center gap-3">
           {user ? (
             <details className="group relative">
-              <summary className="flex list-none cursor-pointer items-center gap-3 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/90 transition hover:border-brand-300 hover:bg-white/10 [&::-webkit-details-marker]:hidden">
+              <summary className="flex list-none cursor-pointer items-center gap-3 rounded-full border border-white/10 bg-[#120a1d] px-3 py-2 text-sm text-white/90 transition hover:border-brand-300 hover:bg-brand-500/10 [&::-webkit-details-marker]:hidden">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-700 text-xs font-semibold text-white shadow-glow">
                   {initials}
                 </span>
@@ -85,7 +85,7 @@ export async function SiteHeader() {
               </summary>
 
               <div className="absolute right-0 mt-3 w-[20rem] rounded-[1.5rem] border border-white/10 bg-[#120a1d] p-4 shadow-2xl">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="rounded-2xl border border-white/10 bg-[#160a27] p-4">
                   <p className="text-xs uppercase tracking-[0.18em] text-brand-200">
                     Почта
                   </p>
@@ -95,7 +95,7 @@ export async function SiteHeader() {
                 </div>
 
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="rounded-2xl border border-white/10 bg-[#160a27] p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-brand-200">
                       Сказок осталось
                     </p>
@@ -104,7 +104,7 @@ export async function SiteHeader() {
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="rounded-2xl border border-white/10 bg-[#160a27] p-4">
                     <p className="text-xs uppercase tracking-[0.18em] text-brand-200">
                       Тариф
                     </p>
@@ -116,12 +116,12 @@ export async function SiteHeader() {
 
                 <Link
                   href="/dashboard"
-                  className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-white/10 px-4 py-3 text-sm font-medium text-white transition hover:border-brand-300 hover:bg-white/5"
+                  className="mt-3 inline-flex w-full items-center justify-center rounded-full border border-white/10 px-4 py-3 text-sm font-medium text-white transition hover:border-brand-300 hover:bg-brand-500/10"
                 >
                   Открыть кабинет
                 </Link>
 
-                <SignOutButton className="mt-3 w-full justify-center border border-white/10 bg-white/5 px-4 py-3 text-sm text-white transition hover:border-brand-300 hover:bg-white/10" />
+                <SignOutButton className="mt-3 w-full justify-center border border-white/10 bg-[#160a27] px-4 py-3 text-sm text-white transition hover:border-brand-300 hover:bg-brand-500/10" />
               </div>
             </details>
           ) : (

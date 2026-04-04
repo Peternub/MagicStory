@@ -19,7 +19,7 @@ export function ContactForm() {
   return (
     <form
       action={formAction}
-      className="rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur"
+      className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8 backdrop-blur"
     >
       <div className="grid gap-4">
         <label className="block">

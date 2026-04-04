@@ -20,7 +20,7 @@ const reviews = [
 export default function ReviewsPage() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
-      <section className="rounded-[2.5rem] border border-white/10 bg-white/5 p-8 sm:p-10">
+      <section className="rounded-[2.5rem] border border-white/10 bg-[#160a27] p-8 sm:p-10">
         <p className="text-sm uppercase tracking-[0.24em] text-brand-200">
           Отзывы
         </p>
@@ -33,7 +33,7 @@ export default function ReviewsPage() {
         {reviews.map((review) => (
           <article
             key={review.name}
-            className="rounded-[2rem] border border-white/10 bg-white/5 p-8"
+            className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8"
           >
             <p className="text-sm leading-7 text-white/75">“{review.text}”</p>
             <p className="mt-6 text-sm font-medium text-brand-200">{review.name}</p>

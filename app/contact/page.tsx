@@ -4,7 +4,7 @@ export default function ContactPage() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
       <section className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-[2.5rem] border border-white/10 bg-white/5 p-8 sm:p-10">
+        <div className="rounded-[2.5rem] border border-white/10 bg-[#160a27] p-8 sm:p-10">
           <p className="text-sm uppercase tracking-[0.24em] text-brand-200">
             Контакты
           </p>

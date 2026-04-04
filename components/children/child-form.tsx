@@ -16,7 +16,7 @@ type ChildFormProps = {
 const initialState: ChildActionState = {};
 
 const fieldClassName =
-  "w-full rounded-2xl border border-brand-200 bg-white px-4 py-3 text-base text-brand-900 placeholder:text-brand-400 caret-brand-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-200/40";
+  "w-full rounded-2xl border border-white/10 bg-[#0f091a] px-4 py-3 text-base text-white placeholder:text-white/35 caret-white outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20";
 
 export function ChildForm({ action }: ChildFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -24,7 +24,7 @@ export function ChildForm({ action }: ChildFormProps) {
   return (
     <form action={formAction} className="space-y-5">
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-brand-900">
+        <span className="mb-2 block text-sm font-medium text-white">
           Имя ребенка
         </span>
         <input
@@ -37,7 +37,7 @@ export function ChildForm({ action }: ChildFormProps) {
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-brand-900">
+        <span className="mb-2 block text-sm font-medium text-white">
           Возраст
         </span>
         <input
@@ -52,7 +52,7 @@ export function ChildForm({ action }: ChildFormProps) {
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-brand-900">
+        <span className="mb-2 block text-sm font-medium text-white">
           Интересы
         </span>
         <textarea
@@ -64,7 +64,7 @@ export function ChildForm({ action }: ChildFormProps) {
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-brand-900">
+        <span className="mb-2 block text-sm font-medium text-white">
           Страхи
         </span>
         <textarea
@@ -76,7 +76,7 @@ export function ChildForm({ action }: ChildFormProps) {
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-brand-900">
+        <span className="mb-2 block text-sm font-medium text-white">
           Дополнительный контекст
         </span>
         <textarea
@@ -88,7 +88,7 @@ export function ChildForm({ action }: ChildFormProps) {
       </label>
 
       {state.error ? (
-        <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
           {state.error}
         </p>
       ) : null}

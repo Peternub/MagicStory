@@ -25,7 +25,7 @@ type AuthFormProps = {
 const initialState: AuthActionState = {};
 
 const inputClassName =
-  "w-full rounded-2xl border border-brand-200 bg-white px-5 py-4 text-lg text-brand-900 placeholder:text-brand-400 caret-brand-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-200/50";
+  "w-full rounded-2xl border border-white/10 bg-[#0f091a] px-5 py-4 text-lg text-white placeholder:text-white/35 caret-white outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20";
 
 export function AuthForm({
   action,
@@ -40,12 +40,10 @@ export function AuthForm({
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <div className="w-full max-w-3xl rounded-[2.5rem] border border-brand-200/70 bg-white/90 p-8 shadow-glow backdrop-blur sm:p-10">
+    <div className="w-full max-w-3xl rounded-[2.5rem] border border-white/10 bg-[linear-gradient(135deg,rgba(21,11,35,0.96),rgba(40,17,74,0.9))] p-8 shadow-glow backdrop-blur sm:p-10">
       <div>
-        <h1 className="text-4xl font-semibold text-brand-900 sm:text-5xl">
-          {title}
-        </h1>
-        <p className="mt-4 max-w-2xl text-lg leading-8 text-brand-900/65">
+        <h1 className="text-4xl font-semibold text-white sm:text-5xl">{title}</h1>
+        <p className="mt-4 max-w-2xl text-lg leading-8 text-white/70">
           {description}
         </p>
       </div>
@@ -54,7 +52,7 @@ export function AuthForm({
         {showNameFields ? (
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-3 block text-base font-medium text-brand-900">
+              <span className="mb-3 block text-base font-medium text-white">
                 Имя
               </span>
               <input
@@ -67,7 +65,7 @@ export function AuthForm({
             </label>
 
             <label className="block">
-              <span className="mb-3 block text-base font-medium text-brand-900">
+              <span className="mb-3 block text-base font-medium text-white">
                 Фамилия
               </span>
               <input
@@ -82,7 +80,7 @@ export function AuthForm({
         ) : null}
 
         <label className="block">
-          <span className="mb-3 block text-base font-medium text-brand-900">
+          <span className="mb-3 block text-base font-medium text-white">
             Email
           </span>
           <input
@@ -95,7 +93,7 @@ export function AuthForm({
         </label>
 
         <label className="block">
-          <span className="mb-3 block text-base font-medium text-brand-900">
+          <span className="mb-3 block text-base font-medium text-white">
             Пароль
           </span>
           <input
@@ -109,13 +107,13 @@ export function AuthForm({
         </label>
 
         {state.error ? (
-          <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700">
+          <p className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
             {state.error}
           </p>
         ) : null}
 
         {state.success ? (
-          <p className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          <p className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
             {state.success}
           </p>
         ) : null}
@@ -129,9 +127,9 @@ export function AuthForm({
         </button>
       </form>
 
-      <p className="mt-8 text-base text-brand-900/70">
+      <p className="mt-8 text-base text-white/70">
         {alternateText}{" "}
-        <Link className="font-semibold text-brand-700" href={alternateHref}>
+        <Link className="font-semibold text-brand-200" href={alternateHref}>
           {alternateLabel}
         </Link>
       </p>

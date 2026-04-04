@@ -22,22 +22,20 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusClasses: Record<string, string> = {
-  pending: "bg-brand-50 text-brand-900",
-  text_generating: "bg-amber-50 text-amber-800",
-  text_ready: "bg-sky-50 text-sky-800",
-  audio_generating: "bg-violet-50 text-violet-800",
-  completed: "bg-emerald-50 text-emerald-800",
-  failed: "bg-red-50 text-red-700"
+  pending: "border border-brand-300/30 bg-brand-500/10 text-brand-100",
+  text_generating: "border border-amber-400/30 bg-amber-500/10 text-amber-200",
+  text_ready: "border border-sky-400/30 bg-sky-500/10 text-sky-200",
+  audio_generating: "border border-violet-400/30 bg-violet-500/10 text-violet-200",
+  completed: "border border-emerald-400/30 bg-emerald-500/10 text-emerald-200",
+  failed: "border border-red-400/30 bg-red-500/10 text-red-200"
 };
 
 export function StoriesList({ stories }: StoriesListProps) {
   if (stories.length === 0) {
     return (
-      <div className="rounded-[2rem] border border-dashed border-brand-300 bg-white/70 p-8 text-center">
-        <p className="text-lg font-medium text-brand-900">
-          Сказок пока нет
-        </p>
-        <p className="mt-3 text-sm text-brand-900/70">
+      <div className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8 text-center">
+        <p className="text-lg font-medium text-white">Сказок пока нет</p>
+        <p className="mt-3 text-sm text-white/70">
           Создайте первую сказку по теме дня для одного из детей.
         </p>
         <Link
@@ -56,20 +54,18 @@ export function StoriesList({ stories }: StoriesListProps) {
         <Link
           key={story.id}
           href={`/stories/${story.id}`}
-          className="rounded-[2rem] border border-brand-200/70 bg-white/85 p-6 transition hover:border-brand-400"
+          className="rounded-[2rem] border border-white/10 bg-[#160a27] p-6 transition hover:border-brand-400/50 hover:bg-[#1b0d30]"
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-brand-900">
+              <h2 className="text-xl font-semibold text-white">
                 {story.title ?? "Новая сказка"}
               </h2>
-              <p className="mt-2 text-sm text-brand-900/70">
-                Тема: {story.theme}
-              </p>
+              <p className="mt-2 text-sm text-white/70">Тема: {story.theme}</p>
             </div>
-            <div className="text-sm text-brand-900/70">
+            <div className="text-sm text-white/70">
               <p
-                className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusClasses[story.status] ?? "bg-brand-50 text-brand-900"}`}
+                className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusClasses[story.status] ?? "border border-brand-300/30 bg-brand-500/10 text-brand-100"}`}
               >
                 {statusLabels[story.status] ?? story.status}
               </p>
