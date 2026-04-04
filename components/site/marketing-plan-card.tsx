@@ -8,7 +8,9 @@ type MarketingPlanCardProps = {
 export function MarketingPlanCard({ plan }: MarketingPlanCardProps) {
   return (
     <article
-      className={`flex h-full flex-col rounded-[2rem] border p-6 shadow-glow ${
+      className={`${
+        plan.highlight ? "pricing-hit-card pricing-hit-card--marketing" : ""
+      } flex h-full flex-col rounded-[2rem] border p-6 shadow-glow ${
         plan.highlight
           ? "border-brand-400/60 bg-gradient-to-b from-brand-800/60 to-[#0d0816]"
           : "border-white/10 bg-[#160a27]"
@@ -19,7 +21,7 @@ export function MarketingPlanCard({ plan }: MarketingPlanCardProps) {
           {plan.letter}
         </span>
         {plan.highlight ? (
-          <span className="rounded-full bg-brand-400/20 px-3 py-1 text-xs font-medium text-brand-100">
+          <span className="rounded-full bg-brand-400/20 px-3 py-1 text-xs font-medium text-brand-100 shadow-[0_0_24px_rgba(155,99,255,0.45)]">
             Хит
           </span>
         ) : null}

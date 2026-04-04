@@ -29,8 +29,7 @@ export const magicPlans: MagicPlan[] = [
     generations: 15,
     minutes: 10,
     hasAudio: true,
-    description: "До 15 генераций сказки до 10 минут с озвучкой.",
-    highlight: true
+    description: "До 15 генераций сказки до 10 минут с озвучкой."
   },
   {
     code: "basic-maximum",
@@ -40,7 +39,8 @@ export const magicPlans: MagicPlan[] = [
     generations: 30,
     minutes: 10,
     hasAudio: true,
-    description: "До 30 генераций сказки до 10 минут с озвучкой."
+    description: "До 30 генераций сказки до 10 минут с озвучкой.",
+    highlight: true
   },
   {
     code: "maximum-minimum",

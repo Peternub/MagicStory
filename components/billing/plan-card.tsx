@@ -9,7 +9,9 @@ type PlanCardProps = {
 export function PlanCard({ plan }: PlanCardProps) {
   return (
     <article
-      className={`flex h-full flex-col rounded-[2rem] border p-6 shadow-[0_20px_50px_rgba(9,5,16,0.3)] ${
+      className={`${
+        plan.highlight ? "pricing-hit-card pricing-hit-card--billing" : ""
+      } flex h-full flex-col rounded-[2rem] border p-6 shadow-[0_20px_50px_rgba(9,5,16,0.3)] ${
         plan.highlight
           ? "border-brand-400/60 bg-gradient-to-b from-brand-800/60 to-[#0d0816]"
           : "border-white/10 bg-[#160a27]"
@@ -20,8 +22,8 @@ export function PlanCard({ plan }: PlanCardProps) {
           {plan.letter}
         </span>
         {plan.highlight ? (
-          <span className="rounded-full border border-brand-300/30 bg-brand-500/10 px-3 py-1 text-xs font-medium text-brand-100">
-            Основной
+          <span className="rounded-full border border-brand-300/30 bg-brand-500/10 px-3 py-1 text-xs font-medium text-brand-100 shadow-[0_0_24px_rgba(155,99,255,0.45)]">
+            Хит
           </span>
         ) : null}
       </div>
