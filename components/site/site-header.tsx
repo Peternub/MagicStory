@@ -5,7 +5,6 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const navigation = [
   { href: "/", label: "Главная" },
-  { href: "/#about", label: "О сервисе" },
   { href: "/#pricing", label: "Цены" },
   { href: "/#reviews", label: "Отзывы" },
   { href: "/#contact", label: "Контакты" }
