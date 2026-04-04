@@ -1,6 +1,6 @@
-import { OnboardingCard } from "@/components/dashboard/onboarding-card";
 import Link from "next/link";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { OnboardingCard } from "@/components/dashboard/onboarding-card";
 import { requireUser } from "@/lib/supabase/auth";
 import { getOnboardingState } from "@/lib/supabase/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -21,11 +21,11 @@ export default async function DashboardPage() {
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm uppercase tracking-[0.25em] text-brand-700">
+          <p className="text-sm uppercase tracking-[0.25em] text-brand-300">
             Личный кабинет
           </p>
-          <h1 className="mt-2 text-3xl font-semibold text-brand-900">
-            Здравствуйте, {user.email}
+          <h1 className="mt-2 max-w-4xl break-all text-3xl font-semibold text-white sm:text-4xl">
+            Здравствуйте, <span className="text-brand-100">{user.email}</span>
           </h1>
         </div>
         <SignOutButton />
@@ -33,12 +33,10 @@ export default async function DashboardPage() {
 
       <section className="mt-12 grid gap-6 md:grid-cols-2">
         <article className="rounded-[2rem] border border-brand-200/70 bg-white/85 p-8">
-          <h2 className="text-xl font-semibold text-brand-900">
-            Профили детей
-          </h2>
+          <h2 className="text-xl font-semibold text-brand-900">Профили детей</h2>
           <p className="mt-3 text-sm leading-6 text-brand-900/70">
-            Добавляйте и храните профили детей, чтобы использовать их в
-            генерации персональных сказок.
+            Добавляйте и храните профили детей, чтобы использовать их в генерации
+            персональных сказок.
           </p>
           <Link
             href="/children"
