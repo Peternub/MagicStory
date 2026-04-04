@@ -25,7 +25,7 @@ type AuthFormProps = {
 const initialState: AuthActionState = {};
 
 const inputClassName =
-  "w-full rounded-2xl border border-brand-200 bg-white px-5 py-4 text-lg text-brand-950 outline-none transition placeholder:text-brand-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-200/50";
+  "w-full rounded-2xl border border-brand-200 bg-white px-5 py-4 text-lg text-brand-900 placeholder:text-brand-400 caret-brand-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-200/50";
 
 export function AuthForm({
   action,
@@ -42,7 +42,7 @@ export function AuthForm({
   return (
     <div className="w-full max-w-3xl rounded-[2.5rem] border border-brand-200/70 bg-white/90 p-8 shadow-glow backdrop-blur sm:p-10">
       <div>
-        <h1 className="text-4xl font-semibold text-brand-950 sm:text-5xl">
+        <h1 className="text-4xl font-semibold text-brand-900 sm:text-5xl">
           {title}
         </h1>
         <p className="mt-4 max-w-2xl text-lg leading-8 text-brand-900/65">
@@ -54,7 +54,7 @@ export function AuthForm({
         {showNameFields ? (
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-3 block text-base font-medium text-brand-950">
+              <span className="mb-3 block text-base font-medium text-brand-900">
                 Имя
               </span>
               <input
@@ -67,7 +67,7 @@ export function AuthForm({
             </label>
 
             <label className="block">
-              <span className="mb-3 block text-base font-medium text-brand-950">
+              <span className="mb-3 block text-base font-medium text-brand-900">
                 Фамилия
               </span>
               <input
@@ -82,7 +82,7 @@ export function AuthForm({
         ) : null}
 
         <label className="block">
-          <span className="mb-3 block text-base font-medium text-brand-950">
+          <span className="mb-3 block text-base font-medium text-brand-900">
             Email
           </span>
           <input
@@ -95,7 +95,7 @@ export function AuthForm({
         </label>
 
         <label className="block">
-          <span className="mb-3 block text-base font-medium text-brand-950">
+          <span className="mb-3 block text-base font-medium text-brand-900">
             Пароль
           </span>
           <input

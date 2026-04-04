@@ -127,7 +127,7 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
           </div>
         ) : null}
 
-        <article className="prose prose-stone mt-8 max-w-none whitespace-pre-line text-brand-950">
+        <article className="prose prose-stone mt-8 max-w-none whitespace-pre-line text-brand-900">
           {story.text_content ?? "Текст сказки еще не готов."}
         </article>
 

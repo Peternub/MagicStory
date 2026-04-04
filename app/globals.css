@@ -39,6 +39,12 @@ a {
   box-sizing: border-box;
 }
 
+input,
+textarea,
+select {
+  caret-color: currentColor;
+}
+
 ::selection {
   background: rgba(155, 99, 255, 0.4);
   color: #ffffff;

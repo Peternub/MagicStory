@@ -10,8 +10,8 @@ function StatusPill({ done }: { done: boolean }) {
     <span
       className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
         done
-          ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
-          : "border border-brand-200 bg-white text-brand-900"
+          ? "border border-emerald-400/30 bg-emerald-500/10 text-emerald-200"
+          : "border border-brand-300/30 bg-brand-900/70 text-brand-100"
       }`}
     >
       {done ? "Готово" : "Следующий шаг"}
