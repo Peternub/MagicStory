@@ -7,6 +7,16 @@ function pickString(value: unknown) {
   return typeof value === "string" && value.trim() ? value.trim() : "";
 }
 
+function formatEmailFallback(email?: string | null) {
+  const localPart = email?.split("@")[0]?.trim();
+
+  if (!localPart) {
+    return "Профиль";
+  }
+
+  return localPart.replace(/[._-]+/g, " ");
+}
+
 export function getUserDisplayName(user: UserLike) {
   const firstName = pickString(user.user_metadata?.first_name);
   const lastName = pickString(user.user_metadata?.last_name);
@@ -22,7 +32,7 @@ export function getUserDisplayName(user: UserLike) {
     return metadataFullName;
   }
 
-  return "Профиль";
+  return formatEmailFallback(user.email);
 }
 
 export function getUserInitials(user: UserLike) {

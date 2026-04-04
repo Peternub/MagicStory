@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SignOutButton } from "@/components/auth/sign-out-button";
 import { OnboardingCard } from "@/components/dashboard/onboarding-card";
 import { requireUser } from "@/lib/supabase/auth";
 import { getOnboardingState } from "@/lib/supabase/onboarding";
@@ -21,60 +20,67 @@ export default async function DashboardPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
-      <header className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm uppercase tracking-[0.25em] text-brand-300">
-            Личный кабинет
-          </p>
-          <h1 className="mt-2 max-w-4xl break-all text-3xl font-semibold text-white sm:text-4xl">
-            Здравствуйте, <span className="text-brand-100">{displayName}</span>
-          </h1>
-        </div>
-        <SignOutButton />
+      <header>
+        <p className="text-sm uppercase tracking-[0.22em] text-brand-300">
+          Кабинет
+        </p>
+        <h1 className="mt-3 max-w-4xl break-words text-3xl font-semibold text-white sm:text-5xl">
+          Здравствуйте, <span className="text-brand-100">{displayName}</span>
+        </h1>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-white/70">
+          Здесь всего два основных действия: добавить ребенка и создать первую сказку.
+        </p>
       </header>
 
-      <section className="mt-12 grid gap-6 md:grid-cols-2">
-        <article className="rounded-[2rem] border border-brand-200/70 bg-white/85 p-8">
-          <h2 className="text-xl font-semibold text-brand-900">Профили детей</h2>
-          <p className="mt-3 text-sm leading-6 text-brand-900/70">
-            Добавляйте и храните профили детей, чтобы использовать их в генерации
-            персональных сказок.
+      <section className="mt-10 grid gap-6 md:grid-cols-3">
+        <article className="rounded-[2rem] border border-white/10 bg-white/85 p-6">
+          <p className="text-sm uppercase tracking-[0.2em] text-brand-700">
+            Баланс
+          </p>
+          <p className="mt-3 text-4xl font-semibold text-brand-950">
+            {profile?.stories_balance ?? 0}
+          </p>
+          <p className="mt-2 text-sm text-brand-900/70">сказок доступно сейчас</p>
+        </article>
+
+        <article className="rounded-[2rem] border border-white/10 bg-brand-900 p-6 text-white">
+          <p className="text-sm uppercase tracking-[0.2em] text-brand-200">
+            Дети
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold">Профили детей</h2>
+          <p className="mt-3 text-sm leading-6 text-white/75">
+            Управляйте профилями и данными для персонализации историй.
           </p>
           <Link
             href="/children"
-            className="mt-6 inline-flex rounded-full bg-brand-700 px-5 py-3 text-sm font-medium text-white"
+            className="mt-5 inline-flex rounded-full bg-white px-4 py-2 text-sm font-semibold text-brand-950"
           >
-            Открыть раздел детей
+            Открыть раздел
           </Link>
         </article>
 
-        <article className="rounded-[2rem] bg-brand-900 p-8 text-brand-50">
-          <h2 className="text-xl font-semibold">Создание сказки</h2>
-          <p className="mt-3 text-sm leading-6 text-brand-100/80">
-            После добавления профиля ребенка можно выбрать тему дня и запустить
-            генерацию новой истории.
+        <article className="rounded-[2rem] border border-white/10 bg-brand-900 p-6 text-white">
+          <p className="text-sm uppercase tracking-[0.2em] text-brand-200">
+            Сказки
           </p>
-          <p className="mt-4 text-sm text-brand-100">
-            Доступный баланс: {profile?.stories_balance ?? 0}
+          <h2 className="mt-3 text-2xl font-semibold">Новая история</h2>
+          <p className="mt-3 text-sm leading-6 text-white/75">
+            Запустите генерацию по теме дня или откройте библиотеку готовых сказок.
           </p>
-          <Link
-            href="/stories/new"
-            className="mt-6 inline-flex rounded-full bg-brand-300 px-5 py-3 text-sm font-medium text-brand-950"
-          >
-            Создать сказку
-          </Link>
-          <Link
-            href="/stories"
-            className="mt-3 inline-flex rounded-full border border-brand-300 px-5 py-3 text-sm font-medium text-brand-50"
-          >
-            Открыть библиотеку
-          </Link>
-          <Link
-            href="/billing"
-            className="mt-3 inline-flex rounded-full border border-brand-300 px-5 py-3 text-sm font-medium text-brand-50"
-          >
-            Тарифы и лимиты
-          </Link>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link
+              href="/stories/new"
+              className="inline-flex rounded-full bg-brand-300 px-4 py-2 text-sm font-semibold text-brand-950"
+            >
+              Создать
+            </Link>
+            <Link
+              href="/stories"
+              className="inline-flex rounded-full border border-brand-300 px-4 py-2 text-sm font-semibold text-white"
+            >
+              Библиотека
+            </Link>
+          </div>
         </article>
       </section>
 

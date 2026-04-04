@@ -24,6 +24,9 @@ type AuthFormProps = {
 
 const initialState: AuthActionState = {};
 
+const inputClassName =
+  "w-full rounded-2xl border border-brand-200 bg-white px-5 py-4 text-lg text-brand-950 outline-none transition placeholder:text-brand-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-200/50";
+
 export function AuthForm({
   action,
   title,
@@ -37,21 +40,25 @@ export function AuthForm({
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <div className="w-full max-w-md rounded-[2rem] border border-brand-200/70 bg-white/85 p-8 shadow-glow backdrop-blur">
+    <div className="w-full max-w-3xl rounded-[2.5rem] border border-brand-200/70 bg-white/90 p-8 shadow-glow backdrop-blur sm:p-10">
       <div>
-        <h1 className="text-3xl font-semibold text-brand-900">{title}</h1>
-        <p className="mt-3 text-sm leading-6 text-brand-900/70">
+        <h1 className="text-4xl font-semibold text-brand-950 sm:text-5xl">
+          {title}
+        </h1>
+        <p className="mt-4 max-w-2xl text-lg leading-8 text-brand-900/65">
           {description}
         </p>
       </div>
 
-      <form action={formAction} className="mt-8 space-y-4">
+      <form action={formAction} className="mt-10 space-y-5">
         {showNameFields ? (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-2 block text-sm text-brand-900">Имя</span>
+              <span className="mb-3 block text-base font-medium text-brand-950">
+                Имя
+              </span>
               <input
-                className="w-full rounded-2xl border border-brand-200 bg-white px-4 py-3 outline-none transition focus:border-brand-400"
+                className={inputClassName}
                 type="text"
                 name="firstName"
                 placeholder="Анна"
@@ -60,9 +67,11 @@ export function AuthForm({
             </label>
 
             <label className="block">
-              <span className="mb-2 block text-sm text-brand-900">Фамилия</span>
+              <span className="mb-3 block text-base font-medium text-brand-950">
+                Фамилия
+              </span>
               <input
-                className="w-full rounded-2xl border border-brand-200 bg-white px-4 py-3 outline-none transition focus:border-brand-400"
+                className={inputClassName}
                 type="text"
                 name="lastName"
                 placeholder="Иванова"
@@ -73,9 +82,11 @@ export function AuthForm({
         ) : null}
 
         <label className="block">
-          <span className="mb-2 block text-sm text-brand-900">Email</span>
+          <span className="mb-3 block text-base font-medium text-brand-950">
+            Email
+          </span>
           <input
-            className="w-full rounded-2xl border border-brand-200 bg-white px-4 py-3 outline-none transition focus:border-brand-400"
+            className={inputClassName}
             type="email"
             name="email"
             placeholder="parent@example.ru"
@@ -84,9 +95,11 @@ export function AuthForm({
         </label>
 
         <label className="block">
-          <span className="mb-2 block text-sm text-brand-900">Пароль</span>
+          <span className="mb-3 block text-base font-medium text-brand-950">
+            Пароль
+          </span>
           <input
-            className="w-full rounded-2xl border border-brand-200 bg-white px-4 py-3 outline-none transition focus:border-brand-400"
+            className={inputClassName}
             type="password"
             name="password"
             placeholder="Минимум 8 символов"
@@ -108,7 +121,7 @@ export function AuthForm({
         ) : null}
 
         <button
-          className="w-full rounded-2xl bg-brand-700 px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-70"
+          className="w-full rounded-2xl bg-brand-700 px-4 py-4 text-lg font-semibold text-white transition hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-70"
           type="submit"
           disabled={isPending}
         >
@@ -116,9 +129,9 @@ export function AuthForm({
         </button>
       </form>
 
-      <p className="mt-6 text-sm text-brand-900/70">
+      <p className="mt-8 text-base text-brand-900/70">
         {alternateText}{" "}
-        <Link className="font-medium text-brand-700" href={alternateHref}>
+        <Link className="font-semibold text-brand-700" href={alternateHref}>
           {alternateLabel}
         </Link>
       </p>
