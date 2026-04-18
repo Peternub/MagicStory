@@ -107,8 +107,6 @@ export default function HomePage() {
           aria-hidden="true"
           className="hero-scene__image hero-scene__image--light"
         />
-        <div className="hero-scene__veil" />
-        <div className="hero-scene__glow" />
 
         <div className="hero-copy relative z-10 flex max-w-4xl flex-col items-center text-center">
           <p className="hero-copy__title font-display text-[clamp(3.2rem,9vw,6.4rem)] tracking-[0.28em] text-[var(--logo-text)]">
