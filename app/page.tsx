@@ -4,8 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ContactForm } from "@/components/site/contact-form";
 import { MarketingPlanCard } from "@/components/site/marketing-plan-card";
 import { magicPlans } from "@/lib/config/pricing";
-import darkHeroImage from "../image 21.png";
-import lightHeroImage from "../image 22.png";
 
 const storyScenes = [
   "Вы пришли с работы, а ребенка уже надо укладывать спать.",
@@ -95,19 +93,6 @@ export default function HomePage() {
   return (
     <main>
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-16">
-        <img
-          src={darkHeroImage.src}
-          alt=""
-          aria-hidden="true"
-          className="hero-scene__image hero-scene__image--dark"
-        />
-        <img
-          src={lightHeroImage.src}
-          alt=""
-          aria-hidden="true"
-          className="hero-scene__image hero-scene__image--light"
-        />
-
         <div className="hero-copy relative z-10 flex max-w-4xl flex-col items-center text-center">
           <p className="hero-copy__title font-display text-[clamp(3.2rem,9vw,6.4rem)] tracking-[0.28em] text-[var(--logo-text)]">
             MagicStory
