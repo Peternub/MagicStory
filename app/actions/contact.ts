@@ -13,7 +13,7 @@ export async function sendContactRequest(
 ): Promise<ContactActionState> {
   const parsed = contactSchema.safeParse({
     name: formData.get("name"),
-    email: formData.get("email"),
+    contact: formData.get("contact"),
     message: formData.get("message")
   });
 
@@ -26,7 +26,6 @@ export async function sendContactRequest(
   console.log("contact request", parsed.data);
 
   return {
-    success:
-      "Сообщение принято. В демо-версии заявки пока не сохраняются в CRM, но форма уже готова."
+    success: "Сообщение отправлено. Мы свяжемся с вами по указанному контакту."
   };
 }

@@ -18,33 +18,29 @@ export default async function BillingPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-[96rem] flex-col px-6 py-10 sm:px-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm uppercase tracking-[0.25em] text-brand-200">
-            Тарифы
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold text-white">
-            Линейка M A G I C
-          </h1>
+        <div className="text-[#24324c]">
+          <p className="text-sm uppercase tracking-[0.25em] text-[#b78397]">Тарифы</p>
+          <h1 className="mt-2 text-3xl font-semibold">Пакеты персональных сказок</h1>
         </div>
         <Link
           href="/dashboard"
-          className="inline-flex rounded-full border border-white/10 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/5"
+          className="inline-flex rounded-lg border border-[#ead7d0] bg-white px-5 py-3 text-sm font-medium text-[#24324c]"
         >
           Вернуться в кабинет
         </Link>
       </header>
 
-      <section className="mt-8 rounded-[2rem] border border-white/10 bg-[#160a27] p-8 text-white">
-        <p className="text-sm text-brand-200">Пять тарифов в логике M A G I C</p>
-        <p className="mt-2 text-sm text-white/80">
+      <section className="mt-8 rounded-lg border border-[#efd9d2] bg-[#fff7f4] p-8 text-[#24324c]">
+        <p className="text-sm text-[#b78397]">Три понятных тарифа без озвучки</p>
+        <p className="mt-2 text-sm text-[#5b6477]">
           Статус подписки: {profile?.subscription_status ?? "free"}
         </p>
-        <p className="mt-4 text-sm text-white/70">
-          Оплату через YooKassa подключим следующим шагом. Пока фиксируем тарифную сетку и интерфейс.
+        <p className="mt-4 text-sm text-[#5b6477]">
+          Оплату через YooKassa подключим следующим шагом. Сетка тарифов уже готова.
         </p>
       </section>
 
-      <section className="mt-10 grid gap-5 xl:grid-cols-5">
+      <section className="mt-10 grid gap-5 lg:grid-cols-3">
         {magicPlans.map((plan) => (
           <PlanCard key={plan.code} plan={plan} />
         ))}

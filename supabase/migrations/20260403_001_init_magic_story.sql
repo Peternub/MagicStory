@@ -28,10 +28,8 @@ create table if not exists public.stories (
   theme text not null,
   title text,
   text_content text,
-  audio_url text,
   status text not null default 'pending',
   provider_llm text,
-  provider_tts text,
   error_message text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -39,8 +37,6 @@ create table if not exists public.stories (
     status in (
       'pending',
       'text_generating',
-      'text_ready',
-      'audio_generating',
       'completed',
       'failed'
     )

@@ -77,7 +77,7 @@ export function OnboardingCard({
           </div>
 
           <p className="mt-4 text-base leading-7 text-white/72">
-            Выберите тему дня и получите готовую историю с аудио.
+            Выберите тему дня и получите готовую персональную историю.
           </p>
 
           <Link

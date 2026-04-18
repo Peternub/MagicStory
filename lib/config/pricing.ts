@@ -1,65 +1,43 @@
+export type MagicPlanTone = "starter" | "family" | "premium";
+
 export type MagicPlan = {
   code: string;
-  letter: "M" | "A" | "G" | "I" | "C";
   name: string;
   price: number;
-  generations: number;
-  minutes: number;
-  hasAudio: boolean;
+  stories: number;
+  subtitle: string;
   description: string;
+  tone: MagicPlanTone;
   highlight?: boolean;
 };
 
 export const magicPlans: MagicPlan[] = [
   {
-    code: "minimal-minimum",
-    letter: "M",
-    name: "Минимальный минимум",
+    code: "starter-10",
+    name: "10 сказок",
     price: 299,
-    generations: 30,
-    minutes: 10,
-    hasAudio: false,
-    description: "До 30 генераций сказки до 10 минут без озвучки."
+    stories: 10,
+    subtitle: "Для спокойного старта",
+    description: "Небольшой пакет для первых уютных вечеров.",
+    tone: "starter"
   },
   {
-    code: "basic-minimum",
-    letter: "A",
-    name: "Базовый минимум",
-    price: 490,
-    generations: 15,
-    minutes: 10,
-    hasAudio: true,
-    description: "До 15 генераций сказки до 10 минут с озвучкой."
-  },
-  {
-    code: "basic-maximum",
-    letter: "G",
-    name: "Базовый максимум",
-    price: 690,
-    generations: 30,
-    minutes: 10,
-    hasAudio: true,
-    description: "До 30 генераций сказки до 10 минут с озвучкой.",
+    code: "family-30",
+    name: "30 сказок",
+    price: 399,
+    stories: 30,
+    subtitle: "Лучший выбор для семьи",
+    description: "Оптимальный запас историй на частые вечерние ритуалы.",
+    tone: "family",
     highlight: true
   },
   {
-    code: "maximum-minimum",
-    letter: "I",
-    name: "Максимальный минимум",
-    price: 999,
-    generations: 30,
-    minutes: 15,
-    hasAudio: true,
-    description: "До 30 генераций сказки до 15 минут с озвучкой."
-  },
-  {
-    code: "maximum-maximum",
-    letter: "C",
-    name: "Максимальный максимум",
-    price: 1299,
-    generations: 45,
-    minutes: 15,
-    hasAudio: true,
-    description: "До 45 генераций сказки до 15 минут с озвучкой."
+    code: "premium-40",
+    name: "40 сказок",
+    price: 449,
+    stories: 40,
+    subtitle: "Максимум историй под рукой",
+    description: "Когда хочется чаще радовать ребенка новыми историями.",
+    tone: "premium"
   }
 ];

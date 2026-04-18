@@ -3,11 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { generateStory } from "@/lib/ai/generate-story";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { buildStoryAudioPath, getStoryAudioBucket } from "@/lib/supabase/storage";
-import { generateAudio } from "@/lib/tts/generate-audio";
 import { parseStoryFormData } from "@/lib/validators/stories";
 
 type StoryActionState = {
@@ -122,87 +119,20 @@ export async function createStory(
       request
     });
 
-    const { error: textUpdateError } = await supabase
+    const { error: storyUpdateError } = await supabase
       .from("stories")
       .update({
         title: generated.title,
         text_content: generated.text,
         provider_llm: generated.provider,
-        status: "text_ready",
+        status: "completed",
         error_message: null
       })
       .eq("id", storyRecord.id)
       .eq("user_id", user.id);
 
-    if (textUpdateError) {
-      throw textUpdateError;
-    }
-
-    try {
-      await supabase
-        .from("stories")
-        .update({
-          status: "audio_generating"
-        })
-        .eq("id", storyRecord.id)
-        .eq("user_id", user.id);
-
-      const generatedAudio = await generateAudio({
-        text: generated.text,
-        characters: request.characters
-      });
-
-      if (generatedAudio) {
-        const adminClient = createSupabaseAdminClient();
-        const audioPath = buildStoryAudioPath(user.id, storyRecord.id);
-        const bucket = getStoryAudioBucket();
-
-        const { error: uploadError } = await adminClient.storage
-          .from(bucket)
-          .upload(audioPath, generatedAudio.buffer, {
-            contentType: generatedAudio.contentType,
-            upsert: true
-          });
-
-        if (uploadError) {
-          throw uploadError;
-        }
-
-        const { error: completeError } = await supabase
-          .from("stories")
-          .update({
-            audio_url: audioPath,
-            provider_tts: generatedAudio.provider,
-            status: "completed",
-            error_message: null
-          })
-          .eq("id", storyRecord.id)
-          .eq("user_id", user.id);
-
-        if (completeError) {
-          throw completeError;
-        }
-      } else {
-        await supabase
-          .from("stories")
-          .update({
-            status: "text_ready",
-            error_message: "Аудио не создано: не настроен TTS или он временно недоступен"
-          })
-          .eq("id", storyRecord.id)
-          .eq("user_id", user.id);
-      }
-    } catch (audioError) {
-      console.error("TTS generation failed", audioError);
-
-      await supabase
-        .from("stories")
-        .update({
-          status: "text_ready",
-          error_message: "Аудио не создано: проблема с Yandex SpeechKit или настройками доступа"
-        })
-        .eq("id", storyRecord.id)
-        .eq("user_id", user.id);
+    if (storyUpdateError) {
+      throw storyUpdateError;
     }
 
     await supabase.from("usage_events").insert({
@@ -242,11 +172,6 @@ export async function deleteStory(formData: FormData) {
   }
 
   const supabase = await createSupabaseServerClient();
-  const adminClient = createSupabaseAdminClient();
-  const bucket = getStoryAudioBucket();
-  const audioPath = buildStoryAudioPath(user.id, storyId);
-
-  await adminClient.storage.from(bucket).remove([audioPath]);
 
   await supabase
     .from("stories")

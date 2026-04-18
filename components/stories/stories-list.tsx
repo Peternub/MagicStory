@@ -15,17 +15,13 @@ type StoriesListProps = {
 const statusLabels: Record<string, string> = {
   pending: "В очереди",
   text_generating: "Генерация текста",
-  text_ready: "Текст готов",
-  audio_generating: "Генерация аудио",
-  completed: "Готово",
+  completed: "Сказка готова",
   failed: "Ошибка"
 };
 
 const statusClasses: Record<string, string> = {
   pending: "border border-brand-300/30 bg-brand-500/10 text-brand-100",
   text_generating: "border border-amber-400/30 bg-amber-500/10 text-amber-200",
-  text_ready: "border border-sky-400/30 bg-sky-500/10 text-sky-200",
-  audio_generating: "border border-violet-400/30 bg-violet-500/10 text-violet-200",
   completed: "border border-emerald-400/30 bg-emerald-500/10 text-emerald-200",
   failed: "border border-red-400/30 bg-red-500/10 text-red-200"
 };

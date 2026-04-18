@@ -39,7 +39,7 @@ export default function AboutPage() {
           <h2 className="font-display text-2xl text-white">Что получает семья</h2>
           <ul className="mt-5 space-y-3 text-sm leading-7 text-white/70">
             <li>Персонализированный сюжет под возраст и интересы ребенка.</li>
-            <li>Текст и аудио в одной библиотеке.</li>
+            <li>Все сказки собираются в одной личной библиотеке.</li>
             <li>Удобный кабинет с профилями детей и историей сказок.</li>
             <li>Понятные тарифы и лимиты без ощущения хаоса.</li>
           </ul>

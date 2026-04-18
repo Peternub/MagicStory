@@ -6,43 +6,66 @@ type PlanCardProps = {
   plan: MagicPlan;
 };
 
+const toneStyles: Record<
+  MagicPlan["tone"],
+  {
+    card: string;
+    badge: string;
+    button: string;
+  }
+> = {
+  starter: {
+    card: "border-[#f0d8d1] bg-[#fff7f4]",
+    badge: "bg-[#f7e4de] text-[#9d6473]",
+    button: "border-[#24324c]/10 bg-[#24324c] text-white"
+  },
+  family: {
+    card: "border-[#e9d8b1] bg-[#fffaf1]",
+    badge: "bg-[#f6ebcb] text-[#8d6b2e]",
+    button: "border-[#cda45a]/30 bg-[#cda45a] text-[#24324c]"
+  },
+  premium: {
+    card: "border-[#d9cdea] bg-[#faf6ff]",
+    badge: "bg-[#ebe4f5] text-[#6f6292]",
+    button: "border-[#8a7bb4]/30 bg-[#8a7bb4] text-white"
+  }
+};
+
 export function PlanCard({ plan }: PlanCardProps) {
+  const styles = toneStyles[plan.tone];
+
   return (
     <article
-      className={`${
-        plan.highlight ? "pricing-hit-card pricing-hit-card--billing" : ""
-      } flex h-full flex-col rounded-[2rem] border p-6 shadow-[0_20px_50px_rgba(9,5,16,0.3)] ${
-        plan.highlight
-          ? "border-brand-400/60 bg-gradient-to-b from-brand-800/60 to-[#0d0816]"
-          : "border-white/10 bg-[#160a27]"
+      className={`flex h-full flex-col rounded-lg border p-6 shadow-glow ${styles.card} ${
+        plan.highlight ? "translate-y-[-6px]" : ""
       }`}
     >
-      <div className="flex items-center justify-between gap-4">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-300/40 bg-brand-500/10 text-lg font-semibold text-brand-100">
-          {plan.letter}
-        </span>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className={`inline-flex rounded-lg px-3 py-1 text-xs font-medium ${styles.badge}`}>
+            {plan.subtitle}
+          </p>
+          <h2 className="mt-5 text-3xl font-semibold text-[#24324c]">{plan.name}</h2>
+        </div>
         {plan.highlight ? (
-          <span className="rounded-full border border-brand-300/30 bg-brand-500/10 px-3 py-1 text-xs font-medium text-brand-100 shadow-[0_0_24px_rgba(155,99,255,0.45)]">
-            Хит
+          <span className="rounded-lg border border-[#e9d8b1] bg-white px-3 py-1 text-xs font-medium text-[#8d6b2e]">
+            Популярный
           </span>
         ) : null}
       </div>
 
-      <h2 className="mt-5 text-lg font-semibold text-white">{plan.name}</h2>
-      <p className="mt-4 text-4xl font-semibold text-white">{plan.price} ₽</p>
-
-      <div className="mt-4 space-y-2 text-sm text-white/75">
-        <p>До {plan.generations} генераций в месяц</p>
-        <p>До {plan.minutes} минут на сказку</p>
-        <p>{plan.hasAudio ? "Озвучка включена" : "Только текст"}</p>
+      <div className="mt-8 flex items-end gap-2 text-[#24324c]">
+        <p className="text-4xl font-semibold">{plan.price}</p>
+        <p className="pb-1 text-sm text-[#5b6477]">рублей</p>
       </div>
 
-      <p className="mt-5 text-sm leading-7 text-white/70">{plan.description}</p>
+      <p className="mt-4 text-sm text-[#5b6477]">{plan.stories} персональных сказок</p>
+      <p className="mt-3 text-sm leading-7 text-[#5b6477]">{plan.description}</p>
 
       <button
         type="button"
         disabled
-        className="mt-8 w-full rounded-2xl border border-white/10 bg-[#0e0819] px-4 py-3 text-sm font-medium text-white/70"
+        className={`mt-8 w-full rounded-lg border px-4 py-3 text-sm font-medium ${styles.button}`}
       >
         Скоро подключим оплату
       </button>
