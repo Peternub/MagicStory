@@ -97,7 +97,13 @@ export default function HomePage() {
           src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1800&q=80"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-20"
+          className="hero-scene__image hero-scene__image--dark"
+        />
+        <img
+          src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1800&q=80"
+          alt=""
+          aria-hidden="true"
+          className="hero-scene__image hero-scene__image--light"
         />
         <div className="absolute inset-0 bg-[var(--page-bg)] opacity-95" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,var(--accent-gold-soft),transparent_32%),radial-gradient(circle_at_70%_30%,var(--accent-lavender-soft),transparent_30%)]" />
