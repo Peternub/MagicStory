@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ContactForm } from "@/components/site/contact-form";
 import { MarketingPlanCard } from "@/components/site/marketing-plan-card";
 import { magicPlans } from "@/lib/config/pricing";
+import darkHeroImage from "../image 21.png";
+import lightHeroImage from "../image 22.png";
 
 const storyScenes = [
   "Вы пришли с работы, а ребенка уже надо укладывать спать.",
@@ -94,13 +96,13 @@ export default function HomePage() {
     <main>
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-16">
         <img
-          src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1800&q=80"
+          src={darkHeroImage.src}
           alt=""
           aria-hidden="true"
           className="hero-scene__image hero-scene__image--dark"
         />
         <img
-          src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=1800&q=80"
+          src={lightHeroImage.src}
           alt=""
           aria-hidden="true"
           className="hero-scene__image hero-scene__image--light"
