@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ContactForm } from "@/components/site/contact-form";
 import { MarketingPlanCard } from "@/components/site/marketing-plan-card";
 import { magicPlans } from "@/lib/config/pricing";
@@ -39,98 +39,109 @@ const reviews = [
   "Текст получается живым, а не шаблонным, поэтому сервис быстро стал частью нашего вечернего ритуала."
 ];
 
+function clamp(value: number, min = 0, max = 1) {
+  return Math.min(max, Math.max(min, value));
+}
+
 export default function HomePage() {
+  const sequenceRef = useRef<HTMLElement | null>(null);
+  const [progress, setProgress] = useState(0);
+
   useEffect(() => {
-    document.documentElement.classList.add("home-snap-root");
-    document.body.classList.add("home-snap-root");
+    function updateProgress() {
+      const node = sequenceRef.current;
 
-    const stages = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-story-stage]")
-    );
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          entry.target.setAttribute(
-            "data-visible",
-            entry.isIntersecting && entry.intersectionRatio > 0.45 ? "true" : "false"
-          );
-        });
-      },
-      {
-        threshold: [0.2, 0.45, 0.7]
+      if (!node) {
+        return;
       }
-    );
 
-    stages.forEach((stage) => observer.observe(stage));
+      const rect = node.getBoundingClientRect();
+      const total = Math.max(node.offsetHeight - window.innerHeight, 1);
+      const next = clamp(-rect.top / total);
+      setProgress(next);
+    }
+
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
 
     return () => {
-      observer.disconnect();
-      document.documentElement.classList.remove("home-snap-root");
-      document.body.classList.remove("home-snap-root");
+      window.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("resize", updateProgress);
     };
   }, []);
 
+  const sceneMetrics = useMemo(() => {
+    return storyScenes.map((scene, index) => {
+      const target = index / (storyScenes.length - 1);
+      const diff = progress - target;
+      const opacity = clamp(1 - Math.abs(diff) * 4.2);
+      const translateY = diff * -120;
+      const scale = 0.96 + opacity * 0.04;
+
+      return {
+        scene,
+        index,
+        opacity,
+        transform: `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`
+      };
+    });
+  }, [progress]);
+
+  const rayIntensity = clamp((progress - 0.62) / 0.28);
+
   return (
     <main>
-      <section className="home-snap-section flex items-center justify-center px-6 py-16">
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-16">
         <img
           src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1800&q=80"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-25"
+          className="absolute inset-0 h-full w-full object-cover opacity-20"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(12,23,48,0.84),rgba(21,34,65,0.86))]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(205,164,90,0.2),transparent_32%),radial-gradient(circle_at_70%_30%,rgba(157,144,200,0.2),transparent_30%)]" />
+        <div className="absolute inset-0 bg-[var(--page-bg)] opacity-95" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,var(--accent-gold-soft),transparent_32%),radial-gradient(circle_at_70%_30%,var(--accent-lavender-soft),transparent_30%)]" />
 
         <div className="relative z-10 flex max-w-4xl flex-col items-center text-center">
-          <p className="font-display text-[clamp(3.2rem,9vw,6.4rem)] tracking-[0.28em] text-[#fff3dd]">
+          <p className="font-display text-[clamp(3.2rem,9vw,6.4rem)] tracking-[0.28em] text-[var(--logo-text)]">
             MagicStory
           </p>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-[#fff8f1]/88 sm:text-xl">
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--logo-text)] sm:text-xl">
             Сказки, которые превращают обычный вечер в маленькое чудо.
           </p>
         </div>
       </section>
 
-      {storyScenes.map((scene, index) => (
-        <section
-          key={scene}
-          data-story-stage=""
-          data-visible={index === 0 ? "true" : "false"}
-          className={`home-snap-section flex items-center justify-center px-6 py-16 ${
-            index < 3
-              ? "bg-[linear-gradient(180deg,#0f1932_0%,#172744_100%)]"
-              : "bg-[linear-gradient(180deg,#2a3854_0%,#f2dce1_46%,#fff8f5_100%)]"
-          }`}
-        >
+      <section ref={sequenceRef} className="story-sequence">
+        <div className="story-sequence__sticky">
+          <div className="story-sequence__bg" />
           <div
-            className={`absolute inset-0 ${
-              index < 3
-                ? "bg-[radial-gradient(circle_at_20%_20%,rgba(205,164,90,0.16),transparent_25%),radial-gradient(circle_at_80%_30%,rgba(157,144,200,0.22),transparent_30%)]"
-                : "bg-[linear-gradient(180deg,rgba(15,25,50,0.2),rgba(15,25,50,0.05)_25%,rgba(255,248,245,0.12)_100%)]"
-            }`}
+            className={`story-sequence__ray ${rayIntensity > 0.04 ? "is-active" : ""}`}
+            style={{ opacity: rayIntensity }}
           />
 
-          <div className="relative z-10 max-w-4xl text-center text-white">
-            <div className="home-panel-content">
-              <p className="text-sm uppercase tracking-[0.34em] text-[#f0ddae]">
-                Экран {index + 1}
+          <div className="story-sequence__content">
+            <p className="story-sequence__label">MagicStory</p>
+
+            {sceneMetrics.map((item) => (
+              <p
+                key={item.scene}
+                className="story-sequence__line"
+                style={{
+                  opacity: item.opacity,
+                  transform: item.transform
+                }}
+              >
+                {item.scene}
               </p>
-              <h2 className="mt-6 text-[clamp(2rem,5vw,4.5rem)] leading-tight">
-                {scene}
-              </h2>
-            </div>
+            ))}
           </div>
-        </section>
-      ))}
+        </div>
+      </section>
 
-      <div className="h-24 bg-[linear-gradient(180deg,#fff8f5_0%,#fff4f3_100%)]" />
+      <div className="h-24 bg-[linear-gradient(180deg,transparent_0%,var(--surface-soft)_100%)]" />
 
-      <section
-        id="pricing"
-        className="bg-[linear-gradient(180deg,#fff4f3_0%,#fffbf7_100%)] px-6 py-24 text-[#24324c]"
-      >
+      <section id="pricing" className="px-6 py-24 text-[var(--text-main)]">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-display text-3xl sm:text-5xl">
             Качество генерации сказки
@@ -142,17 +153,18 @@ export default function HomePage() {
                 key={card.title}
                 className={`rounded-lg border p-6 shadow-glow ${
                   card.tone === "premium"
-                    ? "border-[#e9d8b1] bg-[#fffaf1]"
-                    : "border-[#efd9d2] bg-white"
+                    ? "border-[var(--border-strong)] bg-[var(--surface-card-alt)]"
+                    : "border-[var(--border-soft)] bg-[var(--surface-card)]"
                 }`}
+                style={{ boxShadow: "var(--glow-shadow)" }}
               >
                 <h3 className="text-2xl font-semibold">{card.title}</h3>
-                <p className="mt-2 text-sm text-[#5b6477]">{card.subtitle}</p>
+                <p className="mt-2 text-sm text-[var(--text-soft)]">{card.subtitle}</p>
 
                 <div className="mt-8 grid gap-5">
                   {metrics.map((metric) => (
                     <div key={metric}>
-                      <div className="mb-2 flex items-center justify-between gap-4 text-sm font-medium text-[#24324c]">
+                      <div className="mb-2 flex items-center justify-between gap-4 text-sm font-medium">
                         <span>{metric}</span>
                         <span>{card.value}%</span>
                       </div>
@@ -169,17 +181,17 @@ export default function HomePage() {
             ))}
           </div>
 
-          <p className="mx-auto mt-8 max-w-3xl text-center text-lg leading-8 text-[#5b6477]">
+          <p className="mx-auto mt-8 max-w-3xl text-center text-lg leading-8 text-[var(--text-soft)]">
             Премиум модель создает более живой и увлекательный текст с глубокой
             проработкой характеров.
           </p>
         </div>
       </section>
 
-      <section className="bg-[#fffdf8] px-6 pb-24 text-[#24324c]">
+      <section className="px-6 pb-24 text-[var(--text-main)]">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center">
-            <p className="text-sm uppercase tracking-[0.3em] text-[#b78397]">
+            <p className="text-sm uppercase tracking-[0.3em] text-[var(--logo-text)]">
               Тарифы
             </p>
             <h2 className="mt-4 font-display text-3xl sm:text-5xl">
@@ -195,13 +207,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section
-        id="reviews"
-        className="bg-[linear-gradient(180deg,#fff8f6_0%,#fff3f1_100%)] px-6 py-24 text-[#24324c]"
-      >
+      <section id="reviews" className="px-6 py-24 text-[var(--text-main)]">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
-            <p className="text-sm uppercase tracking-[0.3em] text-[#b78397]">
+            <p className="text-sm uppercase tracking-[0.3em] text-[var(--logo-text)]">
               Отзывы
             </p>
             <h2 className="mt-4 font-display text-3xl sm:text-5xl">
@@ -213,29 +222,33 @@ export default function HomePage() {
             {reviews.map((review, index) => (
               <article
                 key={review}
-                className={`rounded-lg border p-6 shadow-glow ${
+                className={`rounded-lg border p-6 ${
                   index === 1
-                    ? "border-[#ead7b0] bg-[#fffaf1]"
-                    : "border-[#efd9d2] bg-white"
+                    ? "border-[var(--border-strong)] bg-[var(--surface-card-alt)]"
+                    : "border-[var(--border-soft)] bg-[var(--surface-card)]"
                 }`}
+                style={{ boxShadow: "var(--glow-shadow)" }}
               >
-                <p className="text-base leading-8 text-[#5b6477]">{review}</p>
+                <p className="text-base leading-8 text-[var(--text-soft)]">{review}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="contact" className="bg-[#fffdf8] px-6 py-24 text-[#24324c]">
+      <section id="contact" className="px-6 py-24 text-[var(--text-main)]">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-          <div className="rounded-lg border border-[#efd9d2] bg-[#fff6f3] p-8 shadow-glow">
-            <p className="text-sm uppercase tracking-[0.3em] text-[#b78397]">
+          <div
+            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-8"
+            style={{ boxShadow: "var(--glow-shadow)" }}
+          >
+            <p className="text-sm uppercase tracking-[0.3em] text-[var(--logo-text)]">
               Связаться
             </p>
             <h2 className="mt-4 font-display text-3xl sm:text-4xl">
               Связаться с нами по любым вопросам
             </h2>
-            <p className="mt-6 text-base leading-8 text-[#5b6477]">
+            <p className="mt-6 text-base leading-8 text-[var(--text-soft)]">
               Напишите нам, если хотите обсудить сервис, тарифы или любые детали
               работы MagicStory.
             </p>
