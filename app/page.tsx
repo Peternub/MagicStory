@@ -105,14 +105,14 @@ export default function HomePage() {
           aria-hidden="true"
           className="hero-scene__image hero-scene__image--light"
         />
-        <div className="absolute inset-0 bg-[var(--page-bg)] opacity-95" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,var(--accent-gold-soft),transparent_32%),radial-gradient(circle_at_70%_30%,var(--accent-lavender-soft),transparent_30%)]" />
+        <div className="hero-scene__veil" />
+        <div className="hero-scene__glow" />
 
-        <div className="relative z-10 flex max-w-4xl flex-col items-center text-center">
-          <p className="font-display text-[clamp(3.2rem,9vw,6.4rem)] tracking-[0.28em] text-[var(--logo-text)]">
+        <div className="hero-copy relative z-10 flex max-w-4xl flex-col items-center text-center">
+          <p className="hero-copy__title font-display text-[clamp(3.2rem,9vw,6.4rem)] tracking-[0.28em] text-[var(--logo-text)]">
             MagicStory
           </p>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--logo-text)] sm:text-xl">
+          <p className="hero-copy__subtitle mt-6 max-w-2xl text-lg leading-8 text-[var(--logo-text)] sm:text-xl">
             Сказки, которые превращают обычный вечер в маленькое чудо.
           </p>
         </div>
