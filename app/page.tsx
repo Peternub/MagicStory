@@ -130,9 +130,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div className="h-24 bg-[linear-gradient(180deg,transparent_0%,var(--surface-soft)_100%)]" />
-
-      <section id="pricing" className="px-6 py-24 text-[var(--text-main)]">
+      <section id="pricing" className="px-6 pb-24 pt-8 text-[var(--text-main)] sm:pt-12">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-display text-3xl sm:text-5xl">
             Качество генерации сказки
