@@ -4,33 +4,33 @@
 
 :root {
   color-scheme: dark;
-  --page-bg: linear-gradient(180deg, #091427 0%, #0f1d39 44%, #122341 100%);
-  --header-bg: rgba(10, 22, 43, 0.94);
-  --footer-bg: #0c1730;
-  --surface-primary: rgba(16, 29, 55, 0.9);
-  --surface-secondary: rgba(21, 39, 73, 0.92);
-  --surface-tertiary: rgba(25, 46, 84, 0.94);
-  --surface-card: rgba(20, 35, 66, 0.92);
-  --surface-card-alt: rgba(27, 47, 85, 0.94);
-  --surface-soft: rgba(248, 243, 232, 0.06);
-  --border-soft: rgba(247, 232, 207, 0.14);
-  --border-strong: rgba(205, 164, 90, 0.34);
-  --text-main: #f8f3e8;
-  --text-soft: rgba(248, 243, 232, 0.72);
-  --text-muted: rgba(248, 243, 232, 0.58);
-  --text-strong: #f7e8cf;
-  --logo-text: #f7e8cf;
-  --accent-gold: #cda45a;
-  --accent-gold-soft: rgba(205, 164, 90, 0.16);
-  --accent-lavender: #a39ad6;
-  --accent-lavender-soft: rgba(163, 154, 214, 0.18);
-  --accent-rose: #c88ea0;
-  --button-dark: #cda45a;
-  --button-dark-text: #0d1730;
-  --button-light: #223351;
-  --button-light-text: #ffffff;
-  --meter-bg: rgba(247, 232, 207, 0.14);
-  --glow-shadow: 0 18px 44px rgba(4, 10, 24, 0.28);
+  --page-bg: linear-gradient(180deg, #151d1d 0%, #1b2524 46%, #202827 100%);
+  --header-bg: rgba(18, 24, 24, 0.92);
+  --footer-bg: #171f1f;
+  --surface-primary: rgba(20, 28, 28, 0.88);
+  --surface-secondary: rgba(25, 35, 34, 0.9);
+  --surface-tertiary: rgba(31, 42, 40, 0.92);
+  --surface-card: rgba(23, 33, 32, 0.9);
+  --surface-card-alt: rgba(31, 42, 39, 0.92);
+  --surface-soft: rgba(241, 225, 192, 0.06);
+  --border-soft: rgba(241, 225, 192, 0.12);
+  --border-strong: rgba(223, 184, 108, 0.34);
+  --text-main: #f1e1c0;
+  --text-soft: rgba(241, 225, 192, 0.72);
+  --text-muted: rgba(241, 225, 192, 0.54);
+  --text-strong: #f0d69a;
+  --logo-text: #f0d69a;
+  --accent-gold: #ddb66c;
+  --accent-gold-soft: rgba(221, 182, 108, 0.18);
+  --accent-lavender: #75866c;
+  --accent-lavender-soft: rgba(117, 134, 108, 0.2);
+  --accent-rose: #9b7b62;
+  --button-dark: #ddb66c;
+  --button-dark-text: #17201f;
+  --button-light: #283433;
+  --button-light-text: #f7f0de;
+  --meter-bg: rgba(241, 225, 192, 0.12);
+  --glow-shadow: 0 18px 44px rgba(5, 8, 8, 0.34);
 }
 
 html[data-theme="light"] {
@@ -73,7 +73,7 @@ body {
   z-index: 0;
   min-height: 100vh;
   margin: 0;
-  background-color: #091427;
+  background-color: #151d1d;
   color: var(--text-main);
   font-family: "Segoe UI Variable", "Segoe UI", "Trebuchet MS", sans-serif;
 }
