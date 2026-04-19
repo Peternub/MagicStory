@@ -23,21 +23,41 @@ const childRoles = [
   "вообще не участвует в сюжете"
 ] as const;
 
-function parseCheckboxValue(value: FormDataEntryValue | null) {
-  return value === "on" || value === "true" || value === "1";
-}
-
 export const storySchema = z
   .object({
-    childId: z.string().uuid("Выберите ребенка"),
+    childName: z
+      .string()
+      .trim()
+      .min(2, "Укажите имя ребенка")
+      .max(80, "Имя ребенка слишком длинное"),
+    childAge: z.coerce
+      .number()
+      .int()
+      .min(3, "Возраст должен быть не меньше 3 лет")
+      .max(12, "Возраст должен быть не больше 12 лет"),
+    childInterests: z
+      .string()
+      .trim()
+      .max(200, "Интересы слишком длинные")
+      .optional(),
+    childFears: z
+      .string()
+      .trim()
+      .max(200, "Страхи слишком длинные")
+      .optional(),
+    childContext: z
+      .string()
+      .trim()
+      .max(300, "Контекст слишком длинный")
+      .optional(),
     mode: z.enum(["guided", "auto"], {
       message: "Выберите режим создания сказки"
     }),
     durationMinutes: z.coerce
       .number()
       .int()
-      .min(3, "Минимальная длительность — 3 минуты")
-      .max(10, "Максимальная длительность — 10 минут"),
+      .min(3, "Минимальная длительность - 3 минуты")
+      .max(10, "Максимальная длительность - 10 минут"),
     situation: z
       .string()
       .trim()
@@ -57,19 +77,6 @@ export const storySchema = z
     childRole: z.enum(childRoles, {
       message: "Выберите роль ребенка в сказке"
     }),
-    useProfileInterests: z.boolean(),
-    useProfileFears: z.boolean(),
-    useProfileContext: z.boolean(),
-    storyInterests: z
-      .string()
-      .trim()
-      .max(200, "Интересы для этой сказки слишком длинные")
-      .optional(),
-    storyContext: z
-      .string()
-      .trim()
-      .max(300, "Контекст для этой сказки слишком длинный")
-      .optional(),
     characters: z
       .string()
       .trim()
@@ -93,7 +100,11 @@ export const storySchema = z
 
 export function parseStoryFormData(formData: FormData) {
   return storySchema.safeParse({
-    childId: formData.get("childId"),
+    childName: formData.get("childName"),
+    childAge: formData.get("childAge"),
+    childInterests: formData.get("childInterests"),
+    childFears: formData.get("childFears"),
+    childContext: formData.get("childContext"),
     mode: formData.get("mode"),
     durationMinutes: formData.get("durationMinutes"),
     situation: formData.get("situation"),
@@ -101,11 +112,6 @@ export function parseStoryFormData(formData: FormData) {
     goal: formData.get("goal"),
     tone: formData.get("tone"),
     childRole: formData.get("childRole"),
-    useProfileInterests: parseCheckboxValue(formData.get("useProfileInterests")),
-    useProfileFears: parseCheckboxValue(formData.get("useProfileFears")),
-    useProfileContext: parseCheckboxValue(formData.get("useProfileContext")),
-    storyInterests: formData.get("storyInterests"),
-    storyContext: formData.get("storyContext"),
     characters: formData.get("characters"),
     extraWishes: formData.get("extraWishes")
   });

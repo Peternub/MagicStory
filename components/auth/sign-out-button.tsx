@@ -11,7 +11,7 @@ export function SignOutButton({ className }: SignOutButtonProps) {
         type="submit"
         className={
           className ??
-          "rounded-full border border-white/10 px-4 py-2 text-sm text-white/80 transition hover:border-brand-300 hover:text-white"
+          "rounded-lg border border-[var(--border-soft)] px-4 py-2 text-sm text-[var(--text-main)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)]"
         }
       >
         Выйти

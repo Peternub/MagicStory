@@ -20,11 +20,14 @@ const reviews = [
 export default function ReviewsPage() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
-      <section className="rounded-[2.5rem] border border-white/10 bg-[#160a27] p-8 sm:p-10">
-        <p className="text-sm uppercase tracking-[0.24em] text-brand-200">
+      <section
+        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8 sm:p-10"
+        style={{ boxShadow: "var(--glow-shadow)" }}
+      >
+        <p className="text-sm uppercase tracking-[0.24em] text-[var(--logo-text)]">
           Отзывы
         </p>
-        <h1 className="mt-4 font-display text-4xl text-white">
+        <h1 className="mt-4 font-display text-4xl text-[var(--text-main)]">
           Как выглядит ценность продукта глазами родителей
         </h1>
       </section>
@@ -33,10 +36,11 @@ export default function ReviewsPage() {
         {reviews.map((review) => (
           <article
             key={review.name}
-            className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8"
+            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-8"
+            style={{ boxShadow: "var(--glow-shadow)" }}
           >
-            <p className="text-sm leading-7 text-white/75">“{review.text}”</p>
-            <p className="mt-6 text-sm font-medium text-brand-200">{review.name}</p>
+            <p className="text-sm leading-7 text-[var(--text-soft)]">"{review.text}"</p>
+            <p className="mt-6 text-sm font-medium text-[var(--logo-text)]">{review.name}</p>
           </article>
         ))}
       </section>

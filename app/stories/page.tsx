@@ -18,16 +18,16 @@ export default async function StoriesPage() {
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm uppercase tracking-[0.25em] text-brand-200">
+          <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">
             Библиотека сказок
           </p>
-          <h1 className="mt-2 text-3xl font-semibold text-white">
+          <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">
             Все созданные истории
           </h1>
         </div>
         <Link
           href="/stories/new"
-          className="inline-flex rounded-full bg-brand-700 px-5 py-3 text-sm font-medium text-white"
+          className="inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
         >
           Создать сказку
         </Link>

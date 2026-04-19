@@ -20,7 +20,8 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusClasses: Record<string, string> = {
-  pending: "border border-brand-300/30 bg-brand-500/10 text-brand-100",
+  pending:
+    "border border-[var(--border-strong)] bg-[var(--accent-gold-soft)] text-[var(--text-main)]",
   text_generating: "border border-amber-400/30 bg-amber-500/10 text-amber-200",
   completed: "border border-emerald-400/30 bg-emerald-500/10 text-emerald-200",
   failed: "border border-red-400/30 bg-red-500/10 text-red-200"
@@ -29,14 +30,17 @@ const statusClasses: Record<string, string> = {
 export function StoriesList({ stories }: StoriesListProps) {
   if (stories.length === 0) {
     return (
-      <div className="rounded-[2rem] border border-white/10 bg-[#160a27] p-8 text-center">
-        <p className="text-lg font-medium text-white">Сказок пока нет</p>
-        <p className="mt-3 text-sm text-white/70">
-          Создайте первую сказку по теме дня для одного из детей.
+      <div
+        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-8 text-center"
+        style={{ boxShadow: "var(--glow-shadow)" }}
+      >
+        <p className="text-lg font-medium text-[var(--text-main)]">Сказок пока нет</p>
+        <p className="mt-3 text-sm text-[var(--text-soft)]">
+          Создайте первую сказку и она сразу появится в вашей библиотеке.
         </p>
         <Link
           href="/stories/new"
-          className="mt-6 inline-flex rounded-full bg-brand-700 px-5 py-3 text-sm font-medium text-white"
+          className="mt-6 inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
         >
           Создать сказку
         </Link>
@@ -50,18 +54,19 @@ export function StoriesList({ stories }: StoriesListProps) {
         <Link
           key={story.id}
           href={`/stories/${story.id}`}
-          className="rounded-[2rem] border border-white/10 bg-[#160a27] p-6 transition hover:border-brand-400/50 hover:bg-[#1b0d30]"
+          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-6 transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-card-alt)]"
+          style={{ boxShadow: "var(--glow-shadow)" }}
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-[var(--text-main)]">
                 {story.title ?? "Новая сказка"}
               </h2>
-              <p className="mt-2 text-sm text-white/70">Тема: {story.theme}</p>
+              <p className="mt-2 text-sm text-[var(--text-soft)]">Тема: {story.theme}</p>
             </div>
-            <div className="text-sm text-white/70">
+            <div className="text-sm text-[var(--text-soft)]">
               <p
-                className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusClasses[story.status] ?? "border border-brand-300/30 bg-brand-500/10 text-brand-100"}`}
+                className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusClasses[story.status] ?? statusClasses.pending}`}
               >
                 {statusLabels[story.status] ?? story.status}
               </p>

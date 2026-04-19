@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 
 type AuthActionState = {
   error?: string;
@@ -45,7 +46,9 @@ export function AuthForm({
       style={{ boxShadow: "var(--glow-shadow)" }}
     >
       <div>
-        <h1 className="text-4xl font-semibold text-[var(--text-main)] sm:text-5xl">{title}</h1>
+        <h1 className="text-4xl font-semibold text-[var(--text-main)] sm:text-5xl">
+          {title}
+        </h1>
         <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--text-soft)]">
           {description}
         </p>
@@ -110,13 +113,13 @@ export function AuthForm({
         </label>
 
         {state.error ? (
-          <p className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+          <p className="rounded-lg border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
             {state.error}
           </p>
         ) : null}
 
         {state.success ? (
-          <p className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+          <p className="rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
             {state.success}
           </p>
         ) : null}
@@ -129,6 +132,15 @@ export function AuthForm({
           {isPending ? "Подождите..." : submitLabel}
         </button>
       </form>
+
+      <div className="mt-5">
+        <div className="mb-5 flex items-center gap-3 text-sm text-[var(--text-muted)]">
+          <span className="h-px flex-1 bg-[var(--border-soft)]" />
+          <span>или</span>
+          <span className="h-px flex-1 bg-[var(--border-soft)]" />
+        </div>
+        <GoogleAuthButton />
+      </div>
 
       <p className="mt-8 text-base text-[var(--text-soft)]">
         {alternateText}{" "}

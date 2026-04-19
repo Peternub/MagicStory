@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { redirectToNextOnboardingStep } from "@/lib/supabase/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { signInSchema, signUpSchema } from "@/lib/validators/auth";
 
@@ -15,7 +14,7 @@ function mapAuthErrorMessage(message?: string, status?: number) {
   const normalized = (message ?? "").toLowerCase();
 
   if (status === 429 || normalized.includes("rate limit")) {
-    return "Слишком много попыток регистрации за короткое время. Мы попробуем создать аккаунт другим способом.";
+    return "Слишком много попыток за короткое время. Попробуйте еще раз чуть позже.";
   }
 
   if (
@@ -27,10 +26,6 @@ function mapAuthErrorMessage(message?: string, status?: number) {
 
   if (normalized.includes("invalid login credentials")) {
     return "Неверный email или пароль.";
-  }
-
-  if (normalized.includes("email not confirmed")) {
-    return "Подтвердите email и затем войдите в аккаунт.";
   }
 
   if (normalized.includes("password")) {
@@ -71,14 +66,6 @@ export async function signIn(
     };
   }
 
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (user) {
-    await redirectToNextOnboardingStep(user.id);
-  }
-
   redirect("/dashboard");
 }
 
@@ -105,13 +92,12 @@ export async function signUp(
     full_name: `${parsed.data.firstName} ${parsed.data.lastName}`
   };
 
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signUp({
+  const adminClient = createSupabaseAdminClient();
+  const { data: createdUser, error } = await adminClient.auth.admin.createUser({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: {
-      data: userMetadata
-    }
+    email_confirm: true,
+    user_metadata: userMetadata
   });
 
   if (error) {
@@ -120,46 +106,6 @@ export async function signUp(
       message: error.message
     });
 
-    if (error.status === 429 || error.message.toLowerCase().includes("rate limit")) {
-      const adminClient = createSupabaseAdminClient();
-      const { data: createdUser, error: adminError } =
-        await adminClient.auth.admin.createUser({
-          email: parsed.data.email,
-          password: parsed.data.password,
-          email_confirm: true,
-          user_metadata: userMetadata
-        });
-
-      if (adminError) {
-        console.error("admin createUser error", {
-          message: adminError.message
-        });
-
-        return {
-          error:
-            mapAuthErrorMessage(adminError.message) ??
-            "Не удалось зарегистрироваться. Попробуйте еще раз чуть позже."
-        };
-      }
-
-      if (createdUser.user) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: parsed.data.email,
-          password: parsed.data.password
-        });
-
-        if (signInError) {
-          return {
-            success:
-              "Аккаунт создан. Теперь войдите в приложение с этим email и паролем."
-          };
-        }
-
-        await redirectToNextOnboardingStep(createdUser.user.id);
-        redirect("/dashboard");
-      }
-    }
-
     return {
       error:
         mapAuthErrorMessage(error.message, error.status) ??
@@ -167,21 +113,27 @@ export async function signUp(
     };
   }
 
-  if (data.session && data.user) {
-    await redirectToNextOnboardingStep(data.user.id);
-    redirect("/dashboard");
-  }
-
-  if (data.user && !data.session) {
+  if (!createdUser.user) {
     return {
-      success:
-        "Аккаунт создан. Если подтверждение email включено в Supabase, подтвердите адрес и затем войдите."
+      error: "Не удалось зарегистрироваться. Попробуйте еще раз."
     };
   }
 
-  return {
-    success: "Аккаунт создан. Теперь войдите в приложение."
-  };
+  const supabase = await createSupabaseServerClient();
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: parsed.data.email,
+    password: parsed.data.password
+  });
+
+  if (signInError) {
+    return {
+      error:
+        mapAuthErrorMessage(signInError.message, signInError.status) ??
+        "Аккаунт создан, но не удалось сразу выполнить вход."
+    };
+  }
+
+  redirect("/dashboard");
 }
 
 export async function signOut() {

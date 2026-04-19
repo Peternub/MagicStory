@@ -63,32 +63,27 @@ export async function createStory(
   }
 
   const supabase = await createSupabaseServerClient();
-
-  const { data: child, error: childError } = await supabase
-    .from("children")
-    .select("id, user_id, name, age, interests, fears, additional_context")
-    .eq("id", parsed.data.childId)
-    .eq("user_id", user.id)
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("stories_balance")
+    .eq("id", user.id)
     .single();
 
-  if (childError || !child) {
+  if ((profile?.stories_balance ?? 0) <= 0) {
     return {
-      error: "Не удалось найти профиль ребенка"
+      error: "Лимит сказок закончился. Пополните пакет, чтобы создать новую сказку."
     };
   }
 
   const storySummary = buildStorySummary(parsed.data);
   const normalizedCharacters = normalizeCharacters(parsed.data.characters);
 
-  const effectiveChild = {
-    ...child,
-    interests:
-      parsed.data.storyInterests ||
-      (parsed.data.useProfileInterests ? child.interests : null),
-    fears: parsed.data.useProfileFears ? child.fears : null,
-    additional_context:
-      parsed.data.storyContext ||
-      (parsed.data.useProfileContext ? child.additional_context : null)
+  const child = {
+    name: parsed.data.childName,
+    age: parsed.data.childAge,
+    interests: parsed.data.childInterests || null,
+    fears: parsed.data.childFears || null,
+    additional_context: parsed.data.childContext || null
   };
 
   const request = {
@@ -100,7 +95,7 @@ export async function createStory(
     .from("stories")
     .insert({
       user_id: user.id,
-      child_id: child.id,
+      child_id: null,
       theme: storySummary,
       status: "text_generating"
     })
@@ -115,7 +110,7 @@ export async function createStory(
 
   try {
     const generated = await generateStory({
-      child: effectiveChild,
+      child,
       request
     });
 
@@ -135,11 +130,22 @@ export async function createStory(
       throw storyUpdateError;
     }
 
+    const { error: balanceError } = await supabase
+      .from("profiles")
+      .update({
+        stories_balance: Math.max((profile?.stories_balance ?? 0) - 1, 0)
+      })
+      .eq("id", user.id);
+
+    if (balanceError) {
+      throw balanceError;
+    }
+
     await supabase.from("usage_events").insert({
       user_id: user.id,
       story_id: storyRecord.id,
       event_type: "story_created",
-      amount: 0
+      amount: 1
     });
   } catch (storyError) {
     console.error("Story generation failed", storyError);
@@ -158,8 +164,9 @@ export async function createStory(
     };
   }
 
-  revalidatePath("/stories");
+  revalidatePath("/");
   revalidatePath("/dashboard");
+  revalidatePath("/stories");
   redirect(`/stories/${storyRecord.id}`);
 }
 

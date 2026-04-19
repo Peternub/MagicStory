@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState } from "react";
-import type { ChildRecord } from "@/lib/types/database";
 
 type StoryActionState = {
   error?: string;
@@ -12,44 +11,89 @@ type StoryFormProps = {
     state: StoryActionState,
     formData: FormData
   ) => Promise<StoryActionState>;
-  childrenItems: ChildRecord[];
 };
 
 const initialState: StoryActionState = {};
 
 const fieldClassName =
-  "w-full rounded-2xl border border-white/10 bg-[#0f091a] px-4 py-3 text-base text-white placeholder:text-white/35 caret-white outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20";
+  "w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-4 py-3 text-base text-[var(--text-main)] placeholder:text-[var(--text-muted)] caret-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)] focus:ring-4 focus:ring-[var(--accent-gold-soft)]";
 
-const checkboxClassName =
-  "h-5 w-5 rounded border border-white/15 bg-[#0f091a] text-brand-500 focus:ring-2 focus:ring-brand-500/30";
-
-export function StoryForm({ action, childrenItems }: StoryFormProps) {
+export function StoryForm({ action }: StoryFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
     <form action={formAction} className="space-y-5">
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+            Имя ребенка
+          </span>
+          <input
+            name="childName"
+            type="text"
+            required
+            placeholder="Петя"
+            className={fieldClassName}
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+            Возраст
+          </span>
+          <input
+            name="childAge"
+            type="number"
+            min={3}
+            max={12}
+            required
+            placeholder="6"
+            className={fieldClassName}
+          />
+        </label>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+            Интересы ребенка
+          </span>
+          <input
+            name="childInterests"
+            type="text"
+            placeholder="Космос, машинки, подводный мир"
+            className={fieldClassName}
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+            Страхи или переживания
+          </span>
+          <input
+            name="childFears"
+            type="text"
+            placeholder="Темнота, громкие звуки"
+            className={fieldClassName}
+          />
+        </label>
+      </div>
+
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-white">Ребенок</span>
-        <select
-          name="childId"
-          required
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+          Дополнительный контекст о ребенке
+        </span>
+        <textarea
+          name="childContext"
+          rows={3}
+          placeholder="Любимая игрушка, важное событие дня, друзья, особенности характера"
           className={fieldClassName}
-          defaultValue=""
-        >
-          <option value="" disabled>
-            Выберите профиль
-          </option>
-          {childrenItems.map((child) => (
-            <option key={child.id} value={child.id}>
-              {child.name}, {child.age} лет
-            </option>
-          ))}
-        </select>
+        />
       </label>
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-white">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
             Режим сюжета
           </span>
           <select name="mode" defaultValue="guided" className={fieldClassName}>
@@ -59,7 +103,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
         </label>
 
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-white">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
             Длительность сказки
           </span>
           <select
@@ -76,36 +120,36 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
       </div>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-white">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
           Ситуация дня
         </span>
         <textarea
           name="situation"
           rows={4}
-          placeholder="Например: поссорился с другом в детском саду и не хотел мириться"
+          placeholder="Например: поссорился с другом и не хотел мириться"
           className={fieldClassName}
         />
-        <p className="mt-2 text-xs text-white/45">
+        <p className="mt-2 text-xs text-[var(--text-muted)]">
           Если выберете автоматический режим, это поле можно оставить пустым.
         </p>
       </label>
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-white">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
             Место действия
           </span>
           <input
             name="setting"
             type="text"
             required
-            placeholder="Детский садик, лесной домик, морское дно"
+            placeholder="Лесной домик, садик, морской берег"
             className={fieldClassName}
           />
         </label>
 
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-white">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
             Главная цель сказки
           </span>
           <select
@@ -125,7 +169,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-white">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
             Настроение сказки
           </span>
           <select
@@ -141,7 +185,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
         </label>
 
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-white">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
             Роль ребенка в сказке
           </span>
           <select
@@ -159,90 +203,32 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
         </label>
       </div>
 
-      <section className="rounded-[1.75rem] border border-white/10 bg-[#130b22] p-5">
-        <p className="text-sm font-medium text-white">
-          Что брать из профиля ребенка именно в этой сказке
-        </p>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <label className="flex items-center gap-3 text-sm text-white/80">
-            <input
-              type="checkbox"
-              name="useProfileInterests"
-              className={checkboxClassName}
-            />
-            Использовать интересы
-          </label>
-          <label className="flex items-center gap-3 text-sm text-white/80">
-            <input
-              type="checkbox"
-              name="useProfileFears"
-              className={checkboxClassName}
-            />
-            Использовать страхи
-          </label>
-          <label className="flex items-center gap-3 text-sm text-white/80">
-            <input
-              type="checkbox"
-              name="useProfileContext"
-              className={checkboxClassName}
-            />
-            Использовать доп. контекст
-          </label>
-        </div>
-
-        <div className="mt-4 grid gap-5 md:grid-cols-2">
-          <label className="block">
-            <span className="mb-2 block text-sm font-medium text-white">
-              Интересы именно для этой сказки
-            </span>
-            <input
-              name="storyInterests"
-              type="text"
-              placeholder="Например: детский садик, лепка, машинки"
-              className={fieldClassName}
-            />
-          </label>
-
-          <label className="block">
-            <span className="mb-2 block text-sm font-medium text-white">
-              Дополнительный контекст именно для этой сказки
-            </span>
-            <input
-              name="storyContext"
-              type="text"
-              placeholder="Например: сегодня особенно важно, чтобы в центре был детский сад"
-              className={fieldClassName}
-            />
-          </label>
-        </div>
-      </section>
-
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-white">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
           Дополнительные персонажи
         </span>
         <input
           name="characters"
           type="text"
-          placeholder="Например: мама Марьяна, говорящий кот, подводный капитан"
+          placeholder="Мама, лучший друг, говорящий кот"
           className={fieldClassName}
         />
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-white">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
           Дополнительные пожелания
         </span>
         <textarea
           name="extraWishes"
           rows={4}
-          placeholder="Например: сделать сказку особенно мягкой перед сном и добавить сцену примирения"
+          placeholder="Сделать сказку особенно мягкой перед сном и добавить добрый финал"
           className={fieldClassName}
         />
       </label>
 
       {state.error ? (
-        <p className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <p className="rounded-lg border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
           {state.error}
         </p>
       ) : null}
@@ -250,7 +236,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-2xl bg-brand-700 px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-70"
+        className="w-full rounded-lg bg-[var(--button-dark)] px-4 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isPending ? "Создаем сказку..." : "Создать сказку"}
       </button>

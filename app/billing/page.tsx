@@ -18,24 +18,31 @@ export default async function BillingPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-[96rem] flex-col px-6 py-10 sm:px-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-[#24324c]">
-          <p className="text-sm uppercase tracking-[0.25em] text-[#b78397]">Тарифы</p>
-          <h1 className="mt-2 text-3xl font-semibold">Пакеты персональных сказок</h1>
+        <div>
+          <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">
+            Тарифы
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">
+            Пакеты персональных сказок
+          </h1>
         </div>
         <Link
           href="/dashboard"
-          className="inline-flex rounded-lg border border-[#ead7d0] bg-white px-5 py-3 text-sm font-medium text-[#24324c]"
+          className="inline-flex rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] px-5 py-3 text-sm font-medium text-[var(--text-main)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)]"
         >
           Вернуться в кабинет
         </Link>
       </header>
 
-      <section className="mt-8 rounded-lg border border-[#efd9d2] bg-[#fff7f4] p-8 text-[#24324c]">
-        <p className="text-sm text-[#b78397]">Три понятных тарифа без озвучки</p>
-        <p className="mt-2 text-sm text-[#5b6477]">
+      <section
+        className="mt-8 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8 text-[var(--text-main)]"
+        style={{ boxShadow: "var(--glow-shadow)" }}
+      >
+        <p className="text-sm text-[var(--logo-text)]">Три понятных тарифа без озвучки</p>
+        <p className="mt-2 text-sm text-[var(--text-soft)]">
           Статус подписки: {profile?.subscription_status ?? "free"}
         </p>
-        <p className="mt-4 text-sm text-[#5b6477]">
+        <p className="mt-4 text-sm text-[var(--text-soft)]">
           Оплату через YooKassa подключим следующим шагом. Сетка тарифов уже готова.
         </p>
       </section>

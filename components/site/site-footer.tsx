@@ -9,8 +9,8 @@ const productLinks = [
 
 const appLinks = [
   { href: "/dashboard", label: "Кабинет" },
-  { href: "/children", label: "Дети" },
-  { href: "/stories", label: "Сказки" },
+  { href: "/stories/new", label: "Создать сказку" },
+  { href: "/stories", label: "Библиотека" },
   { href: "/billing", label: "Подписка" }
 ];
 
