@@ -25,7 +25,7 @@ type AuthFormProps = {
 const initialState: AuthActionState = {};
 
 const inputClassName =
-  "w-full rounded-2xl border border-white/10 bg-[#0f091a] px-5 py-4 text-lg text-white placeholder:text-white/35 caret-white outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20";
+  "w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-5 py-4 text-lg text-[var(--text-main)] placeholder:text-[var(--text-muted)] caret-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)] focus:ring-4 focus:ring-[var(--accent-gold-soft)]";
 
 export function AuthForm({
   action,
@@ -40,10 +40,13 @@ export function AuthForm({
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <div className="w-full max-w-3xl rounded-[2.5rem] border border-white/10 bg-[linear-gradient(135deg,rgba(21,11,35,0.96),rgba(40,17,74,0.9))] p-8 shadow-glow backdrop-blur sm:p-10">
+    <div
+      className="w-full max-w-3xl rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8 backdrop-blur sm:p-10"
+      style={{ boxShadow: "var(--glow-shadow)" }}
+    >
       <div>
-        <h1 className="text-4xl font-semibold text-white sm:text-5xl">{title}</h1>
-        <p className="mt-4 max-w-2xl text-lg leading-8 text-white/70">
+        <h1 className="text-4xl font-semibold text-[var(--text-main)] sm:text-5xl">{title}</h1>
+        <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--text-soft)]">
           {description}
         </p>
       </div>
@@ -52,7 +55,7 @@ export function AuthForm({
         {showNameFields ? (
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-3 block text-base font-medium text-white">
+              <span className="mb-3 block text-base font-medium text-[var(--text-main)]">
                 Имя
               </span>
               <input
@@ -65,7 +68,7 @@ export function AuthForm({
             </label>
 
             <label className="block">
-              <span className="mb-3 block text-base font-medium text-white">
+              <span className="mb-3 block text-base font-medium text-[var(--text-main)]">
                 Фамилия
               </span>
               <input
@@ -80,7 +83,7 @@ export function AuthForm({
         ) : null}
 
         <label className="block">
-          <span className="mb-3 block text-base font-medium text-white">
+          <span className="mb-3 block text-base font-medium text-[var(--text-main)]">
             Email
           </span>
           <input
@@ -93,7 +96,7 @@ export function AuthForm({
         </label>
 
         <label className="block">
-          <span className="mb-3 block text-base font-medium text-white">
+          <span className="mb-3 block text-base font-medium text-[var(--text-main)]">
             Пароль
           </span>
           <input
@@ -119,7 +122,7 @@ export function AuthForm({
         ) : null}
 
         <button
-          className="w-full rounded-2xl bg-brand-700 px-4 py-4 text-lg font-semibold text-white transition hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-70"
+          className="w-full rounded-lg bg-[var(--button-dark)] px-4 py-4 text-lg font-semibold text-[var(--button-dark-text)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
           type="submit"
           disabled={isPending}
         >
@@ -127,9 +130,9 @@ export function AuthForm({
         </button>
       </form>
 
-      <p className="mt-8 text-base text-white/70">
+      <p className="mt-8 text-base text-[var(--text-soft)]">
         {alternateText}{" "}
-        <Link className="font-semibold text-brand-200" href={alternateHref}>
+        <Link className="font-semibold text-[var(--logo-text)]" href={alternateHref}>
           {alternateLabel}
         </Link>
       </p>
