@@ -1,58 +1,16 @@
 import { z } from "zod";
 
 const goals = [
-  "спокойное засыпание",
-  "смелость и уверенность",
-  "доброта и дружба",
-  "порядок и ответственность",
-  "самостоятельность",
-  "хорошее настроение"
-] as const;
-
-const tones = [
-  "очень спокойная",
-  "уютная",
-  "приключенческая",
-  "смешная и добрая"
-] as const;
-
-const childRoles = [
-  "главный герой",
-  "один из главных героев",
-  "второстепенный герой",
-  "вообще не участвует в сюжете"
+  "спокойно уснуть",
+  "стать смелее",
+  "помириться и подружиться",
+  "поверить в себя",
+  "прожить день мягче"
 ] as const;
 
 export const storySchema = z
   .object({
-    childName: z
-      .string()
-      .trim()
-      .min(2, "Укажите имя ребенка")
-      .max(80, "Имя ребенка слишком длинное"),
-    childAge: z.coerce
-      .number()
-      .int()
-      .min(3, "Возраст должен быть не меньше 3 лет")
-      .max(12, "Возраст должен быть не больше 12 лет"),
-    childInterests: z
-      .string()
-      .trim()
-      .max(200, "Интересы слишком длинные")
-      .optional(),
-    childFears: z
-      .string()
-      .trim()
-      .max(200, "Страхи слишком длинные")
-      .optional(),
-    childContext: z
-      .string()
-      .trim()
-      .max(300, "Контекст слишком длинный")
-      .optional(),
-    mode: z.enum(["guided", "auto"], {
-      message: "Выберите режим создания сказки"
-    }),
+    childId: z.string().uuid("Выберите ребенка"),
     durationMinutes: z.coerce
       .number()
       .int()
@@ -71,17 +29,6 @@ export const storySchema = z
     goal: z.enum(goals, {
       message: "Выберите цель сказки"
     }),
-    tone: z.enum(tones, {
-      message: "Выберите настроение сказки"
-    }),
-    childRole: z.enum(childRoles, {
-      message: "Выберите роль ребенка в сказке"
-    }),
-    characters: z
-      .string()
-      .trim()
-      .max(200, "Список персонажей слишком длинный")
-      .optional(),
     extraWishes: z
       .string()
       .trim()
@@ -89,30 +36,22 @@ export const storySchema = z
       .optional()
   })
   .superRefine((data, ctx) => {
-    if (data.mode === "guided" && (!data.situation || data.situation.length < 10)) {
+    if (!data.situation || data.situation.length < 5) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["situation"],
-        message: "Опишите ситуацию дня хотя бы одной понятной фразой"
+        message: "Коротко опишите, что произошло сегодня"
       });
     }
   });
 
 export function parseStoryFormData(formData: FormData) {
   return storySchema.safeParse({
-    childName: formData.get("childName"),
-    childAge: formData.get("childAge"),
-    childInterests: formData.get("childInterests"),
-    childFears: formData.get("childFears"),
-    childContext: formData.get("childContext"),
-    mode: formData.get("mode"),
+    childId: formData.get("childId"),
     durationMinutes: formData.get("durationMinutes"),
     situation: formData.get("situation"),
     setting: formData.get("setting"),
     goal: formData.get("goal"),
-    tone: formData.get("tone"),
-    childRole: formData.get("childRole"),
-    characters: formData.get("characters"),
     extraWishes: formData.get("extraWishes")
   });
 }

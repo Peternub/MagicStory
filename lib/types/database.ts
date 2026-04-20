@@ -3,6 +3,7 @@ export type ChildRecord = {
   user_id: string;
   name: string;
   age: number;
+  gender: "boy" | "girl";
   interests: string | null;
   fears: string | null;
   additional_context: string | null;

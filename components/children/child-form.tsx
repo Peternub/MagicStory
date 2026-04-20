@@ -16,7 +16,7 @@ type ChildFormProps = {
 const initialState: ChildActionState = {};
 
 const fieldClassName =
-  "w-full rounded-2xl border border-white/10 bg-[#0f091a] px-4 py-3 text-base text-white placeholder:text-white/35 caret-white outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-500/20";
+  "w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-4 py-3 text-base text-[var(--text-main)] placeholder:text-[var(--text-muted)] caret-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)] focus:ring-4 focus:ring-[var(--accent-gold-soft)]";
 
 export function ChildForm({ action }: ChildFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -24,71 +24,47 @@ export function ChildForm({ action }: ChildFormProps) {
   return (
     <form action={formAction} className="space-y-5">
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-white">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
           Имя ребенка
         </span>
         <input
           name="name"
           type="text"
           required
-          placeholder="Пётр"
+          placeholder="Петя"
           className={fieldClassName}
         />
       </label>
 
-      <label className="block">
-        <span className="mb-2 block text-sm font-medium text-white">
-          Возраст
-        </span>
-        <input
-          name="age"
-          type="number"
-          min={3}
-          max={10}
-          required
-          placeholder="6"
-          className={fieldClassName}
-        />
-      </label>
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+            Возраст
+          </span>
+          <input
+            name="age"
+            type="number"
+            min={3}
+            max={12}
+            required
+            placeholder="6"
+            className={fieldClassName}
+          />
+        </label>
 
-      <label className="block">
-        <span className="mb-2 block text-sm font-medium text-white">
-          Интересы
-        </span>
-        <textarea
-          name="interests"
-          rows={3}
-          placeholder="Любит истории про космос, машинки и водное поло"
-          className={fieldClassName}
-        />
-      </label>
-
-      <label className="block">
-        <span className="mb-2 block text-sm font-medium text-white">
-          Страхи
-        </span>
-        <textarea
-          name="fears"
-          rows={3}
-          placeholder="Темнота, громкие звуки, поход к врачу"
-          className={fieldClassName}
-        />
-      </label>
-
-      <label className="block">
-        <span className="mb-2 block text-sm font-medium text-white">
-          Дополнительный контекст
-        </span>
-        <textarea
-          name="additional_context"
-          rows={4}
-          placeholder="Любимая игрушка Аркадий, лучше засыпает под спокойный голос"
-          className={fieldClassName}
-        />
-      </label>
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+            Пол
+          </span>
+          <select name="gender" defaultValue="boy" className={fieldClassName}>
+            <option value="boy">Мальчик</option>
+            <option value="girl">Девочка</option>
+          </select>
+        </label>
+      </div>
 
       {state.error ? (
-        <p className="rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <p className="rounded-lg border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
           {state.error}
         </p>
       ) : null}
@@ -96,7 +72,7 @@ export function ChildForm({ action }: ChildFormProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-2xl bg-brand-700 px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-70"
+        className="w-full rounded-lg bg-[var(--button-dark)] px-4 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isPending ? "Сохраняем..." : "Сохранить профиль"}
       </button>

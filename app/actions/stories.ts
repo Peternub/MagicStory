@@ -12,41 +12,12 @@ type StoryActionState = {
 };
 
 function buildStorySummary(input: {
-  mode: "guided" | "auto";
   situation?: string;
   goal: string;
   setting: string;
   durationMinutes: number;
-  childRole: string;
 }) {
-  if (input.mode === "guided" && input.situation) {
-    return `${input.situation}. ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}, роль ребенка: ${input.childRole}`;
-  }
-
-  return `Свободный сюжет на ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}, роль ребенка: ${input.childRole}`;
-}
-
-function normalizeCharacterLabel(value: string) {
-  return value
-    .trim()
-    .replace(/^я\s+/i, "")
-    .replace(/^моя\s+мама\b/i, "мама")
-    .replace(/^мой\s+папа\b/i, "папа")
-    .replace(/^моя\s+бабушка\b/i, "бабушка")
-    .replace(/^мой\s+дедушка\b/i, "дедушка")
-    .replace(/\s+/g, " ");
-}
-
-function normalizeCharacters(value?: string) {
-  if (!value) {
-    return "";
-  }
-
-  return value
-    .split(",")
-    .map(normalizeCharacterLabel)
-    .filter(Boolean)
-    .join(", ");
+  return `${input.situation}. ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}`;
 }
 
 export async function createStory(
@@ -63,11 +34,19 @@ export async function createStory(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stories_balance")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, { data: child, error: childError }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("stories_balance")
+      .eq("id", user.id)
+      .single(),
+    supabase
+      .from("children")
+      .select("id, name, age, gender")
+      .eq("id", parsed.data.childId)
+      .eq("user_id", user.id)
+      .single()
+  ]);
 
   if ((profile?.stories_balance ?? 0) <= 0) {
     return {
@@ -75,27 +54,19 @@ export async function createStory(
     };
   }
 
+  if (childError || !child) {
+    return {
+      error: "Не удалось найти профиль ребенка"
+    };
+  }
+
   const storySummary = buildStorySummary(parsed.data);
-  const normalizedCharacters = normalizeCharacters(parsed.data.characters);
-
-  const child = {
-    name: parsed.data.childName,
-    age: parsed.data.childAge,
-    interests: parsed.data.childInterests || null,
-    fears: parsed.data.childFears || null,
-    additional_context: parsed.data.childContext || null
-  };
-
-  const request = {
-    ...parsed.data,
-    characters: normalizedCharacters
-  };
 
   const { data: storyRecord, error: insertError } = await supabase
     .from("stories")
     .insert({
       user_id: user.id,
-      child_id: null,
+      child_id: child.id,
       theme: storySummary,
       status: "text_generating"
     })
@@ -111,7 +82,7 @@ export async function createStory(
   try {
     const generated = await generateStory({
       child,
-      request
+      request: parsed.data
     });
 
     const { error: storyUpdateError } = await supabase
@@ -167,6 +138,7 @@ export async function createStory(
   revalidatePath("/");
   revalidatePath("/dashboard");
   revalidatePath("/stories");
+  revalidatePath("/children");
   redirect(`/stories/${storyRecord.id}`);
 }
 

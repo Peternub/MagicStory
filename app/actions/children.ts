@@ -18,9 +18,7 @@ export async function createChild(
   const parsed = childSchema.safeParse({
     name: formData.get("name"),
     age: formData.get("age"),
-    interests: formData.get("interests") || undefined,
-    fears: formData.get("fears") || undefined,
-    additional_context: formData.get("additional_context") || undefined
+    gender: formData.get("gender")
   });
 
   if (!parsed.success) {
@@ -42,6 +40,7 @@ export async function createChild(
   }
 
   revalidatePath("/children");
+  revalidatePath("/stories/new");
   redirect("/children");
 }
 
@@ -62,4 +61,5 @@ export async function deleteChild(formData: FormData) {
     .eq("user_id", user.id);
 
   revalidatePath("/children");
+  revalidatePath("/stories/new");
 }

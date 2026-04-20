@@ -5,11 +5,11 @@ export const childSchema = z.object({
   age: z.coerce
     .number()
     .int("Возраст должен быть целым числом")
-    .min(3, "Минимальный возраст — 3 года")
-    .max(10, "Максимальный возраст — 10 лет"),
-  interests: z.string().trim().max(500).optional(),
-  fears: z.string().trim().max(500).optional(),
-  additional_context: z.string().trim().max(1000).optional()
+    .min(3, "Минимальный возраст - 3 года")
+    .max(12, "Максимальный возраст - 12 лет"),
+  gender: z.enum(["boy", "girl"], {
+    message: "Выберите пол ребенка"
+  })
 });
 
 export type ChildInput = z.infer<typeof childSchema>;
