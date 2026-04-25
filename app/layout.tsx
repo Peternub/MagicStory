@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
+import { CursorMagic } from "@/components/site/cursor-magic";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import darkThemeImage from "../image 21.png";
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="ru" data-theme="dark" suppressHydrationWarning>
       <body style={bodyStyle}>
+        <CursorMagic />
         <div className="min-h-screen">
           <SiteHeader />
           {children}
