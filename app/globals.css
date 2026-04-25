@@ -246,6 +246,9 @@ form,
 .magic-hover {
   position: relative;
   overflow: hidden;
+  transition:
+    box-shadow 0.28s ease,
+    transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 article::before,
@@ -259,8 +262,8 @@ form::before,
   background:
     radial-gradient(
       circle at var(--cursor-x) var(--cursor-y),
-      color-mix(in srgb, var(--accent-gold) 22%, transparent) 0 5rem,
-      transparent 12rem
+      color-mix(in srgb, var(--accent-gold) 12%, transparent) 0 4rem,
+      transparent 10rem
     );
   opacity: 0;
   transition: opacity 0.28s ease;
@@ -276,12 +279,10 @@ form > *,
 article:hover,
 form:hover,
 .magic-hover:hover {
-  border-color: var(--border-strong);
   box-shadow:
     var(--glow-shadow),
-    0 0 30px color-mix(in srgb, var(--accent-gold) 28%, transparent),
-    0 0 58px color-mix(in srgb, var(--accent-lavender) 14%, transparent);
-  transform: translateY(-3px);
+    0 18px 38px rgba(0, 0, 0, 0.18);
+  transform: translateY(-7px);
 }
 
 article:hover::before,
@@ -392,16 +393,15 @@ a[class*="bg-[var(--button-dark)]"]::after {
 
 .contact-card {
   transition:
-    border-color 0.32s ease,
     box-shadow 0.32s ease,
-    transform 0.32s ease;
+    transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .contact-card:hover {
   box-shadow:
     var(--glow-shadow),
-    0 0 24px color-mix(in srgb, var(--accent-gold) 22%, transparent);
-  transform: translateY(-2px);
+    0 18px 38px rgba(0, 0, 0, 0.18);
+  transform: translateY(-7px);
 }
 
 input,
