@@ -1,66 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const interactiveSelector = [
-  "a",
-  "button",
-  "input",
-  "textarea",
-  "select",
-  "[role='button']",
-  "article",
-  "form",
-  ".magic-hover"
-].join(",");
+type Spark = {
+  id: number;
+  x: number;
+  y: number;
+};
+
+const FIREFLIES = [
+  { id: 0, size: 7, lag: 0.24 },
+  { id: 1, size: 5, lag: 0.18 },
+  { id: 2, size: 4, lag: 0.14 },
+  { id: 3, size: 4, lag: 0.1 },
+  { id: 4, size: 3, lag: 0.08 }
+];
 
 export function CursorMagic() {
   const [enabled, setEnabled] = useState(false);
+  const [sparks, setSparks] = useState<Spark[]>([]);
+  const sparkId = useRef(0);
 
   useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const touchOnly = window.matchMedia("(pointer: coarse)").matches && navigator.maxTouchPoints > 0;
-    let seenPointer = false;
+    const nextEnabled = !motion.matches && !touchOnly;
 
-    function setCursorState(nextEnabled: boolean) {
-      setEnabled(nextEnabled);
-      document.documentElement.classList.toggle("cursor-magic-enabled", nextEnabled);
-      document.documentElement.classList.toggle("cursor-magic-ready", nextEnabled);
-    }
-
-    function enableFromPointer(event: PointerEvent) {
-      if (motion.matches || event.pointerType === "touch") {
-        setCursorState(false);
-        return;
-      }
-
-      seenPointer = true;
-      setCursorState(true);
-    }
+    setEnabled(nextEnabled);
+    document.documentElement.classList.toggle("cursor-magic-enabled", nextEnabled);
 
     function syncMotion() {
-      if (motion.matches) {
-        setCursorState(false);
-        return;
-      }
-
-      if (seenPointer) {
-        setCursorState(true);
-      }
+      const isEnabled = !motion.matches && !touchOnly;
+      setEnabled(isEnabled);
+      document.documentElement.classList.toggle("cursor-magic-enabled", isEnabled);
     }
 
-    setCursorState(!motion.matches && !touchOnly);
-    window.addEventListener("pointermove", enableFromPointer, { passive: true });
     motion.addEventListener("change", syncMotion);
 
     return () => {
-      window.removeEventListener("pointermove", enableFromPointer);
       motion.removeEventListener("change", syncMotion);
-      document.documentElement.classList.remove(
-        "cursor-magic-enabled",
-        "cursor-magic-ready",
-        "cursor-magic-active"
-      );
+      document.documentElement.classList.remove("cursor-magic-enabled");
     };
   }, []);
 
@@ -70,52 +50,58 @@ export function CursorMagic() {
     }
 
     let frame = 0;
-    let x = window.innerWidth / 2;
-    let y = window.innerHeight / 2;
-    let glowX = x;
-    let glowY = y;
+    const target = {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
+    };
+    const points = FIREFLIES.map((_, index) => ({
+      x: target.x - index * 5,
+      y: target.y - index * 5
+    }));
 
     function draw() {
-      glowX += (x - glowX) * 0.32;
-      glowY += (y - glowY) * 0.32;
+      points.forEach((point, index) => {
+        const firefly = FIREFLIES[index];
+        point.x += (target.x - point.x) * firefly.lag;
+        point.y += (target.y - point.y) * firefly.lag;
 
-      document.documentElement.style.setProperty("--cursor-x", `${glowX}px`);
-      document.documentElement.style.setProperty("--cursor-y", `${glowY}px`);
+        document.documentElement.style.setProperty(`--firefly-${index}-x`, `${point.x}px`);
+        document.documentElement.style.setProperty(`--firefly-${index}-y`, `${point.y}px`);
+      });
+
       frame = window.requestAnimationFrame(draw);
     }
 
     function handlePointerMove(event: PointerEvent) {
-      x = event.clientX;
-      y = event.clientY;
+      if (event.pointerType === "touch") {
+        return;
+      }
+
+      target.x = event.clientX;
+      target.y = event.clientY;
     }
 
-    function handlePointerOver(event: PointerEvent) {
-      const target = event.target;
-
-      if (target instanceof Element && target.closest(interactiveSelector)) {
-        document.documentElement.classList.add("cursor-magic-active");
+    function handlePointerDown(event: PointerEvent) {
+      if (event.pointerType === "touch") {
+        return;
       }
-    }
 
-    function handlePointerOut(event: PointerEvent) {
-      const target = event.relatedTarget;
-
-      if (!(target instanceof Element) || !target.closest(interactiveSelector)) {
-        document.documentElement.classList.remove("cursor-magic-active");
-      }
+      const id = sparkId.current;
+      sparkId.current += 1;
+      setSparks((items) => [...items, { id, x: event.clientX, y: event.clientY }]);
+      window.setTimeout(() => {
+        setSparks((items) => items.filter((item) => item.id !== id));
+      }, 850);
     }
 
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    window.addEventListener("pointerover", handlePointerOver, { passive: true });
-    window.addEventListener("pointerout", handlePointerOut, { passive: true });
+    window.addEventListener("pointerdown", handlePointerDown, { passive: true });
     frame = window.requestAnimationFrame(draw);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerover", handlePointerOver);
-      window.removeEventListener("pointerout", handlePointerOut);
-      document.documentElement.classList.remove("cursor-magic-active");
+      window.removeEventListener("pointerdown", handlePointerDown);
     };
   }, [enabled]);
 
@@ -125,12 +111,26 @@ export function CursorMagic() {
 
   return (
     <div className="cursor-magic" aria-hidden="true">
-      <span className="cursor-magic__halo" />
-      <span className="cursor-magic__core" />
-      <span className="cursor-magic__dot" />
-      <span className="cursor-magic__spark cursor-magic__spark--one" />
-      <span className="cursor-magic__spark cursor-magic__spark--two" />
-      <span className="cursor-magic__spark cursor-magic__spark--three" />
+      {FIREFLIES.map((firefly) => (
+        <span
+          key={firefly.id}
+          className={`cursor-magic__firefly cursor-magic__firefly--${firefly.id}`}
+          style={{ "--firefly-size": `${firefly.size}px` } as CSSProperties}
+        />
+      ))}
+
+      {sparks.map((spark) => (
+        <span
+          key={spark.id}
+          className="cursor-magic__star"
+          style={
+            {
+              "--star-x": `${spark.x}px`,
+              "--star-y": `${spark.y}px`
+            } as CSSProperties
+          }
+        />
+      ))}
     </div>
   );
 }
