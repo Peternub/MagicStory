@@ -46,36 +46,38 @@ function clamp(value: number, min = 0, max = 1) {
 export default function HomePage() {
   const sequenceRef = useRef<HTMLElement | null>(null);
   const rayRef = useRef<HTMLDivElement | null>(null);
+  const activeSlideRef = useRef(0);
+  const isSlidingRef = useRef(false);
 
   useEffect(() => {
     let frame = 0;
 
-    function updateProgress() {
+    function applySlide(nextIndex: number) {
       const node = sequenceRef.current;
 
       if (!node) {
         return;
       }
 
+      const slideIndex = Math.max(0, Math.min(storyScenes.length - 1, nextIndex));
+      activeSlideRef.current = slideIndex;
+
       const lines = Array.from(
         node.querySelectorAll<HTMLElement>(".story-sequence__line")
       );
-      const rect = node.getBoundingClientRect();
-      const total = Math.max(node.offsetHeight - window.innerHeight, 1);
-      const next = clamp(-rect.top / total);
 
       lines.forEach((line, index) => {
-        const target = index / (storyScenes.length - 1);
-        const diff = next - target;
-        const opacity = clamp(1 - Math.abs(diff) * 4.2);
-        const translateY = diff * -120;
+        const diff = index - slideIndex;
+        const opacity = clamp(1 - Math.abs(diff));
+        const translateY = diff * 96;
         const scale = 0.96 + opacity * 0.04;
 
         line.style.opacity = String(opacity);
         line.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`;
+        line.classList.toggle("is-active", index === slideIndex);
       });
 
-      const rayIntensity = clamp((next - 0.62) / 0.28);
+      const rayIntensity = clamp((slideIndex - 1.45) / 1.25);
 
       if (rayRef.current) {
         rayRef.current.style.opacity = String(rayIntensity);
@@ -83,21 +85,103 @@ export default function HomePage() {
       }
     }
 
-    function requestUpdate() {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(updateProgress);
+    function syncSlideFromScroll() {
+      const node = sequenceRef.current;
+
+      if (!node || isSlidingRef.current) {
+        return;
+      }
+
+      const rect = node.getBoundingClientRect();
+      const total = Math.max(node.offsetHeight - window.innerHeight, 1);
+      const progress = clamp(-rect.top / total);
+      const nextIndex = Math.round(progress * (storyScenes.length - 1));
+      applySlide(nextIndex);
     }
 
-    updateProgress();
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("wheel", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
+    function requestSync() {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(syncSlideFromScroll);
+    }
+
+    function releaseSlideLock() {
+      window.setTimeout(() => {
+        isSlidingRef.current = false;
+      }, 860);
+    }
+
+    function scrollToSequencePoint(index: number) {
+      const node = sequenceRef.current;
+
+      if (!node) {
+        return;
+      }
+
+      const segment = Math.max(window.innerHeight * 0.92, 1);
+      window.scrollTo({
+        top: node.offsetTop + segment * index,
+        behavior: "smooth"
+      });
+    }
+
+    function handleWheel(event: WheelEvent) {
+      const node = sequenceRef.current;
+
+      if (!node || Math.abs(event.deltaY) < 8) {
+        return;
+      }
+
+      const rect = node.getBoundingClientRect();
+      const isInsideSequence = rect.top <= 4 && rect.bottom >= window.innerHeight - 4;
+
+      if (!isInsideSequence || isSlidingRef.current) {
+        return;
+      }
+
+      const direction = event.deltaY > 0 ? 1 : -1;
+      const current = activeSlideRef.current;
+      const lastSlide = storyScenes.length - 1;
+
+      if (direction > 0 && current < lastSlide) {
+        event.preventDefault();
+        isSlidingRef.current = true;
+        applySlide(current + 1);
+        scrollToSequencePoint(current + 1);
+        releaseSlideLock();
+        return;
+      }
+
+      if (direction < 0 && current > 0) {
+        event.preventDefault();
+        isSlidingRef.current = true;
+        applySlide(current - 1);
+        scrollToSequencePoint(current - 1);
+        releaseSlideLock();
+        return;
+      }
+
+      if (direction > 0 && current === lastSlide) {
+        event.preventDefault();
+        isSlidingRef.current = true;
+        window.scrollTo({
+          top: node.offsetTop + node.offsetHeight - window.innerHeight,
+          behavior: "smooth"
+        });
+        releaseSlideLock();
+      }
+    }
+
+    applySlide(0);
+    syncSlideFromScroll();
+    window.addEventListener("scroll", requestSync, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("resize", requestSync);
 
     return () => {
       window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("wheel", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
+      window.removeEventListener("scroll", requestSync);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("resize", requestSync);
     };
   }, []);
 

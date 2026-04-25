@@ -147,6 +147,26 @@ footer > div {
   animation-delay: var(--magic-delay, 0ms);
 }
 
+html.scroll-reveal-ready main > section,
+html.scroll-reveal-ready main article,
+html.scroll-reveal-ready main form,
+html.scroll-reveal-ready .magic-hover {
+  opacity: 0;
+  transform: translateY(28px) scale(0.985);
+}
+
+html.scroll-reveal-ready main > section.is-revealed,
+html.scroll-reveal-ready main article.is-revealed,
+html.scroll-reveal-ready main form.is-revealed,
+html.scroll-reveal-ready .magic-hover.is-revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 0.82s ease,
+    transform 0.82s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
 main > section:nth-child(2),
 main > header:nth-child(2),
 main > div:nth-child(2) {
@@ -451,7 +471,7 @@ html[data-theme="light"] .hero-copy__subtitle {
 
 .story-sequence {
   position: relative;
-  min-height: 380vh;
+  min-height: 500vh;
 }
 
 .story-sequence__sticky {
@@ -536,8 +556,14 @@ html[data-theme="light"] .hero-copy__subtitle {
   color: var(--text-main);
   will-change: opacity, transform;
   transition:
-    opacity 0.32s ease,
-    transform 0.32s ease;
+    opacity 0.82s ease,
+    transform 0.82s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.story-sequence__line.is-active {
+  text-shadow:
+    0 0 18px color-mix(in srgb, var(--accent-gold) 28%, transparent),
+    0 16px 44px rgba(0, 0, 0, 0.22);
 }
 
 .story-meter {
