@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { requireUser } from "@/lib/supabase/auth";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { childSchema } from "@/lib/validators/children";
 
@@ -29,7 +30,7 @@ export async function createChild(
     };
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseAdminClient();
   const childPayload = {
     ...parsed.data,
     user_id: user.id
@@ -43,6 +44,14 @@ export async function createChild(
   }
 
   if (error) {
+    console.error("createChild insert error", {
+      userId: user.id,
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint
+    });
+
     return {
       error: "Не удалось сохранить профиль ребенка"
     };

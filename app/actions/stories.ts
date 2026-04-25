@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { generateStory } from "@/lib/ai/generate-story";
 import { requireUser } from "@/lib/supabase/auth";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseStoryFormData } from "@/lib/validators/stories";
 
@@ -35,12 +36,22 @@ export async function createStory(
     };
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { data: profile } = await supabase
+  const supabase = createSupabaseAdminClient();
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("stories_balance")
     .eq("id", user.id)
     .single();
+
+  if (profileError) {
+    console.error("createStory profile error", {
+      userId: user.id,
+      message: profileError.message,
+      code: profileError.code,
+      details: profileError.details,
+      hint: profileError.hint
+    });
+  }
 
   let { data: child, error: childError } = await supabase
     .from("children")
@@ -73,6 +84,15 @@ export async function createStory(
   }
 
   if (childError || !child) {
+    console.error("createStory child error", {
+      userId: user.id,
+      childId: parsed.data.childId,
+      message: childError?.message,
+      code: childError?.code,
+      details: childError?.details,
+      hint: childError?.hint
+    });
+
     return {
       error: "Не удалось найти профиль ребенка"
     };
@@ -92,6 +112,15 @@ export async function createStory(
     .single();
 
   if (insertError || !storyRecord) {
+    console.error("createStory insert error", {
+      userId: user.id,
+      childId: child.id,
+      message: insertError?.message,
+      code: insertError?.code,
+      details: insertError?.details,
+      hint: insertError?.hint
+    });
+
     return {
       error: "Не удалось создать запись сказки"
     };
