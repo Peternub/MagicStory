@@ -6,6 +6,7 @@ import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isMissingColumnError } from "@/lib/supabase/errors";
 import { childSchema } from "@/lib/validators/children";
 
 type ChildActionState = {
@@ -37,7 +38,7 @@ export async function createChild(
   };
   let { error } = await supabase.from("children").insert(childPayload);
 
-  if (error?.code === "42703") {
+  if (isMissingColumnError(error, "gender")) {
     const { gender: _gender, ...payloadWithoutGender } = childPayload;
     const retryResult = await supabase.from("children").insert(payloadWithoutGender);
     error = retryResult.error;

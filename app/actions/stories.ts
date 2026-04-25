@@ -7,6 +7,7 @@ import { generateStory } from "@/lib/ai/generate-story";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isMissingColumnError } from "@/lib/supabase/errors";
 import { parseStoryFormData } from "@/lib/validators/stories";
 
 type StoryActionState = {
@@ -60,7 +61,7 @@ export async function createStory(
     .eq("user_id", user.id)
     .single();
 
-  if (childError?.code === "42703") {
+  if (isMissingColumnError(childError, "gender")) {
     const fallbackChild = await supabase
       .from("children")
       .select("id, name, age")
