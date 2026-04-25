@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { generateStory } from "@/lib/ai/generate-story";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -25,6 +26,7 @@ export async function createStory(
   formData: FormData
 ): Promise<StoryActionState> {
   const user = await requireUser();
+  await ensureUserProfile(user.id, user.email);
   const parsed = parseStoryFormData(formData);
 
   if (!parsed.success) {
@@ -34,19 +36,35 @@ export async function createStory(
   }
 
   const supabase = await createSupabaseServerClient();
-  const [{ data: profile }, { data: child, error: childError }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("stories_balance")
-      .eq("id", user.id)
-      .single(),
-    supabase
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("stories_balance")
+    .eq("id", user.id)
+    .single();
+
+  let { data: child, error: childError } = await supabase
+    .from("children")
+    .select("id, name, age, gender")
+    .eq("id", parsed.data.childId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (childError?.code === "42703") {
+    const fallbackChild = await supabase
       .from("children")
-      .select("id, name, age, gender")
+      .select("id, name, age")
       .eq("id", parsed.data.childId)
       .eq("user_id", user.id)
-      .single()
-  ]);
+      .single();
+
+    child = fallbackChild.data
+      ? {
+          ...fallbackChild.data,
+          gender: "boy" as const
+        }
+      : null;
+    childError = fallbackChild.error;
+  }
 
   if ((profile?.stories_balance ?? 0) <= 0) {
     return {

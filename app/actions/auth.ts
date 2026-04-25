@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { signInSchema, signUpSchema } from "@/lib/validators/auth";
@@ -118,6 +119,8 @@ export async function signUp(
       error: "Не удалось зарегистрироваться. Попробуйте еще раз."
     };
   }
+
+  await ensureUserProfile(createdUser.user.id, parsed.data.email);
 
   const supabase = await createSupabaseServerClient();
   const { error: signInError } = await supabase.auth.signInWithPassword({

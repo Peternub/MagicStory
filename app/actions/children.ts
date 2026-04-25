@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { childSchema } from "@/lib/validators/children";
@@ -15,6 +16,7 @@ export async function createChild(
   formData: FormData
 ): Promise<ChildActionState> {
   const user = await requireUser();
+  await ensureUserProfile(user.id, user.email);
   const parsed = childSchema.safeParse({
     name: formData.get("name"),
     age: formData.get("age"),
@@ -28,10 +30,17 @@ export async function createChild(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.from("children").insert({
+  const childPayload = {
     ...parsed.data,
     user_id: user.id
-  });
+  };
+  let { error } = await supabase.from("children").insert(childPayload);
+
+  if (error?.code === "42703") {
+    const { gender: _gender, ...payloadWithoutGender } = childPayload;
+    const retryResult = await supabase.from("children").insert(payloadWithoutGender);
+    error = retryResult.error;
+  }
 
   if (error) {
     return {
