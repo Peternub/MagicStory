@@ -270,9 +270,9 @@ form:hover,
   border-color: var(--border-strong);
   box-shadow:
     var(--glow-shadow),
-    0 0 34px color-mix(in srgb, var(--accent-gold) 34%, transparent),
-    0 0 70px color-mix(in srgb, var(--accent-lavender) 18%, transparent);
-  transform: translateY(-5px);
+    0 0 30px color-mix(in srgb, var(--accent-gold) 28%, transparent),
+    0 0 58px color-mix(in srgb, var(--accent-lavender) 14%, transparent);
+  transform: translateY(-3px);
 }
 
 article:hover::before,
@@ -313,7 +313,8 @@ a[class*="bg-[var(--button-dark)]"]::after {
   top: 0;
   z-index: 9999;
   pointer-events: none;
-  mix-blend-mode: screen;
+  mix-blend-mode: normal;
+  filter: saturate(1.25);
 }
 
 .cursor-magic__halo,
@@ -407,6 +408,20 @@ html.cursor-magic-active .cursor-magic__halo {
 
 html.cursor-magic-active .cursor-magic__spark {
   opacity: 1;
+}
+
+.contact-card {
+  transition:
+    border-color 0.32s ease,
+    box-shadow 0.32s ease,
+    transform 0.32s ease;
+}
+
+.contact-card:hover {
+  box-shadow:
+    var(--glow-shadow),
+    0 0 24px color-mix(in srgb, var(--accent-gold) 22%, transparent);
+  transform: translateY(-2px);
 }
 
 input,

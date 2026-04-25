@@ -18,23 +18,44 @@ export function CursorMagic() {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    const media = window.matchMedia("(hover: hover) and (pointer: fine)");
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const touchOnly = window.matchMedia("(pointer: coarse)").matches && navigator.maxTouchPoints > 0;
+    let seenPointer = false;
 
-    function syncEnabled() {
-      const nextEnabled = media.matches && !motion.matches;
+    function setCursorState(nextEnabled: boolean) {
       setEnabled(nextEnabled);
       document.documentElement.classList.toggle("cursor-magic-enabled", nextEnabled);
       document.documentElement.classList.toggle("cursor-magic-ready", nextEnabled);
     }
 
-    syncEnabled();
-    media.addEventListener("change", syncEnabled);
-    motion.addEventListener("change", syncEnabled);
+    function enableFromPointer(event: PointerEvent) {
+      if (motion.matches || event.pointerType === "touch") {
+        setCursorState(false);
+        return;
+      }
+
+      seenPointer = true;
+      setCursorState(true);
+    }
+
+    function syncMotion() {
+      if (motion.matches) {
+        setCursorState(false);
+        return;
+      }
+
+      if (seenPointer) {
+        setCursorState(true);
+      }
+    }
+
+    setCursorState(!motion.matches && !touchOnly);
+    window.addEventListener("pointermove", enableFromPointer, { passive: true });
+    motion.addEventListener("change", syncMotion);
 
     return () => {
-      media.removeEventListener("change", syncEnabled);
-      motion.removeEventListener("change", syncEnabled);
+      window.removeEventListener("pointermove", enableFromPointer);
+      motion.removeEventListener("change", syncMotion);
       document.documentElement.classList.remove(
         "cursor-magic-enabled",
         "cursor-magic-ready",

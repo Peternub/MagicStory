@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ContactForm } from "@/components/site/contact-form";
 import { MarketingPlanCard } from "@/components/site/marketing-plan-card";
 import { magicPlans } from "@/lib/config/pricing";
@@ -45,7 +45,7 @@ function clamp(value: number, min = 0, max = 1) {
 
 export default function HomePage() {
   const sequenceRef = useRef<HTMLElement | null>(null);
-  const [progress, setProgress] = useState(0);
+  const rayRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let frame = 0;
@@ -57,10 +57,30 @@ export default function HomePage() {
         return;
       }
 
-      const sectionTop = node.offsetTop;
+      const lines = Array.from(
+        node.querySelectorAll<HTMLElement>(".story-sequence__line")
+      );
+      const rect = node.getBoundingClientRect();
       const total = Math.max(node.offsetHeight - window.innerHeight, 1);
-      const next = clamp((window.scrollY - sectionTop) / total);
-      setProgress(next);
+      const next = clamp(-rect.top / total);
+
+      lines.forEach((line, index) => {
+        const target = index / (storyScenes.length - 1);
+        const diff = next - target;
+        const opacity = clamp(1 - Math.abs(diff) * 4.2);
+        const translateY = diff * -120;
+        const scale = 0.96 + opacity * 0.04;
+
+        line.style.opacity = String(opacity);
+        line.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`;
+      });
+
+      const rayIntensity = clamp((next - 0.62) / 0.28);
+
+      if (rayRef.current) {
+        rayRef.current.style.opacity = String(rayIntensity);
+        rayRef.current.classList.toggle("is-active", rayIntensity > 0.04);
+      }
     }
 
     function requestUpdate() {
@@ -70,33 +90,16 @@ export default function HomePage() {
 
     updateProgress();
     window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("wheel", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("wheel", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
     };
   }, []);
-
-  const sceneMetrics = useMemo(() => {
-    return storyScenes.map((scene, index) => {
-      const target = index / (storyScenes.length - 1);
-      const diff = progress - target;
-      const opacity = clamp(1 - Math.abs(diff) * 4.2);
-      const translateY = diff * -120;
-      const scale = 0.96 + opacity * 0.04;
-
-      return {
-        scene,
-        index,
-        opacity,
-        transform: `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`
-      };
-    });
-  }, [progress]);
-
-  const rayIntensity = clamp((progress - 0.62) / 0.28);
 
   return (
     <main>
@@ -115,23 +118,24 @@ export default function HomePage() {
         <div className="story-sequence__sticky">
           <div className="story-sequence__bg" />
           <div
-            className={`story-sequence__ray ${rayIntensity > 0.04 ? "is-active" : ""}`}
-            style={{ opacity: rayIntensity }}
+            ref={rayRef}
+            className="story-sequence__ray"
+            style={{ opacity: 0 }}
           />
 
           <div className="story-sequence__content">
             <p className="story-sequence__label">MagicStory</p>
 
-            {sceneMetrics.map((item) => (
+            {storyScenes.map((scene, index) => (
               <p
-                key={item.scene}
+                key={scene}
                 className="story-sequence__line"
                 style={{
-                  opacity: item.opacity,
-                  transform: item.transform
+                  opacity: index === 0 ? 1 : 0,
+                  transform: `translate(-50%, calc(-50% + ${index * 40}px)) scale(${index === 0 ? 1 : 0.96})`
                 }}
               >
-                {item.scene}
+                {scene}
               </p>
             ))}
           </div>
@@ -236,7 +240,7 @@ export default function HomePage() {
       <section id="contact" className="px-6 py-24 text-[var(--text-main)]">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr]">
           <div
-            className="magic-hover rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-8"
+            className="contact-card magic-hover rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-8"
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm uppercase tracking-[0.3em] text-[var(--logo-text)]">
