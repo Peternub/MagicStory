@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useRef } from "react";
 import { ContactForm } from "@/components/site/contact-form";
 import { MarketingPlanCard } from "@/components/site/marketing-plan-card";
 import { magicPlans } from "@/lib/config/pricing";
@@ -39,152 +36,7 @@ const reviews = [
   "Текст получается живым, а не шаблонным, поэтому сервис быстро стал частью нашего вечернего ритуала."
 ];
 
-function clamp(value: number, min = 0, max = 1) {
-  return Math.min(max, Math.max(min, value));
-}
-
 export default function HomePage() {
-  const sequenceRef = useRef<HTMLElement | null>(null);
-  const rayRef = useRef<HTMLDivElement | null>(null);
-  const activeSlideRef = useRef(0);
-  const isSlidingRef = useRef(false);
-
-  useEffect(() => {
-    let frame = 0;
-
-    function applySlide(nextIndex: number) {
-      const node = sequenceRef.current;
-
-      if (!node) {
-        return;
-      }
-
-      const slideIndex = Math.max(0, Math.min(storyScenes.length - 1, nextIndex));
-      activeSlideRef.current = slideIndex;
-
-      const lines = Array.from(
-        node.querySelectorAll<HTMLElement>(".story-sequence__line")
-      );
-
-      lines.forEach((line, index) => {
-        const diff = index - slideIndex;
-        const opacity = clamp(1 - Math.abs(diff));
-        const translateY = diff * 96;
-        const scale = 0.96 + opacity * 0.04;
-
-        line.style.opacity = String(opacity);
-        line.style.transform = `translate(-50%, calc(-50% + ${translateY}px)) scale(${scale})`;
-        line.classList.toggle("is-active", index === slideIndex);
-      });
-
-      const rayIntensity = clamp((slideIndex - 1.45) / 1.25);
-
-      if (rayRef.current) {
-        rayRef.current.style.opacity = String(rayIntensity);
-        rayRef.current.classList.toggle("is-active", rayIntensity > 0.04);
-      }
-    }
-
-    function syncSlideFromScroll() {
-      const node = sequenceRef.current;
-
-      if (!node || isSlidingRef.current) {
-        return;
-      }
-
-      const rect = node.getBoundingClientRect();
-      const total = Math.max(node.offsetHeight - window.innerHeight, 1);
-      const progress = clamp(-rect.top / total);
-      const nextIndex = Math.round(progress * (storyScenes.length - 1));
-      applySlide(nextIndex);
-    }
-
-    function requestSync() {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(syncSlideFromScroll);
-    }
-
-    function releaseSlideLock() {
-      window.setTimeout(() => {
-        isSlidingRef.current = false;
-      }, 860);
-    }
-
-    function scrollToSequencePoint(index: number) {
-      const node = sequenceRef.current;
-
-      if (!node) {
-        return;
-      }
-
-      const segment = Math.max(window.innerHeight * 0.92, 1);
-      window.scrollTo({
-        top: node.offsetTop + segment * index,
-        behavior: "smooth"
-      });
-    }
-
-    function handleWheel(event: WheelEvent) {
-      const node = sequenceRef.current;
-
-      if (!node || Math.abs(event.deltaY) < 8) {
-        return;
-      }
-
-      const rect = node.getBoundingClientRect();
-      const isInsideSequence = rect.top <= 4 && rect.bottom >= window.innerHeight - 4;
-
-      if (!isInsideSequence || isSlidingRef.current) {
-        return;
-      }
-
-      const direction = event.deltaY > 0 ? 1 : -1;
-      const current = activeSlideRef.current;
-      const lastSlide = storyScenes.length - 1;
-
-      if (direction > 0 && current < lastSlide) {
-        event.preventDefault();
-        isSlidingRef.current = true;
-        applySlide(current + 1);
-        scrollToSequencePoint(current + 1);
-        releaseSlideLock();
-        return;
-      }
-
-      if (direction < 0 && current > 0) {
-        event.preventDefault();
-        isSlidingRef.current = true;
-        applySlide(current - 1);
-        scrollToSequencePoint(current - 1);
-        releaseSlideLock();
-        return;
-      }
-
-      if (direction > 0 && current === lastSlide) {
-        event.preventDefault();
-        isSlidingRef.current = true;
-        window.scrollTo({
-          top: node.offsetTop + node.offsetHeight - window.innerHeight,
-          behavior: "smooth"
-        });
-        releaseSlideLock();
-      }
-    }
-
-    applySlide(0);
-    syncSlideFromScroll();
-    window.addEventListener("scroll", requestSync, { passive: true });
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("resize", requestSync);
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", requestSync);
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("resize", requestSync);
-    };
-  }, []);
-
   return (
     <main>
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-16">
@@ -198,32 +50,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section ref={sequenceRef} className="story-sequence">
-        <div className="story-sequence__sticky">
-          <div className="story-sequence__bg" />
-          <div
-            ref={rayRef}
-            className="story-sequence__ray"
-            style={{ opacity: 0 }}
-          />
-
-          <div className="story-sequence__content">
-            <p className="story-sequence__label">MagicStory</p>
-
-            {storyScenes.map((scene, index) => (
-              <p
-                key={scene}
-                className="story-sequence__line"
-                style={{
-                  opacity: index === 0 ? 1 : 0,
-                  transform: `translate(-50%, calc(-50% + ${index * 40}px)) scale(${index === 0 ? 1 : 0.96})`
-                }}
-              >
+      <section className="story-sequence">
+        {storyScenes.map((scene, index) => (
+          <section key={scene} className="story-sequence__panel">
+            <div className="story-sequence__content">
+              <p className="story-sequence__label">MagicStory / 0{index + 1}</p>
+              <p className="story-sequence__line is-active">
                 {scene}
               </p>
-            ))}
-          </div>
-        </div>
+            </div>
+          </section>
+        ))}
       </section>
 
       <section id="pricing" className="px-6 pb-24 pt-8 text-[var(--text-main)] sm:pt-12">

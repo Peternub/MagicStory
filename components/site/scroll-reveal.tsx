@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 const revealSelector = [
   "main > section",
+  ".story-sequence__panel",
   "main article",
   "main form",
   ".magic-hover"
