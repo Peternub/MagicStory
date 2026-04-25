@@ -169,6 +169,16 @@ html.scroll-reveal-ready .magic-hover.is-revealed {
   transition-delay: var(--reveal-delay, 0ms);
 }
 
+html.scroll-reveal-ready main article.is-revealed:hover,
+html.scroll-reveal-ready main form.is-revealed:hover,
+html.scroll-reveal-ready .magic-hover.is-revealed:hover {
+  box-shadow:
+    var(--glow-shadow),
+    0 18px 38px rgba(0, 0, 0, 0.18);
+  transform: translateY(-7px);
+  transition-delay: 0ms;
+}
+
 main > section:nth-child(2),
 main > header:nth-child(2),
 main > div:nth-child(2) {
