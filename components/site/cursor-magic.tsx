@@ -25,6 +25,7 @@ export function CursorMagic() {
       const nextEnabled = media.matches && !motion.matches;
       setEnabled(nextEnabled);
       document.documentElement.classList.toggle("cursor-magic-enabled", nextEnabled);
+      document.documentElement.classList.toggle("cursor-magic-ready", nextEnabled);
     }
 
     syncEnabled();
@@ -34,7 +35,11 @@ export function CursorMagic() {
     return () => {
       media.removeEventListener("change", syncEnabled);
       motion.removeEventListener("change", syncEnabled);
-      document.documentElement.classList.remove("cursor-magic-enabled", "cursor-magic-active");
+      document.documentElement.classList.remove(
+        "cursor-magic-enabled",
+        "cursor-magic-ready",
+        "cursor-magic-active"
+      );
     };
   }, []);
 
@@ -50,8 +55,8 @@ export function CursorMagic() {
     let glowY = y;
 
     function draw() {
-      glowX += (x - glowX) * 0.18;
-      glowY += (y - glowY) * 0.18;
+      glowX += (x - glowX) * 0.32;
+      glowY += (y - glowY) * 0.32;
 
       document.documentElement.style.setProperty("--cursor-x", `${glowX}px`);
       document.documentElement.style.setProperty("--cursor-y", `${glowY}px`);
@@ -101,6 +106,7 @@ export function CursorMagic() {
     <div className="cursor-magic" aria-hidden="true">
       <span className="cursor-magic__halo" />
       <span className="cursor-magic__core" />
+      <span className="cursor-magic__dot" />
       <span className="cursor-magic__spark cursor-magic__spark--one" />
       <span className="cursor-magic__spark cursor-magic__spark--two" />
       <span className="cursor-magic__spark cursor-magic__spark--three" />

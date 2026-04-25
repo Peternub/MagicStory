@@ -48,6 +48,8 @@ export default function HomePage() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    let frame = 0;
+
     function updateProgress() {
       const node = sequenceRef.current;
 
@@ -55,19 +57,25 @@ export default function HomePage() {
         return;
       }
 
-      const rect = node.getBoundingClientRect();
+      const sectionTop = node.offsetTop;
       const total = Math.max(node.offsetHeight - window.innerHeight, 1);
-      const next = clamp(-rect.top / total);
+      const next = clamp((window.scrollY - sectionTop) / total);
       setProgress(next);
     }
 
+    function requestUpdate() {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(updateProgress);
+    }
+
     updateProgress();
-    window.addEventListener("scroll", updateProgress, { passive: true });
-    window.addEventListener("resize", updateProgress);
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
 
     return () => {
-      window.removeEventListener("scroll", updateProgress);
-      window.removeEventListener("resize", updateProgress);
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
     };
   }, []);
 
@@ -228,7 +236,7 @@ export default function HomePage() {
       <section id="contact" className="px-6 py-24 text-[var(--text-main)]">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr]">
           <div
-            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-8"
+            className="magic-hover rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-8"
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm uppercase tracking-[0.3em] text-[var(--logo-text)]">

@@ -117,6 +117,11 @@ html.cursor-magic-active body::after {
   opacity: 0.95;
 }
 
+html.cursor-magic-ready,
+html.cursor-magic-ready * {
+  cursor: none !important;
+}
+
 html[data-theme="light"] body {
   background-color: #fff7f7;
 }
@@ -265,8 +270,9 @@ form:hover,
   border-color: var(--border-strong);
   box-shadow:
     var(--glow-shadow),
-    0 0 28px color-mix(in srgb, var(--accent-gold) 18%, transparent);
-  transform: translateY(-3px);
+    0 0 34px color-mix(in srgb, var(--accent-gold) 34%, transparent),
+    0 0 70px color-mix(in srgb, var(--accent-lavender) 18%, transparent);
+  transform: translateY(-5px);
 }
 
 article:hover::before,
@@ -305,12 +311,14 @@ a[class*="bg-[var(--button-dark)]"]::after {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 80;
+  z-index: 9999;
   pointer-events: none;
+  mix-blend-mode: screen;
 }
 
 .cursor-magic__halo,
 .cursor-magic__core,
+.cursor-magic__dot,
 .cursor-magic__spark {
   position: fixed;
   left: var(--cursor-x);
@@ -321,13 +329,22 @@ a[class*="bg-[var(--button-dark)]"]::after {
 }
 
 .cursor-magic__halo {
-  width: 7.5rem;
-  height: 7.5rem;
-  border: 1px solid color-mix(in srgb, var(--accent-gold) 38%, transparent);
+  width: 5rem;
+  height: 5rem;
+  border: 1px solid color-mix(in srgb, var(--accent-gold) 74%, transparent);
   background:
-    radial-gradient(circle, color-mix(in srgb, var(--accent-gold) 18%, transparent), transparent 64%);
-  filter: blur(0.2px);
-  opacity: 0.54;
+    conic-gradient(
+      from 0deg,
+      transparent,
+      color-mix(in srgb, var(--accent-gold) 72%, transparent),
+      color-mix(in srgb, var(--accent-lavender) 74%, transparent),
+      transparent 72%
+    );
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--accent-gold) 58%, transparent),
+    0 0 44px color-mix(in srgb, var(--accent-lavender) 36%, transparent);
+  opacity: 0.86;
+  animation: magic-cursor-spin 2.8s linear infinite;
   transition:
     height 0.24s ease,
     opacity 0.24s ease,
@@ -335,21 +352,34 @@ a[class*="bg-[var(--button-dark)]"]::after {
 }
 
 .cursor-magic__core {
-  width: 0.58rem;
-  height: 0.58rem;
-  background: var(--accent-gold);
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 1px solid color-mix(in srgb, white 64%, var(--accent-gold));
+  background:
+    radial-gradient(circle at 35% 35%, #ffffff, var(--accent-gold) 42%, var(--accent-lavender));
   box-shadow:
-    0 0 16px var(--accent-gold),
-    0 0 32px color-mix(in srgb, var(--accent-lavender) 45%, transparent);
-  opacity: 0.8;
+    0 0 14px var(--accent-gold),
+    0 0 34px color-mix(in srgb, var(--accent-lavender) 68%, transparent);
+  opacity: 0.96;
+}
+
+.cursor-magic__dot {
+  width: 0.34rem;
+  height: 0.34rem;
+  background: #ffffff;
+  box-shadow: 0 0 14px #ffffff;
+  opacity: 0.96;
 }
 
 .cursor-magic__spark {
-  width: 0.32rem;
-  height: 0.32rem;
+  width: 0.46rem;
+  height: 0.46rem;
   background: color-mix(in srgb, var(--accent-gold) 84%, white);
-  opacity: 0.68;
-  animation: magic-spark 2.4s ease-in-out infinite;
+  box-shadow:
+    0 0 12px var(--accent-gold),
+    0 0 24px color-mix(in srgb, var(--accent-lavender) 52%, transparent);
+  opacity: 0.88;
+  animation: magic-spark-orbit 2.6s ease-in-out infinite;
 }
 
 .cursor-magic__spark--one {
@@ -370,13 +400,13 @@ a[class*="bg-[var(--button-dark)]"]::after {
 }
 
 html.cursor-magic-active .cursor-magic__halo {
-  width: 10rem;
-  height: 10rem;
-  opacity: 0.8;
+  width: 7.2rem;
+  height: 7.2rem;
+  opacity: 1;
 }
 
 html.cursor-magic-active .cursor-magic__spark {
-  opacity: 0.95;
+  opacity: 1;
 }
 
 input,
@@ -618,6 +648,22 @@ html[data-theme="light"] .hero-copy__subtitle {
   }
   50% {
     transform: translate(-50%, -50%) scale(1.18);
+  }
+}
+
+@keyframes magic-cursor-spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes magic-spark-orbit {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg) translateX(1.25rem) scale(0.74);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(180deg) translateX(1.85rem) scale(1.12);
   }
 }
 
