@@ -139,9 +139,7 @@ a {
 main > section,
 main > header,
 main > div,
-main > form,
 article,
-form,
 footer > div {
   animation: magic-fade 0.72s ease both;
   animation-delay: var(--magic-delay, 0ms);
@@ -150,7 +148,6 @@ footer > div {
 html.scroll-reveal-ready main > section,
 html.scroll-reveal-ready .story-sequence__panel,
 html.scroll-reveal-ready main article,
-html.scroll-reveal-ready main form,
 html.scroll-reveal-ready .magic-hover {
   opacity: 0;
   transform: translateY(28px) scale(0.985);
@@ -159,7 +156,6 @@ html.scroll-reveal-ready .magic-hover {
 html.scroll-reveal-ready main > section.is-revealed,
 html.scroll-reveal-ready .story-sequence__panel.is-revealed,
 html.scroll-reveal-ready main article.is-revealed,
-html.scroll-reveal-ready main form.is-revealed,
 html.scroll-reveal-ready .magic-hover.is-revealed {
   opacity: 1;
   transform: translateY(0) scale(1);
@@ -170,7 +166,6 @@ html.scroll-reveal-ready .magic-hover.is-revealed {
 }
 
 html.scroll-reveal-ready main article.is-revealed:hover,
-html.scroll-reveal-ready main form.is-revealed:hover,
 html.scroll-reveal-ready .magic-hover.is-revealed:hover {
   box-shadow:
     var(--glow-shadow),
@@ -221,7 +216,6 @@ input,
 textarea,
 select,
 article,
-form,
 [role="button"] {
   transition-duration: 0.24s;
   transition-timing-function: ease;
@@ -252,7 +246,6 @@ a[href]:active,
 }
 
 article,
-form,
 .magic-hover {
   position: relative;
   overflow: hidden;
@@ -262,7 +255,6 @@ form,
 }
 
 article::before,
-form::before,
 .magic-hover::before {
   content: "";
   position: absolute;
@@ -280,14 +272,12 @@ form::before,
 }
 
 article > *,
-form > *,
 .magic-hover > * {
   position: relative;
   z-index: 1;
 }
 
 article:hover,
-form:hover,
 .magic-hover:hover {
   box-shadow:
     var(--glow-shadow),
@@ -296,7 +286,6 @@ form:hover,
 }
 
 article:hover::before,
-form:hover::before,
 .magic-hover:hover::before {
   opacity: 1;
 }
