@@ -55,15 +55,15 @@ export function MarketingPlanCard({ plan }: MarketingPlanCardProps) {
   const [format, setFormat] = useState<MagicPlanFormat>("stories");
   const [model, setModel] = useState<MagicPlanModel>("plus");
   const styles = toneStyles[plan.tone];
-  const isRich = plan.tone === "premium" || model === "premium";
+  const isRich = plan.tone === "premium" || model === "premium" || format === "audio";
   const price = getPlanPrice(plan, format, model);
   const includedLabel = getPlanIncludedLabel(plan, format, model);
 
   return (
-    <article
+    <div
       className={`flex h-full flex-col rounded-lg border p-6 shadow-glow ${styles.card} ${
-        plan.highlight ? "translate-y-[-6px]" : ""
-      } ${isRich ? "ring-1 ring-[var(--accent-gold-soft)]" : ""}`}
+        isRich ? "ring-1 ring-[var(--accent-gold-soft)]" : ""
+      }`}
       style={{
         boxShadow: isRich
           ? "var(--glow-shadow), 0 0 34px color-mix(in srgb, var(--accent-gold) 16%, transparent)"
@@ -92,7 +92,8 @@ export function MarketingPlanCard({ plan }: MarketingPlanCardProps) {
               type="button"
               onClick={() => setFormat(item.code)}
               className={`min-h-11 rounded-md border px-3 py-2 text-xs font-medium transition ${optionClassName(
-                format === item.code
+                format === item.code,
+                item.code === "audio"
               )}`}
             >
               {item.label}
@@ -130,6 +131,6 @@ export function MarketingPlanCard({ plan }: MarketingPlanCardProps) {
       >
         Выбрать
       </Link>
-    </article>
+    </div>
   );
 }
