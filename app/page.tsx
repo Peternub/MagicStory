@@ -16,13 +16,13 @@ const qualityCards = [
     tone: "soft"
   },
   {
-    title: "Модель плюс",
+    title: 'Модель "Plus"',
     subtitle: "Более ровный сюжет и аккуратная детализация",
     value: 73,
     tone: "plus"
   },
   {
-    title: "Премиум-модель",
+    title: 'Модель "Premium"',
     subtitle: "Самая глубокая проработка истории и персонажей",
     value: 98,
     tone: "premium"
@@ -120,7 +120,7 @@ export default function HomePage() {
           </div>
 
           <p className="mx-auto mt-8 max-w-3xl text-center text-lg leading-8 text-[var(--text-soft)]">
-            Модель плюс дает заметно более ровный результат, а премиум-модель делает
+            Модель "Plus" дает заметно более ровный результат, а модель "Premium" делает
             историю глубже, живее и богаче по деталям.
           </p>
         </div>
