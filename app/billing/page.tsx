@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { PlanCard } from "@/components/billing/plan-card";
-import { magicPlans } from "@/lib/config/pricing";
+import { PricingTabs } from "@/components/site/pricing-tabs";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -23,7 +22,7 @@ export default async function BillingPage() {
             Тарифы
           </p>
           <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">
-            Пакеты персональных сказок
+            Пакеты сказок и аудио-сказок
           </h1>
         </div>
         <Link
@@ -38,7 +37,9 @@ export default async function BillingPage() {
         className="mt-8 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8 text-[var(--text-main)]"
         style={{ boxShadow: "var(--glow-shadow)" }}
       >
-        <p className="text-sm text-[var(--logo-text)]">Три понятных тарифа без озвучки</p>
+        <p className="text-sm text-[var(--logo-text)]">
+          Сказки, аудио-сказки и два уровня модели
+        </p>
         <p className="mt-2 text-sm text-[var(--text-soft)]">
           Статус подписки: {profile?.subscription_status ?? "free"}
         </p>
@@ -47,10 +48,8 @@ export default async function BillingPage() {
         </p>
       </section>
 
-      <section className="mt-10 grid gap-5 lg:grid-cols-3">
-        {magicPlans.map((plan) => (
-          <PlanCard key={plan.code} plan={plan} />
-        ))}
+      <section className="mt-10">
+        <PricingTabs variant="billing" />
       </section>
     </main>
   );

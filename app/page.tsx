@@ -1,6 +1,5 @@
 import { ContactForm } from "@/components/site/contact-form";
-import { MarketingPlanCard } from "@/components/site/marketing-plan-card";
-import { magicPlans } from "@/lib/config/pricing";
+import { PricingTabs } from "@/components/site/pricing-tabs";
 
 const storyScenes = [
   "Вы пришли с работы, а ребенка уже надо укладывать спать.",
@@ -17,8 +16,14 @@ const qualityCards = [
     tone: "soft"
   },
   {
-    title: "Премиум модель",
-    subtitle: "Одна из лучших моделей ИИ в мире",
+    title: "Модель плюс",
+    subtitle: "Более ровный сюжет и аккуратная детализация",
+    value: 73,
+    tone: "plus"
+  },
+  {
+    title: "Премиум-модель",
+    subtitle: "Самая глубокая проработка истории и персонажей",
     value: 98,
     tone: "premium"
   }
@@ -35,6 +40,18 @@ const reviews = [
   "Дочке нравится, что в сказках появляются ее друзья, любимые места и знакомые мелочи дня.",
   "Текст получается живым, а не шаблонным, поэтому сервис быстро стал частью нашего вечернего ритуала."
 ];
+
+function getQualityCardClass(tone: (typeof qualityCards)[number]["tone"]) {
+  if (tone === "premium") {
+    return "border-[var(--accent-gold)] bg-[linear-gradient(145deg,color-mix(in_srgb,var(--surface-card-alt)_86%,transparent),color-mix(in_srgb,var(--accent-gold)_14%,var(--surface-card)))] ring-1 ring-[var(--accent-gold-soft)]";
+  }
+
+  if (tone === "plus") {
+    return "border-[var(--border-strong)] bg-[var(--surface-card-alt)]";
+  }
+
+  return "border-[var(--border-soft)] bg-[var(--surface-card)]";
+}
 
 export default function HomePage() {
   return (
@@ -55,9 +72,7 @@ export default function HomePage() {
           <section key={scene} className="story-sequence__panel">
             <div className="story-sequence__content">
               <p className="story-sequence__label">MagicStory / 0{index + 1}</p>
-              <p className="story-sequence__line is-active">
-                {scene}
-              </p>
+              <p className="story-sequence__line is-active">{scene}</p>
             </div>
           </section>
         ))}
@@ -69,16 +84,17 @@ export default function HomePage() {
             Качество генерации сказки
           </h2>
 
-          <div className="mt-14 grid gap-6 lg:grid-cols-2">
+          <div className="mt-14 grid gap-6 lg:grid-cols-3">
             {qualityCards.map((card) => (
               <article
                 key={card.title}
-                className={`rounded-lg border p-6 shadow-glow ${
-                  card.tone === "premium"
-                    ? "border-[var(--border-strong)] bg-[var(--surface-card-alt)]"
-                    : "border-[var(--border-soft)] bg-[var(--surface-card)]"
-                }`}
-                style={{ boxShadow: "var(--glow-shadow)" }}
+                className={`rounded-lg border p-6 shadow-glow ${getQualityCardClass(card.tone)}`}
+                style={{
+                  boxShadow:
+                    card.tone === "premium"
+                      ? "var(--glow-shadow), 0 0 38px color-mix(in srgb, var(--accent-gold) 18%, transparent)"
+                      : "var(--glow-shadow)"
+                }}
               >
                 <h3 className="text-2xl font-semibold">{card.title}</h3>
                 <p className="mt-2 text-sm text-[var(--text-soft)]">{card.subtitle}</p>
@@ -104,8 +120,8 @@ export default function HomePage() {
           </div>
 
           <p className="mx-auto mt-8 max-w-3xl text-center text-lg leading-8 text-[var(--text-soft)]">
-            Премиум модель создает более живой и увлекательный текст с глубокой
-            проработкой характеров.
+            Модель плюс дает заметно более ровный результат, а премиум-модель делает
+            историю глубже, живее и богаче по деталям.
           </p>
         </div>
       </section>
@@ -121,11 +137,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            {magicPlans.map((plan) => (
-              <MarketingPlanCard key={plan.code} plan={plan} />
-            ))}
-          </div>
+          <PricingTabs />
         </div>
       </section>
 

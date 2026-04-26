@@ -15,52 +15,63 @@ const toneStyles: Record<
   }
 > = {
   starter: {
-    card: "border-[#f0d8d1] bg-[#fff7f4]",
-    badge: "bg-[#f7e4de] text-[#9d6473]",
-    button: "border-[#24324c]/10 bg-[#24324c] text-white"
+    card: "border-[var(--border-soft)] bg-[var(--surface-card)]",
+    badge: "bg-[var(--surface-soft)] text-[var(--logo-text)]",
+    button: "border-[var(--border-soft)] bg-[var(--button-light)] text-[var(--button-light-text)]"
   },
   family: {
-    card: "border-[#e9d8b1] bg-[#fffaf1]",
-    badge: "bg-[#f6ebcb] text-[#8d6b2e]",
-    button: "border-[#cda45a]/30 bg-[#cda45a] text-[#24324c]"
+    card: "border-[var(--border-strong)] bg-[var(--surface-card-alt)]",
+    badge: "bg-[var(--accent-gold-soft)] text-[var(--accent-gold)]",
+    button: "border-[var(--border-strong)] bg-[var(--button-dark)] text-[var(--button-dark-text)]"
   },
   premium: {
-    card: "border-[#d9cdea] bg-[#faf6ff]",
-    badge: "bg-[#ebe4f5] text-[#6f6292]",
-    button: "border-[#8a7bb4]/30 bg-[#8a7bb4] text-white"
+    card: "border-[var(--border-strong)] bg-[var(--surface-card)]",
+    badge: "bg-[var(--accent-lavender-soft)] text-[var(--accent-lavender)]",
+    button: "border-[var(--accent-lavender)] bg-[var(--accent-lavender)] text-white"
+  },
+  royal: {
+    card: "border-[var(--accent-gold)] bg-[linear-gradient(145deg,color-mix(in_srgb,var(--surface-card-alt)_86%,transparent),color-mix(in_srgb,var(--accent-gold)_14%,var(--surface-card)))]",
+    badge: "bg-[var(--accent-gold)] text-[var(--button-dark-text)]",
+    button: "border-[var(--accent-gold)] bg-[var(--accent-gold)] text-[var(--button-dark-text)]"
   }
 };
 
 export function PlanCard({ plan }: PlanCardProps) {
   const styles = toneStyles[plan.tone];
+  const isRich = plan.tone === "royal" || plan.model === "business";
 
   return (
     <article
       className={`flex h-full flex-col rounded-lg border p-6 shadow-glow ${styles.card} ${
         plan.highlight ? "translate-y-[-6px]" : ""
-      }`}
+      } ${plan.model === "business" ? "ring-1 ring-[var(--accent-gold-soft)]" : ""}`}
+      style={{
+        boxShadow: isRich
+          ? "var(--glow-shadow), 0 0 34px color-mix(in srgb, var(--accent-gold) 16%, transparent)"
+          : "var(--glow-shadow)"
+      }}
     >
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className={`inline-flex rounded-lg px-3 py-1 text-xs font-medium ${styles.badge}`}>
             {plan.subtitle}
           </p>
-          <h2 className="mt-5 text-3xl font-semibold text-[#24324c]">{plan.name}</h2>
+          <h2 className="mt-5 text-3xl font-semibold text-[var(--text-main)]">{plan.name}</h2>
         </div>
         {plan.highlight ? (
-          <span className="rounded-lg border border-[#e9d8b1] bg-white px-3 py-1 text-xs font-medium text-[#8d6b2e]">
+          <span className="rounded-lg border border-[var(--border-strong)] bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-[var(--accent-gold)]">
             Популярный
           </span>
         ) : null}
       </div>
 
-      <div className="mt-8 flex items-end gap-2 text-[#24324c]">
+      <div className="mt-8 flex items-end gap-2 text-[var(--text-main)]">
         <p className="text-4xl font-semibold">{plan.price}</p>
-        <p className="pb-1 text-sm text-[#5b6477]">рублей</p>
+        <p className="pb-1 text-sm text-[var(--text-soft)]">рублей</p>
       </div>
 
-      <p className="mt-4 text-sm text-[#5b6477]">{plan.stories} персональных сказок</p>
-      <p className="mt-3 text-sm leading-7 text-[#5b6477]">{plan.description}</p>
+      <p className="mt-4 text-sm font-medium text-[var(--text-main)]">{plan.includedLabel}</p>
+      <p className="mt-3 text-sm leading-7 text-[var(--text-soft)]">{plan.description}</p>
 
       <button
         type="button"
