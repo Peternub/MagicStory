@@ -29,11 +29,30 @@ function mapAuthErrorMessage(message?: string, status?: number) {
     return "Неверный email или пароль.";
   }
 
+  if (normalized.includes("email not confirmed")) {
+    return "Email не подтвержден. Попробуйте войти еще раз или обратитесь в поддержку.";
+  }
+
   if (normalized.includes("password")) {
     return "Пароль не соответствует требованиям Supabase.";
   }
 
   return null;
+}
+
+async function confirmUserEmail(userId: string) {
+  const adminClient = createSupabaseAdminClient();
+  const { error } = await adminClient.auth.admin.updateUserById(userId, {
+    email_confirm: true
+  });
+
+  if (error) {
+    console.error("confirmUserEmail error", {
+      userId,
+      status: error.status,
+      message: error.message
+    });
+  }
 }
 
 export async function signIn(
@@ -52,7 +71,7 @@ export async function signIn(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
 
   if (error) {
     console.error("signIn error", {
@@ -65,6 +84,10 @@ export async function signIn(
         mapAuthErrorMessage(error.message, error.status) ??
         "Не удалось войти. Проверьте email и пароль."
     };
+  }
+
+  if (data.user) {
+    await ensureUserProfile(data.user.id, data.user.email);
   }
 
   redirect("/dashboard");
@@ -93,12 +116,13 @@ export async function signUp(
     full_name: `${parsed.data.firstName} ${parsed.data.lastName}`
   };
 
-  const adminClient = createSupabaseAdminClient();
-  const { data: createdUser, error } = await adminClient.auth.admin.createUser({
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    email_confirm: true,
-    user_metadata: userMetadata
+    options: {
+      data: userMetadata
+    }
   });
 
   if (error) {
@@ -114,26 +138,35 @@ export async function signUp(
     };
   }
 
-  if (!createdUser.user) {
+  if (!data.user) {
     return {
       error: "Не удалось зарегистрироваться. Попробуйте еще раз."
     };
   }
 
-  await ensureUserProfile(createdUser.user.id, parsed.data.email);
-
-  const supabase = await createSupabaseServerClient();
-  const { error: signInError } = await supabase.auth.signInWithPassword({
-    email: parsed.data.email,
-    password: parsed.data.password
-  });
-
-  if (signInError) {
+  if (data.user.identities?.length === 0) {
     return {
-      error:
-        mapAuthErrorMessage(signInError.message, signInError.status) ??
-        "Аккаунт создан, но не удалось сразу выполнить вход."
+      error: "Пользователь с таким email уже зарегистрирован. Войдите через форму входа."
     };
+  }
+
+  await ensureUserProfile(data.user.id, data.user.email ?? parsed.data.email);
+
+  if (!data.session) {
+    await confirmUserEmail(data.user.id);
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: parsed.data.email,
+      password: parsed.data.password
+    });
+
+    if (signInError) {
+      return {
+        error:
+          mapAuthErrorMessage(signInError.message, signInError.status) ??
+          "Аккаунт создан, но не удалось сразу выполнить вход."
+      };
+    }
   }
 
   redirect("/dashboard");
