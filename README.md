@@ -19,9 +19,10 @@ MVP на `Next.js` для сервиса генерации персональн
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `OPENAI_API_KEY`
-3. Если используете локальный Supabase CLI, конфиг уже лежит в [supabase/config.toml](c:\Users\HUAWEI\Documents\Мои проекты VIBECODE\MagicStory\supabase\config.toml).
-4. Примените SQL-миграции из [supabase/migrations/20260403_001_init_magic_story.sql](c:\Users\HUAWEI\Documents\Мои проекты VIBECODE\MagicStory\supabase\migrations\20260403_001_init_magic_story.sql).
-5. Если база уже запускалась со старой схемой, примените [supabase/migrations/20260418_004_remove_audio_support.sql](c:\Users\HUAWEI\Documents\Мои проекты VIBECODE\MagicStory\supabase\migrations\20260418_004_remove_audio_support.sql).
+3. В Supabase Dashboard откройте `Authentication` -> `Providers` -> `Email` и включите email/password-вход и регистрацию. Без этого Supabase вернет `Email signups are disabled` или `Email logins are disabled`.
+4. Если используете локальный Supabase CLI, конфиг уже лежит в [supabase/config.toml](c:\Users\HUAWEI\Documents\Мои проекты VIBECODE\MagicStory\supabase\config.toml).
+5. Примените SQL-миграции из [supabase/migrations/20260403_001_init_magic_story.sql](c:\Users\HUAWEI\Documents\Мои проекты VIBECODE\MagicStory\supabase\migrations\20260403_001_init_magic_story.sql).
+6. Если база уже запускалась со старой схемой, примените [supabase/migrations/20260418_004_remove_audio_support.sql](c:\Users\HUAWEI\Documents\Мои проекты VIBECODE\MagicStory\supabase\migrations\20260418_004_remove_audio_support.sql).
 
 ## Что уже закрыто по Supabase
 

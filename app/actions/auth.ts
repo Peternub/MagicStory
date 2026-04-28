@@ -25,6 +25,14 @@ function mapAuthErrorMessage(message?: string, status?: number) {
     return "Пользователь с таким email уже зарегистрирован.";
   }
 
+  if (normalized.includes("email signups are disabled")) {
+    return "В Supabase выключена регистрация по email/password. Включите Email provider в Authentication → Providers → Email.";
+  }
+
+  if (normalized.includes("email logins are disabled")) {
+    return "В Supabase выключен вход по email/password. Включите Email provider в Authentication → Providers → Email.";
+  }
+
   if (normalized.includes("invalid login credentials")) {
     return "Неверный email или пароль.";
   }
