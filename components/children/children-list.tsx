@@ -50,15 +50,24 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
               </p>
             </div>
 
-            <form action={deleteChild}>
-              <input type="hidden" name="childId" value={child.id} />
-              <button
-                type="submit"
-                className="rounded-lg border border-red-400/25 px-4 py-2 text-sm text-red-200 transition hover:border-red-300/50 hover:bg-red-500/10"
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/children/${child.id}`}
+                className="rounded-lg border border-[var(--border-strong)] px-4 py-2 text-sm text-[var(--text-main)] transition hover:bg-[var(--surface-card-alt)]"
               >
-                Удалить
-              </button>
-            </form>
+                Изменить
+              </Link>
+
+              <form action={deleteChild}>
+                <input type="hidden" name="childId" value={child.id} />
+                <button
+                  type="submit"
+                  className="rounded-lg border border-red-400/25 px-4 py-2 text-sm text-red-200 transition hover:border-red-300/50 hover:bg-red-500/10"
+                >
+                  Удалить
+                </button>
+              </form>
+            </div>
           </div>
         </article>
       ))}
