@@ -547,6 +547,23 @@ html[data-theme="light"] .hero-copy__subtitle {
   transform-origin: left;
 }
 
+.story-loading {
+  position: relative;
+  height: 0.65rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--meter-bg);
+}
+
+.story-loading__bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 42%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-gold) 0%, var(--accent-lavender) 100%);
+  animation: story-loading-slide 1.25s ease-in-out infinite;
+}
+
 @keyframes magic-rise {
   from {
     opacity: 0;
@@ -634,6 +651,18 @@ html[data-theme="light"] .hero-copy__subtitle {
   }
   to {
     transform: scaleX(1);
+  }
+}
+
+@keyframes story-loading-slide {
+  0% {
+    transform: translateX(-110%);
+  }
+  50% {
+    transform: translateX(70%);
+  }
+  100% {
+    transform: translateX(245%);
   }
 }
 

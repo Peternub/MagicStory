@@ -128,6 +128,21 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
       >
         {isPending ? "Создаем сказку..." : "Создать сказку"}
       </button>
+
+      {isPending ? (
+        <div
+          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] px-4 py-3"
+          aria-live="polite"
+        >
+          <div className="flex items-center justify-between gap-4 text-sm text-[var(--text-soft)]">
+            <span>Сказка создается</span>
+            <span>Пожалуйста, подождите</span>
+          </div>
+          <div className="story-loading mt-3">
+            <div className="story-loading__bar" />
+          </div>
+        </div>
+      ) : null}
     </form>
   );
 }

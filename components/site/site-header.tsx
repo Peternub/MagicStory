@@ -40,14 +40,22 @@ export async function SiteHeader() {
           <span className="font-display text-lg tracking-[0.24em]">MagicStory</span>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
 
           {user ? (
             <>
               <Link
+                href="/children"
+                className="rounded-lg border border-[var(--border-soft)] px-3 py-2 text-sm font-medium text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] sm:px-4"
+              >
+                <span className="hidden sm:inline">Профиль ребёнка</span>
+                <span className="sm:hidden">Дети</span>
+              </Link>
+
+              <Link
                 href="/stories/new"
-                className="rounded-lg bg-[var(--button-dark)] px-4 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
+                className="rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
               >
                 Создать сказку
               </Link>
