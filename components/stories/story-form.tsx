@@ -38,8 +38,16 @@ const durationOptions: SelectOption[] = [
   { value: "7", label: "7 минут" }
 ];
 
-function formatGenderLabel(gender: ChildRecord["gender"]) {
-  return gender === "girl" ? "девочка" : "мальчик";
+function formatGenderLabel(gender?: ChildRecord["gender"]) {
+  if (gender === "girl") {
+    return "девочка";
+  }
+
+  if (gender === "boy") {
+    return "мальчик";
+  }
+
+  return "пол не указан";
 }
 
 function CustomSelect({

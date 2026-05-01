@@ -6,8 +6,16 @@ type ChildrenListProps = {
   childrenItems: ChildRecord[];
 };
 
-function formatGenderLabel(gender: ChildRecord["gender"]) {
-  return gender === "girl" ? "Девочка" : "Мальчик";
+function formatGenderLabel(gender?: ChildRecord["gender"]) {
+  if (gender === "girl") {
+    return "Девочка";
+  }
+
+  if (gender === "boy") {
+    return "Мальчик";
+  }
+
+  return "Не указан";
 }
 
 export function ChildrenList({ childrenItems }: ChildrenListProps) {

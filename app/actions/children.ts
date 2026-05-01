@@ -36,15 +36,15 @@ export async function createChild(
     ...parsed.data,
     user_id: user.id
   };
-  let { error } = await supabase.from("children").insert(childPayload);
-
-  if (isMissingColumnError(error, "gender")) {
-    const { gender: _gender, ...payloadWithoutGender } = childPayload;
-    const retryResult = await supabase.from("children").insert(payloadWithoutGender);
-    error = retryResult.error;
-  }
+  const { error } = await supabase.from("children").insert(childPayload);
 
   if (error) {
+    if (isMissingColumnError(error, "gender")) {
+      return {
+        error: "В базе не применена миграция пола ребенка. Примените 20260420_006_add_child_gender.sql."
+      };
+    }
+
     console.error("createChild insert error", {
       userId: user.id,
       message: error.message,
@@ -89,24 +89,19 @@ export async function updateChild(
   }
 
   const supabase = createSupabaseAdminClient();
-  let { error } = await supabase
+  const { error } = await supabase
     .from("children")
     .update(parsed.data)
     .eq("id", childId)
     .eq("user_id", user.id);
 
-  if (isMissingColumnError(error, "gender")) {
-    const { gender: _gender, ...payloadWithoutGender } = parsed.data;
-    const retryResult = await supabase
-      .from("children")
-      .update(payloadWithoutGender)
-      .eq("id", childId)
-      .eq("user_id", user.id);
-
-    error = retryResult.error;
-  }
-
   if (error) {
+    if (isMissingColumnError(error, "gender")) {
+      return {
+        error: "В базе не применена миграция пола ребенка. Примените 20260420_006_add_child_gender.sql."
+      };
+    }
+
     console.error("updateChild error", {
       userId: user.id,
       childId,

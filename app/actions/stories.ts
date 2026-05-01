@@ -71,20 +71,9 @@ export async function createStory(
     .single();
 
   if (isMissingColumnError(childError, "gender")) {
-    const fallbackChild = await supabase
-      .from("children")
-      .select("id, name, age")
-      .eq("id", parsed.data.childId)
-      .eq("user_id", user.id)
-      .single();
-
-    child = fallbackChild.data
-      ? {
-          ...fallbackChild.data,
-          gender: "boy" as const
-        }
-      : null;
-    childError = fallbackChild.error;
+    return {
+      error: "В базе не применена миграция пола ребенка. Примените 20260420_006_add_child_gender.sql."
+    };
   }
 
   if ((profile?.stories_balance ?? 0) <= 0) {
