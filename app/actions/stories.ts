@@ -24,8 +24,12 @@ function buildStorySummary(input: {
   goal: string;
   setting: string;
   durationMinutes: number;
+  additionalCharacters?: string;
 }) {
-  return `${input.situation}. ${input.durationMinutes} мин, цель: ${input.goal}, место: ${input.setting}`;
+  const characters = input.additionalCharacters
+    ? `, персонажи: ${input.additionalCharacters}`
+    : "";
+  return `${input.situation}. ${input.durationMinutes} мин, изменение к финалу: ${input.goal}, место: ${input.setting}${characters}`;
 }
 
 export async function createStory(

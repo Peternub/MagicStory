@@ -135,23 +135,23 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
     <form action={formAction} className="space-y-5">
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
-          Для кого сказка
+          Для кого история
         </span>
         <CustomSelect
           name="childId"
           options={childOptions}
-          placeholder="Выберите ребенка"
+          placeholder="Выберите ребёнка"
         />
       </label>
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
-          Тема сказки
+          Тема истории
         </span>
         <textarea
           name="situation"
           rows={4}
-          placeholder="Например: ребенок устал, поссорился с другом или переживает перед садиком"
+          placeholder="Например: не хочется спать, страшно идти в садик, поссорился с другом"
           className={fieldClassName}
           required
         />
@@ -160,7 +160,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
       <div className="grid gap-5 md:grid-cols-2">
         <label className="block">
           <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
-            Где будет происходить сказка
+            Место действия
           </span>
           <input
             name="setting"
@@ -173,7 +173,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
 
         <label className="block">
           <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
-            Длительность
+            Длительность чтения
           </span>
           <CustomSelect
             name="durationMinutes"
@@ -198,12 +198,12 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
-          Что должна дать сказка/Мораль
+          Что должно измениться к концу истории
         </span>
         <textarea
           name="goal"
           rows={3}
-          placeholder="Например: показать, что ошибаться не страшно, или помочь спокойно уснуть"
+          placeholder="Например: ребёнку стало легче уснуть, он перестал бояться садика, понял, как помириться"
           className={fieldClassName}
           required
         />
@@ -216,7 +216,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
         <input
           name="extraWishes"
           type="text"
-          placeholder="Например: сделать сказку смешнее, спокойнее или без волшебства"
+          placeholder="Например: сделать историю смешнее, спокойнее или совсем без волшебства"
           className={fieldClassName}
         />
       </label>
@@ -232,7 +232,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
         disabled={isPending}
         className="w-full rounded-lg bg-[var(--button-dark)] px-4 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isPending ? "Создаем сказку..." : "Создать сказку"}
+        {isPending ? "Создаем историю..." : "Создать историю"}
       </button>
 
       {isPending ? (
@@ -241,7 +241,7 @@ export function StoryForm({ action, childrenItems }: StoryFormProps) {
           aria-live="polite"
         >
           <div className="flex items-center justify-between gap-4 text-sm text-[var(--text-soft)]">
-            <span>Сказка создается</span>
+            <span>История создается</span>
             <span>Пожалуйста, подождите</span>
           </div>
           <div className="story-loading mt-3">

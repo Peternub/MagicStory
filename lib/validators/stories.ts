@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const storySchema = z
   .object({
-    childId: z.string().uuid("Выберите ребенка"),
+    childId: z.string().uuid("Выберите ребёнка"),
     durationMinutes: z.coerce
       .number()
       .int()
@@ -11,7 +11,7 @@ export const storySchema = z
     situation: z
       .string()
       .trim()
-      .max(500, "Тема сказки слишком длинная")
+      .max(500, "Тема истории слишком длинная")
       .optional(),
     setting: z
       .string()
@@ -26,8 +26,8 @@ export const storySchema = z
     goal: z
       .string()
       .trim()
-      .min(3, "Напишите, что должна дать сказка")
-      .max(400, "Мораль сказки слишком длинная"),
+      .min(3, "Напишите, что должно измениться к концу истории")
+      .max(400, "Описание финального изменения слишком длинное"),
     extraWishes: z
       .string()
       .trim()
@@ -39,7 +39,7 @@ export const storySchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["situation"],
-        message: "Коротко опишите тему сказки"
+        message: "Коротко опишите тему истории"
       });
     }
   });
