@@ -84,7 +84,7 @@ export default async function EditChildPage({ params }: EditChildPageProps) {
         </p>
 
         {hasMissingGenderColumn ? (
-          <p className="mt-5 rounded-lg border border-amber-300/35 bg-amber-300/12 px-4 py-3 text-sm leading-6 text-amber-100">
+          <p className="mt-5 rounded-lg border border-[#c47d1f]/35 bg-[#fff4cf] px-4 py-3 text-sm leading-6 text-[#4a3411] shadow-sm">
             В базе не применена миграция пола ребёнка. Редактирование имени и
             возраста работает, но пол сохранится только после применения
             миграции 20260420_006_add_child_gender.sql.
