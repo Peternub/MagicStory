@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ProfileMenu } from "@/components/site/profile-menu";
 
 type AccountSummary =
@@ -20,9 +21,11 @@ type AccountSummary =
 
 export function HeaderAuthActions() {
   const [summary, setSummary] = useState<AccountSummary | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     let mounted = true;
+    setSummary(null);
 
     async function loadSummary() {
       try {
@@ -51,7 +54,7 @@ export function HeaderAuthActions() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [pathname]);
 
   if (!summary) {
     return <div className="h-10 w-36 rounded-lg bg-[var(--surface-soft)]" aria-hidden="true" />;
