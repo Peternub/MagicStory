@@ -12,7 +12,9 @@ type ChildFormProps = {
     state: ChildActionState,
     formData: FormData
   ) => Promise<ChildActionState>;
-  child?: Pick<ChildRecord, "id" | "name" | "age" | "gender">;
+  child?: Pick<ChildRecord, "id" | "name" | "age"> & {
+    gender?: ChildRecord["gender"];
+  };
   submitLabel?: string;
   pendingLabel?: string;
 };
@@ -29,6 +31,7 @@ export function ChildForm({
   pendingLabel = "Сохраняем..."
 }: ChildFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const genderDefaultValue = child ? child.gender ?? "" : "boy";
 
   return (
     <form action={formAction} className="space-y-5">
@@ -69,7 +72,17 @@ export function ChildForm({
           <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
             Пол
           </span>
-          <select name="gender" defaultValue={child?.gender ?? "boy"} className={fieldClassName}>
+          <select
+            name="gender"
+            required
+            defaultValue={genderDefaultValue}
+            className={fieldClassName}
+          >
+            {child && !child.gender ? (
+              <option value="" disabled>
+                Не указан
+              </option>
+            ) : null}
             <option value="boy">Мальчик</option>
             <option value="girl">Девочка</option>
           </select>
