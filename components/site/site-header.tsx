@@ -1,9 +1,6 @@
 import Link from "next/link";
-import { ProfileMenu } from "@/components/site/profile-menu";
+import { HeaderAuthActions } from "@/components/site/header-auth-actions";
 import { ThemeToggle } from "@/components/site/theme-toggle";
-import { getUserSummary } from "@/lib/account/user-summary";
-import { getCurrentUser } from "@/lib/supabase/auth";
-import { getUserDisplayName, getUserInitials } from "@/lib/user/display-name";
 
 const navigation = [
   { href: "/", label: "Главная" },
@@ -12,12 +9,7 @@ const navigation = [
   { href: "/#contact", label: "Связаться" }
 ];
 
-export async function SiteHeader() {
-  const user = await getCurrentUser();
-  const summary = user ? await getUserSummary(user.id) : null;
-  const displayName = user ? getUserDisplayName(user) : "";
-  const initials = user ? getUserInitials(user) : "";
-
+export function SiteHeader() {
   return (
     <header className="sticky top-0 z-[60] border-b border-[var(--border-soft)] bg-[var(--header-bg)] backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-5 sm:px-10">
@@ -42,48 +34,7 @@ export async function SiteHeader() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
-
-          {user ? (
-            <>
-              <Link
-                href="/children"
-                className="rounded-lg border border-[var(--border-soft)] px-3 py-2 text-sm font-medium text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] sm:px-4"
-              >
-                <span className="hidden sm:inline">Профиль ребёнка</span>
-                <span className="sm:hidden">Дети</span>
-              </Link>
-
-              <Link
-                href="/stories/new"
-                className="rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
-              >
-                Создать сказку
-              </Link>
-
-              <ProfileMenu
-                displayName={displayName}
-                email={user.email ?? ""}
-                initials={initials}
-                storiesBalance={summary?.storiesBalance ?? 0}
-                subscriptionStatus={summary?.subscriptionStatus ?? "free"}
-              />
-            </>
-          ) : (
-            <>
-              <Link
-                href="/auth/login"
-                className="rounded-lg border border-[var(--border-soft)] px-4 py-2 text-sm text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)]"
-              >
-                Войти
-              </Link>
-              <Link
-                href="/auth/sign-up"
-                className="rounded-lg bg-[var(--button-dark)] px-4 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
-              >
-                Начать
-              </Link>
-            </>
-          )}
+          <HeaderAuthActions />
         </div>
       </div>
     </header>

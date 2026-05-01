@@ -10,7 +10,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "MagicStory",
-  description: "Персональные сказки для детей на основе реальных ситуаций дня."
+  description: "Персональные сказки для детей на основе реальных ситуаций дня.",
+  icons: {
+    icon: "/favicon.svg"
+  }
 };
 
 export default function RootLayout({
