@@ -12,7 +12,7 @@ const salutespeechEnvSchema = z.object({
   SALUTESPEECH_AUTH_KEY: z.string().min(1),
   SALUTESPEECH_SCOPE: z.string().min(1).default("SALUTE_SPEECH_PERS"),
   SALUTESPEECH_VOICE: z.string().min(1).default("May_24000"),
-  SALUTESPEECH_AUTH_SCHEME: z.enum(["Bearer", "Basic"]).default("Bearer")
+  SALUTESPEECH_AUTH_SCHEME: z.enum(["Bearer", "Basic"]).default("Basic")
 });
 
 type TokenResponse = {
