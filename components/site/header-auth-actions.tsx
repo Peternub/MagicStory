@@ -83,7 +83,7 @@ export function HeaderAuthActions() {
     <>
       <Link
         href="/children"
-        className="rounded-lg border border-[var(--border-soft)] px-3 py-2 text-sm font-medium text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] sm:px-4"
+        className="shrink-0 whitespace-nowrap rounded-lg border border-[var(--border-soft)] px-3 py-2 text-sm font-medium text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] sm:px-4"
       >
         <span className="hidden sm:inline">Профиль ребенка</span>
         <span className="sm:hidden">Дети</span>
@@ -91,7 +91,7 @@ export function HeaderAuthActions() {
 
       <Link
         href="/stories/new"
-        className="rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
+        className="shrink-0 whitespace-nowrap rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
       >
         Создать сказку
       </Link>
