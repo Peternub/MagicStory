@@ -19,6 +19,8 @@ type StoryActionState = {
   error?: string;
 };
 
+type SupabaseAdminClient = ReturnType<typeof createSupabaseAdminClient>;
+
 function buildStorySummary(input: {
   situation?: string;
   goal: string;
@@ -30,6 +32,65 @@ function buildStorySummary(input: {
     ? `, персонажи: ${input.additionalCharacters}`
     : "";
   return `${input.situation}. ${input.durationMinutes} мин, изменение к финалу: ${input.goal}, место: ${input.setting}${characters}`;
+}
+
+async function saveReadyStoryAudio(input: {
+  supabase: SupabaseAdminClient;
+  userId: string;
+  storyId: string;
+  taskId: string;
+}) {
+  const status = await getSaluteSpeechTaskStatus(input.taskId);
+
+  if (status.status === "DONE" && status.responseFileId) {
+    const audio = await downloadSaluteSpeechResult(status.responseFileId);
+    const audioPath = `${input.userId}/${input.storyId}.ogg`;
+    const { error: uploadError } = await input.supabase.storage
+      .from("story-audio")
+      .upload(audioPath, audio, {
+        contentType: "audio/ogg",
+        upsert: true
+      });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    await input.supabase
+      .from("stories")
+      .update({
+        audio_path: audioPath,
+        tts_response_file_id: status.responseFileId,
+        tts_status: "completed",
+        tts_error_message: null
+      })
+      .eq("id", input.storyId)
+      .eq("user_id", input.userId);
+
+    return;
+  }
+
+  if (status.status === "ERROR" || status.status === "CANCELED") {
+    await input.supabase
+      .from("stories")
+      .update({
+        tts_status: "failed",
+        tts_error_message: status.errorMessage ?? "SaluteSpeech не смог озвучить сказку."
+      })
+      .eq("id", input.storyId)
+      .eq("user_id", input.userId);
+
+    return;
+  }
+
+  await input.supabase
+    .from("stories")
+    .update({
+      tts_status: "audio_generating",
+      tts_error_message: null
+    })
+    .eq("id", input.storyId)
+    .eq("user_id", input.userId);
 }
 
 export async function createStory(
@@ -220,12 +281,37 @@ export async function startStoryAudio(formData: FormData) {
   const supabase = createSupabaseAdminClient();
   const { data: story } = await supabase
     .from("stories")
-    .select("id, text_content")
+    .select("id, text_content, tts_task_id")
     .eq("id", storyId)
     .eq("user_id", user.id)
     .single();
 
   if (!story?.text_content) {
+    redirect(`/stories/${storyId}`);
+  }
+
+  if (story.tts_task_id) {
+    try {
+      await saveReadyStoryAudio({
+        supabase,
+        userId: user.id,
+        storyId,
+        taskId: story.tts_task_id
+      });
+    } catch (error) {
+      console.error("SaluteSpeech resume failed", error);
+
+      await supabase
+        .from("stories")
+        .update({
+          tts_status: "failed",
+          tts_error_message: "Не удалось получить готовую озвучку. Попробуйте ещё раз."
+        })
+        .eq("id", storyId)
+        .eq("user_id", user.id);
+    }
+
+    revalidatePath(`/stories/${storyId}`);
     redirect(`/stories/${storyId}`);
   }
 
@@ -288,7 +374,7 @@ export async function refreshStoryAudio(formData: FormData) {
       const { error: uploadError } = await supabase.storage
         .from("story-audio")
         .upload(audioPath, audio, {
-          contentType: "audio/ogg; codecs=opus",
+          contentType: "audio/ogg",
           upsert: true
         });
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { refreshStoryAudio, startStoryAudio } from "@/app/actions/stories";
+import { AudioGenerationProgress } from "@/components/stories/audio-generation-progress";
 import { DeleteStoryButton } from "@/components/stories/delete-story-button";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -127,35 +128,21 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
               ) : null}
 
               {story.tts_status === "audio_generating" ? (
-                <form action={refreshStoryAudio}>
-                  <input type="hidden" name="storyId" value={story.id} />
-                  <button
-                    type="submit"
-                    className="inline-flex rounded-lg border border-[var(--border-strong)] px-5 py-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-card-alt)]"
-                  >
-                    Проверить готовность
-                  </button>
-                </form>
+                <AudioGenerationProgress storyId={story.id} />
               ) : null}
 
               {story.tts_status === "failed" ? (
-                <form action={startStoryAudio}>
+                <form action={story.tts_task_id ? refreshStoryAudio : startStoryAudio}>
                   <input type="hidden" name="storyId" value={story.id} />
                   <button
                     type="submit"
                     className="inline-flex rounded-lg border border-[var(--border-strong)] px-5 py-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-card-alt)]"
                   >
-                    Запустить заново
+                    {story.tts_task_id ? "Получить озвучку" : "Запустить заново"}
                   </button>
                 </form>
               ) : null}
             </div>
-
-            {story.tts_status === "audio_generating" ? (
-              <p className="mt-4 text-sm text-[var(--text-soft)]">
-                SaluteSpeech озвучивает длинный текст асинхронно. Подождите немного и проверьте готовность.
-              </p>
-            ) : null}
 
             {story.tts_error_message ? (
               <p className="mt-4 rounded-lg border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
