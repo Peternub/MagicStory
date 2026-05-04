@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node scripts/next-with-salutespeech-ca.mjs dev",
+    "build": "node scripts/next-with-salutespeech-ca.mjs build",
+    "start": "node scripts/next-with-salutespeech-ca.mjs start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
   },
