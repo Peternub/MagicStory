@@ -158,7 +158,57 @@ export async function createStory(
     };
   }
 
-  const storySummary = buildStorySummary(parsed.data);
+  const rawSeriesId = formData.get("seriesId");
+  const seriesId = typeof rawSeriesId === "string" && rawSeriesId ? rawSeriesId : null;
+  let episodeNumber: number | null = null;
+  let storyRequest = parsed.data;
+
+  if (seriesId) {
+    const [{ data: series }, { data: previousEpisode }] = await Promise.all([
+      supabase
+        .from("story_series")
+        .select("id, child_id, title, premise")
+        .eq("id", seriesId)
+        .eq("user_id", user.id)
+        .maybeSingle(),
+      supabase
+        .from("stories")
+        .select("title, text_content, episode_number")
+        .eq("series_id", seriesId)
+        .eq("user_id", user.id)
+        .order("episode_number", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    ]);
+
+    if (!series || series.child_id !== child.id) {
+      return { error: "Сериал не найден" };
+    }
+
+    episodeNumber = (previousEpisode?.episode_number ?? 0) + 1;
+    const rawAddition = formData.get("situation");
+    const addition = typeof rawAddition === "string" ? rawAddition.trim() : "";
+    const continuity = previousEpisode?.text_content
+      ? [
+          `Это эпизод ${episodeNumber} сериала «${series.title}».`,
+          "Продолжи сюжет напрямую, сохрани характеры героев и не пересказывай предыдущую серию.",
+          `Предыдущий эпизод «${previousEpisode.title ?? "Без названия"}»:`,
+          previousEpisode.text_content.slice(-7000)
+        ].join("\n\n")
+      : `Это первый эпизод сериала «${series.title}». Представь постоянных героев и оставь возможность для продолжения.`;
+
+    storyRequest = {
+      ...parsed.data,
+      situation: addition || series.premise,
+      setting: `мир сериала «${series.title}»`,
+      goal: "завершить сегодняшний эпизод спокойно и оставить небольшой повод для следующей серии",
+      extraWishes: [series.premise, continuity].join("\n\n")
+    };
+  }
+
+  const storySummary = seriesId
+    ? `Эпизод ${episodeNumber}: ${storyRequest.situation}`
+    : buildStorySummary(storyRequest);
 
   const { data: storyRecord, error: insertError } = await supabase
     .from("stories")
@@ -166,6 +216,8 @@ export async function createStory(
       user_id: user.id,
       child_id: child.id,
       theme: storySummary,
+      series_id: seriesId,
+      episode_number: episodeNumber,
       status: "text_generating"
     })
     .select("id")
@@ -189,7 +241,7 @@ export async function createStory(
   try {
     const generated = await generateStory({
       child,
-      request: parsed.data
+      request: storyRequest
     });
 
     const { error: storyUpdateError } = await supabase
@@ -222,7 +274,7 @@ export async function createStory(
     await supabase.from("usage_events").insert({
       user_id: user.id,
       story_id: storyRecord.id,
-      event_type: "story_created",
+      event_type: seriesId ? "series_episode_created" : "story_created",
       amount: 1
     });
   } catch (storyError) {
@@ -245,8 +297,12 @@ export async function createStory(
   revalidatePath("/");
   revalidatePath("/dashboard");
   revalidatePath("/stories");
+  revalidatePath("/series");
+  if (seriesId) {
+    revalidatePath(`/series/${seriesId}`);
+  }
   revalidatePath("/children");
-  redirect(`/stories/${storyRecord.id}`);
+  redirect(seriesId ? `/series/${seriesId}` : `/stories/${storyRecord.id}`);
 }
 
 export async function deleteStory(formData: FormData) {

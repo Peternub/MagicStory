@@ -25,12 +25,20 @@ export default async function StoriesPage() {
             Все созданные истории
           </h1>
         </div>
-        <Link
-          href="/stories/new"
-          className="inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
-        >
-          Создать сказку
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/series"
+            className="inline-flex rounded-lg border border-[var(--border-strong)] px-5 py-3 text-sm font-medium text-[var(--text-main)]"
+          >
+            Сериалы
+          </Link>
+          <Link
+            href="/stories/new"
+            className="inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
+          >
+            Создать сказку
+          </Link>
+        </div>
       </header>
 
       <section className="mt-10">

@@ -35,7 +35,7 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
   const supabase = await createSupabaseServerClient();
   const { data: story } = await supabase
     .from("stories")
-    .select("id, title, theme, text_content, status, error_message, created_at, audio_path, provider_tts, tts_task_id, tts_status, tts_error_message")
+    .select("id, title, theme, text_content, status, error_message, created_at, audio_path, provider_tts, tts_task_id, tts_status, tts_error_message, series_id, episode_number")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
@@ -51,10 +51,10 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-6 py-10 sm:px-10">
       <Link
-        href="/stories"
+        href={story.series_id ? `/series/${story.series_id}` : "/stories"}
         className="text-sm font-medium text-[var(--logo-text)] transition hover:text-[var(--text-main)]"
       >
-        ← Назад к библиотеке
+        {story.series_id ? "Назад к сериалу" : "Назад к библиотеке"}
       </Link>
 
       <section
@@ -64,7 +64,7 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">
-              Персональная сказка
+              {story.series_id ? `Эпизод ${story.episode_number}` : "Персональная сказка"}
             </p>
             <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">
               {story.title ?? "Новая сказка"}

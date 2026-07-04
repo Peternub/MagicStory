@@ -48,6 +48,7 @@ export const config = {
     "/billing/:path*",
     "/children/:path*",
     "/dashboard/:path*",
+    "/series/:path*",
     "/stories/:path*"
   ]
 };

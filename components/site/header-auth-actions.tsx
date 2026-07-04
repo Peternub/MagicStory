@@ -170,7 +170,7 @@ function isProtectedPath(pathname: string | null) {
     return false;
   }
 
-  return ["/billing", "/children", "/dashboard", "/stories"].some(
+  return ["/billing", "/children", "/dashboard", "/series", "/stories"].some(
     (path) => pathname === path || pathname.startsWith(`${path}/`)
   );
 }
