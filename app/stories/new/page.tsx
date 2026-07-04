@@ -32,11 +32,11 @@ export default async function NewStoryPage() {
         style={{ boxShadow: "var(--glow-shadow)" }}
       >
         <h1 className="text-3xl font-semibold text-[var(--text-main)]">
-          Создать новую сказку
+          Сказка за несколько секунд
         </h1>
         <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
-          Мы сократили форму до нескольких главных шагов, чтобы родителю было
-          проще заполнить все за минуту.
+          Выберите настроение, при желании напишите одну фразу о сегодняшнем дне
+          и сразу запускайте историю.
         </p>
 
         {childrenItems.length === 0 ? (
