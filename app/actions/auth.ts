@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -99,6 +100,36 @@ export async function signIn(
   }
 
   redirect("/dashboard");
+}
+
+export async function signInWithGoogle() {
+  const requestHeaders = await headers();
+  const origin = requestHeaders.get("origin");
+  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+  const protocol = requestHeaders.get("x-forwarded-proto") ?? "http";
+  const siteOrigin = origin ?? (host ? `${protocol}://${host}` : null);
+
+  if (!siteOrigin) {
+    redirect("/auth/login?error=oauth_start");
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${siteOrigin}/auth/callback?next=/dashboard`
+    }
+  });
+
+  if (error || !data.url) {
+    console.error("Google sign in start error", {
+      status: error?.status,
+      message: error?.message
+    });
+    redirect("/auth/login?error=oauth_start");
+  }
+
+  redirect(data.url);
 }
 
 export async function signUp(

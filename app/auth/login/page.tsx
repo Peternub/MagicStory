@@ -14,6 +14,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const initialError =
     error === "oauth"
       ? "Google не передал действующую сессию. Попробуйте войти через Google еще раз."
+      : error === "oauth_start"
+        ? "Не удалось начать вход через Google. Проверьте настройки Google в Supabase."
       : undefined;
 
   return (

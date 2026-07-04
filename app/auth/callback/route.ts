@@ -13,8 +13,10 @@ export async function GET(request: NextRequest) {
   const env = getPublicSupabaseEnv();
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const providerError = requestUrl.searchParams.get("error_description");
   const next = requestUrl.searchParams.get("next") || "/dashboard";
-  let response = NextResponse.redirect(new URL(next, request.url));
+  const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
+  let response = NextResponse.redirect(new URL(safeNext, request.url));
 
   const supabase = createServerClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
@@ -35,6 +37,9 @@ export async function GET(request: NextRequest) {
   );
 
   if (!code) {
+    console.error("Google callback missing code", {
+      providerError
+    });
     return NextResponse.redirect(new URL("/auth/login?error=oauth", request.url));
   }
 
