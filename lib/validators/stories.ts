@@ -25,7 +25,10 @@ const modeDefaults: Record<
 
 const optionalText = (max: number, message: string) =>
   z.preprocess(
-    (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+    (value) =>
+      value === null || value === undefined || (typeof value === "string" && value.trim() === "")
+        ? undefined
+        : value,
     z.string().trim().max(max, message).optional()
   );
 
