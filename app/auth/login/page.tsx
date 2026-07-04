@@ -6,14 +6,15 @@ export const dynamic = "force-dynamic";
 type LoginPageProps = {
   searchParams: Promise<{
     error?: string;
+    reason?: string;
   }>;
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { error } = await searchParams;
+  const { error, reason } = await searchParams;
   const initialError =
     error === "oauth"
-      ? "Google не передал действующую сессию. Попробуйте войти через Google еще раз."
+      ? `Google не передал действующую сессию${reason ? `: ${reason}` : "."}`
       : error === "oauth_start"
         ? "Не удалось начать вход через Google. Проверьте настройки Google в Supabase."
       : undefined;

@@ -9,6 +9,17 @@ type CookieToSet = {
   options?: CookieOptions;
 };
 
+function createOAuthErrorResponse(request: NextRequest, reason?: string | null) {
+  const url = new URL("/auth/login", request.url);
+  url.searchParams.set("error", "oauth");
+
+  if (reason) {
+    url.searchParams.set("reason", reason.slice(0, 180));
+  }
+
+  return NextResponse.redirect(url);
+}
+
 export async function GET(request: NextRequest) {
   const env = getPublicSupabaseEnv();
   const requestUrl = new URL(request.url);
@@ -40,7 +51,7 @@ export async function GET(request: NextRequest) {
     console.error("Google callback missing code", {
       providerError
     });
-    return NextResponse.redirect(new URL("/auth/login?error=oauth", request.url));
+    return createOAuthErrorResponse(request, providerError ?? "Google не вернул код авторизации");
   }
 
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
@@ -50,7 +61,7 @@ export async function GET(request: NextRequest) {
       status: error?.status,
       message: error?.message
     });
-    return NextResponse.redirect(new URL("/auth/login?error=oauth", request.url));
+    return createOAuthErrorResponse(request, error?.message ?? "Supabase не создал сессию");
   }
 
   try {
