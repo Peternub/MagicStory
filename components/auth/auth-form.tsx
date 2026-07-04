@@ -22,6 +22,7 @@ type AuthFormProps = {
   alternateText: string;
   showNameFields?: boolean;
   initialError?: string;
+  recoveryHref?: string;
 };
 
 const inputClassName =
@@ -36,7 +37,8 @@ export function AuthForm({
   alternateLabel,
   alternateText,
   showNameFields = false,
-  initialError
+  initialError,
+  recoveryHref
 }: AuthFormProps) {
   const [state, formAction, isPending] = useActionState(action, {
     error: initialError
@@ -99,6 +101,14 @@ export function AuthForm({
             required
           />
         </label>
+
+        {recoveryHref ? (
+          <div className="text-right">
+            <Link className="text-sm font-medium text-[var(--logo-text)]" href={recoveryHref}>
+              Забыли пароль?
+            </Link>
+          </div>
+        ) : null}
 
         <label className="block">
           <span className="mb-3 block text-base font-medium text-[var(--text-main)]">

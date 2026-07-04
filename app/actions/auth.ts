@@ -5,12 +5,26 @@ import { headers } from "next/headers";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { signInSchema, signUpSchema } from "@/lib/validators/auth";
+import {
+  passwordResetRequestSchema,
+  signInSchema,
+  signUpSchema,
+  updatePasswordSchema
+} from "@/lib/validators/auth";
 
 type AuthActionState = {
   error?: string;
   success?: string;
 };
+
+async function getRequestOrigin() {
+  const requestHeaders = await headers();
+  const origin = requestHeaders.get("origin");
+  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+  const protocol = requestHeaders.get("x-forwarded-proto") ?? "http";
+
+  return origin ?? (host ? `${protocol}://${host}` : null);
+}
 
 function mapAuthErrorMessage(message?: string, status?: number) {
   const normalized = (message ?? "").toLowerCase();
@@ -103,11 +117,7 @@ export async function signIn(
 }
 
 export async function signInWithGoogle() {
-  const requestHeaders = await headers();
-  const origin = requestHeaders.get("origin");
-  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
-  const protocol = requestHeaders.get("x-forwarded-proto") ?? "http";
-  const siteOrigin = origin ?? (host ? `${protocol}://${host}` : null);
+  const siteOrigin = await getRequestOrigin();
 
   if (!siteOrigin) {
     redirect("/auth/login?error=oauth_start");
@@ -130,6 +140,74 @@ export async function signInWithGoogle() {
   }
 
   redirect(data.url);
+}
+
+export async function requestPasswordReset(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const parsed = passwordResetRequestSchema.safeParse({
+    email: formData.get("email")
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Проверьте email" };
+  }
+
+  const siteOrigin = await getRequestOrigin();
+
+  if (!siteOrigin) {
+    return { error: "Не удалось определить адрес сайта" };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${siteOrigin}/auth/callback?next=/auth/update-password`
+  });
+
+  if (error) {
+    console.error("requestPasswordReset error", {
+      status: error.status,
+      message: error.message
+    });
+
+    if (error.status === 429) {
+      return { error: "Слишком много запросов. Попробуйте немного позже." };
+    }
+  }
+
+  return {
+    success: "Если аккаунт с таким email существует, ссылка для смены пароля отправлена."
+  };
+}
+
+export async function updatePassword(
+  _prevState: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const parsed = updatePasswordSchema.safeParse({
+    password: formData.get("password"),
+    passwordConfirm: formData.get("passwordConfirm")
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Проверьте новый пароль" };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.updateUser({
+    password: parsed.data.password
+  });
+
+  if (error) {
+    console.error("updatePassword error", {
+      status: error.status,
+      message: error.message
+    });
+    return { error: "Ссылка устарела или сессия восстановления недействительна." };
+  }
+
+  redirect("/dashboard");
 }
 
 export async function signUp(

@@ -29,6 +29,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         alternateLabel="Создать аккаунт"
         alternateText="Еще нет аккаунта?"
         initialError={initialError}
+        recoveryHref="/auth/forgot-password"
       />
     </main>
   );

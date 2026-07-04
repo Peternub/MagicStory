@@ -19,3 +19,17 @@ export const signUpSchema = signInSchema.extend({
   firstName: nameSchema,
   lastName: nameSchema
 });
+
+export const passwordResetRequestSchema = z.object({
+  email: emailSchema
+});
+
+export const updatePasswordSchema = z
+  .object({
+    password: passwordSchema,
+    passwordConfirm: passwordSchema
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    path: ["passwordConfirm"],
+    message: "Пароли не совпадают"
+  });
