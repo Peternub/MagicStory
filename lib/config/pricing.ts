@@ -2,6 +2,26 @@ export type MagicPlanTone = "starter" | "family" | "premium";
 export type MagicPlanFormat = "stories" | "audio";
 export type MagicPlanModel = "plus" | "premium";
 
+export type LibraryPlan = {
+  code: string;
+  name: string;
+  priceMonthly: number;
+  subtitle: string;
+  features: string[];
+};
+
+export const libraryPlan: LibraryPlan = {
+  code: "library-monthly",
+  name: "Библиотека",
+  priceMonthly: 59,
+  subtitle: "Каждый месяц",
+  features: [
+    "Каталог готовых сказок",
+    "Новые истории каждую неделю",
+    "Без списания лимита генераций"
+  ]
+};
+
 export type MagicPlan = {
   code: string;
   name: string;
