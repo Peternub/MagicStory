@@ -32,7 +32,11 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getSession();
+  try {
+    await supabase.auth.getUser();
+  } catch (error) {
+    console.error("updateSession error", error);
+  }
 
   return response;
 }

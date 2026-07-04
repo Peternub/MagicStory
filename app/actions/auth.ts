@@ -34,7 +34,7 @@ function mapAuthErrorMessage(message?: string, status?: number) {
   }
 
   if (normalized.includes("invalid login credentials")) {
-    return "Неверный email или пароль.";
+    return "Неверный email или пароль. Если аккаунт создан через Google, войдите кнопкой «Продолжить через Google».";
   }
 
   if (normalized.includes("email not confirmed")) {

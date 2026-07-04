@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { getPublicSupabaseEnv } from "@/lib/supabase/config";
 
 type CookieToSet = {
@@ -33,12 +34,26 @@ export async function GET(request: NextRequest) {
     }
   );
 
-  if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (!code) {
+    return NextResponse.redirect(new URL("/auth/login?error=oauth", request.url));
+  }
 
-    if (error) {
-      response = NextResponse.redirect(new URL("/auth/login", request.url));
-    }
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error || !data.user) {
+    console.error("Google callback error", {
+      status: error?.status,
+      message: error?.message
+    });
+    return NextResponse.redirect(new URL("/auth/login?error=oauth", request.url));
+  }
+
+  try {
+    await ensureUserProfile(data.user.id, data.user.email);
+  } catch {
+    console.error("Google callback profile creation failed", {
+      userId: data.user.id
+    });
   }
 
   return response;

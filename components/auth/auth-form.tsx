@@ -21,9 +21,8 @@ type AuthFormProps = {
   alternateLabel: string;
   alternateText: string;
   showNameFields?: boolean;
+  initialError?: string;
 };
-
-const initialState: AuthActionState = {};
 
 const inputClassName =
   "w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-5 py-4 text-lg text-[var(--text-main)] placeholder:text-[var(--text-muted)] caret-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)] focus:ring-4 focus:ring-[var(--accent-gold-soft)]";
@@ -36,9 +35,12 @@ export function AuthForm({
   alternateHref,
   alternateLabel,
   alternateText,
-  showNameFields = false
+  showNameFields = false,
+  initialError
 }: AuthFormProps) {
-  const [state, formAction, isPending] = useActionState(action, initialState);
+  const [state, formAction, isPending] = useActionState(action, {
+    error: initialError
+  });
 
   return (
     <div
