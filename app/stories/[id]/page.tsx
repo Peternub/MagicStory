@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { refreshStoryAudio, startStoryAudio } from "@/app/actions/stories";
-import { AudioGenerationProgress } from "@/components/stories/audio-generation-progress";
 import { DeleteStoryButton } from "@/components/stories/delete-story-button";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -35,7 +33,7 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
   const supabase = await createSupabaseServerClient();
   const { data: story } = await supabase
     .from("stories")
-    .select("id, title, theme, text_content, status, error_message, created_at, audio_path, provider_tts, tts_task_id, tts_status, tts_error_message, series_id, episode_number")
+    .select("id, title, theme, text_content, status, error_message, created_at")
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
@@ -44,17 +42,13 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
     notFound();
   }
 
-  const { data: audioUrl } = story.audio_path
-    ? await supabase.storage.from("story-audio").createSignedUrl(story.audio_path, 60 * 60)
-    : { data: null };
-
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-6 py-10 sm:px-10">
       <Link
-        href={story.series_id ? `/series/${story.series_id}` : "/stories"}
+        href="/stories"
         className="text-sm font-medium text-[var(--logo-text)] transition hover:text-[var(--text-main)]"
       >
-        {story.series_id ? "Назад к сериалу" : "Назад к библиотеке"}
+        Назад к библиотеке
       </Link>
 
       <section
@@ -64,7 +58,7 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">
-              {story.series_id ? `Эпизод ${story.episode_number}` : "Персональная сказка"}
+              Персональная сказка
             </p>
             <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">
               {story.title ?? "Новая сказка"}
@@ -102,59 +96,6 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
         {story.status === "completed" ? (
           <div className="mt-6 rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-200">
             Сказка полностью готова и сохранена в вашей библиотеке.
-          </div>
-        ) : null}
-
-        {story.status === "completed" ? (
-          <div className="mt-6 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-medium text-[var(--logo-text)]">Озвучка сказки</p>
-                <p className="mt-1 text-sm text-[var(--text-soft)]">
-                  {story.provider_tts ?? "SaluteSpeech"}
-                </p>
-              </div>
-
-              {story.tts_status === "not_started" || !story.tts_status ? (
-                <form action={startStoryAudio}>
-                  <input type="hidden" name="storyId" value={story.id} />
-                  <button
-                    type="submit"
-                    className="inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
-                  >
-                    Озвучить
-                  </button>
-                </form>
-              ) : null}
-
-              {story.tts_status === "audio_generating" ? (
-                <AudioGenerationProgress storyId={story.id} />
-              ) : null}
-
-              {story.tts_status === "failed" ? (
-                <form action={story.tts_task_id ? refreshStoryAudio : startStoryAudio}>
-                  <input type="hidden" name="storyId" value={story.id} />
-                  <button
-                    type="submit"
-                    className="inline-flex rounded-lg border border-[var(--border-strong)] px-5 py-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-card-alt)]"
-                  >
-                    {story.tts_task_id ? "Получить озвучку" : "Запустить заново"}
-                  </button>
-                </form>
-              ) : null}
-            </div>
-
-            {story.tts_error_message ? (
-              <p className="mt-4 rounded-lg border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-                {story.tts_error_message}
-              </p>
-            ) : null}
-
-            {story.tts_status === "completed" && audioUrl?.signedUrl ? (
-              <audio controls className="mt-5 w-full" src={audioUrl.signedUrl}>
-                Ваш браузер не поддерживает аудиоплеер.
-              </audio>
-            ) : null}
           </div>
         ) : null}
 

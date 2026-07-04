@@ -209,17 +209,22 @@ export async function createStory(
   const storySummary = seriesId
     ? `Эпизод ${episodeNumber}: ${storyRequest.situation}`
     : buildStorySummary(storyRequest);
+  const storyInsert = {
+    user_id: user.id,
+    child_id: child.id,
+    theme: storySummary,
+    status: "text_generating",
+    ...(seriesId
+      ? {
+          series_id: seriesId,
+          episode_number: episodeNumber
+        }
+      : {})
+  };
 
   const { data: storyRecord, error: insertError } = await supabase
     .from("stories")
-    .insert({
-      user_id: user.id,
-      child_id: child.id,
-      theme: storySummary,
-      series_id: seriesId,
-      episode_number: episodeNumber,
-      status: "text_generating"
-    })
+    .insert(storyInsert)
     .select("id")
     .single();
 

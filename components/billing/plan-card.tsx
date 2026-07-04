@@ -4,10 +4,8 @@ import { useState } from "react";
 import {
   getPlanIncludedLabel,
   getPlanPrice,
-  planFormats,
   planModels,
   type MagicPlan,
-  type MagicPlanFormat,
   type MagicPlanModel
 } from "@/lib/config/pricing";
 
@@ -51,10 +49,10 @@ function optionClassName(isActive: boolean, isPremium = false) {
 }
 
 export function PlanCard({ plan }: PlanCardProps) {
-  const [format, setFormat] = useState<MagicPlanFormat>("stories");
   const [model, setModel] = useState<MagicPlanModel>("plus");
+  const format = "stories" as const;
   const styles = toneStyles[plan.tone];
-  const isRich = plan.tone === "premium" || model === "premium" || format === "audio";
+  const isRich = plan.tone === "premium" || model === "premium";
   const price = getPlanPrice(plan, format, model);
   const includedLabel = getPlanIncludedLabel(plan, format, model);
 
@@ -84,22 +82,6 @@ export function PlanCard({ plan }: PlanCardProps) {
       </div>
 
       <div className="mt-7 grid gap-3">
-        <div className="grid grid-cols-2 gap-2">
-          {planFormats.map((item) => (
-            <button
-              key={item.code}
-              type="button"
-              onClick={() => setFormat(item.code)}
-              className={`min-h-11 rounded-md border px-3 py-2 text-xs font-medium transition ${optionClassName(
-                format === item.code,
-                item.code === "audio"
-              )}`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-
         <div className="grid grid-cols-2 gap-2">
           {planModels.map((item) => (
             <button
