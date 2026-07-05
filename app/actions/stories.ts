@@ -126,7 +126,7 @@ export async function createStory(
 
   let { data: child, error: childError } = await supabase
     .from("children")
-    .select("id, name, age, gender")
+    .select("id, name, age, gender, interests, fears, additional_context")
     .eq("id", parsed.data.childId)
     .eq("user_id", user.id)
     .single();

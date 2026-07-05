@@ -79,8 +79,8 @@ export default async function EditChildPage({ params }: EditChildPageProps) {
           Изменить профиль ребёнка
         </h1>
         <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
-          Обновите имя, возраст или пол. Новые данные будут использоваться при
-          создании следующих историй.
+          Обновите данные, друзей и интересы ребёнка. Изменения будут использоваться
+          при создании следующих историй.
         </p>
 
         {hasMissingGenderColumn ? (

@@ -8,11 +8,11 @@ type ChildActionState = {
 };
 
 type ChildFormProps = {
-  action: (
-    state: ChildActionState,
-    formData: FormData
-  ) => Promise<ChildActionState>;
-  child?: Pick<ChildRecord, "id" | "name" | "age"> & {
+  action: (state: ChildActionState, formData: FormData) => Promise<ChildActionState>;
+  child?: Pick<
+    ChildRecord,
+    "id" | "name" | "age" | "interests" | "fears" | "additional_context"
+  > & {
     gender?: ChildRecord["gender"];
   };
   submitLabel?: string;
@@ -39,7 +39,7 @@ export function ChildForm({
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
-          Имя ребенка
+          Имя ребёнка
         </span>
         <input
           name="name"
@@ -53,9 +53,7 @@ export function ChildForm({
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
-            Возраст
-          </span>
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Возраст</span>
           <input
             name="age"
             type="number"
@@ -69,9 +67,7 @@ export function ChildForm({
         </label>
 
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
-            Пол
-          </span>
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Пол</span>
           <select
             name="gender"
             required
@@ -79,15 +75,56 @@ export function ChildForm({
             className={fieldClassName}
           >
             {child && !child.gender ? (
-              <option value="" disabled>
-                Не указан
-              </option>
+              <option value="" disabled>Не указан</option>
             ) : null}
             <option value="boy">Мальчик</option>
             <option value="girl">Девочка</option>
           </select>
         </label>
       </div>
+
+      <label className="block">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+          Друзья, близкие и важные персонажи
+        </span>
+        <textarea
+          name="additionalContext"
+          rows={3}
+          maxLength={800}
+          placeholder="Например: Миша — лучший друг, Аня — старшая сестра, Барсик — любимый кот"
+          defaultValue={child?.additional_context ?? ""}
+          className={fieldClassName}
+        />
+      </label>
+
+      <label className="block">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+          Что ребёнок любит
+        </span>
+        <textarea
+          name="interests"
+          rows={3}
+          maxLength={500}
+          placeholder="Динозавры, космос, рисование, футбол, конструктор"
+          defaultValue={child?.interests ?? ""}
+          className={fieldClassName}
+        />
+      </label>
+
+      <label className="block">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+          Страхи или сложные ситуации
+          <span className="ml-2 font-normal text-[var(--text-muted)]">необязательно</span>
+        </span>
+        <textarea
+          name="fears"
+          rows={3}
+          maxLength={500}
+          placeholder="Темнота, новый садик, знакомство с другими детьми"
+          defaultValue={child?.fears ?? ""}
+          className={fieldClassName}
+        />
+      </label>
 
       {state.error ? (
         <p className="rounded-lg border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">

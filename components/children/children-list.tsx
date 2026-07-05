@@ -56,6 +56,18 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
               <p className="mt-1 text-sm text-[var(--text-soft)]">
                 Пол: {formatGenderLabel(child.gender)}
               </p>
+              {child.additional_context ? (
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-soft)]">
+                  <span className="font-medium text-[var(--text-main)]">Друзья и близкие:</span>{" "}
+                  {child.additional_context}
+                </p>
+              ) : null}
+              {child.interests ? (
+                <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--text-soft)]">
+                  <span className="font-medium text-[var(--text-main)]">Интересы:</span>{" "}
+                  {child.interests}
+                </p>
+              ) : null}
             </div>
 
             <div className="flex flex-wrap gap-2">

@@ -5,6 +5,9 @@ type ChildProfile = {
   name: string;
   age: number;
   gender: "boy" | "girl";
+  interests?: string | null;
+  fears?: string | null;
+  additional_context?: string | null;
 };
 
 type GenerateStoryParams = {
@@ -170,6 +173,9 @@ function buildPrompt(child: ChildProfile, request: StoryInput) {
     `Имя ребёнка: ${child.name}.`,
     `Возраст ребёнка: ${child.age}.`,
     `Пол ребёнка: ${getGenderLabel(child.gender)}.`,
+    `Интересы ребёнка: ${child.interests || "не указаны"}.`,
+    `Страхи или сложные ситуации: ${child.fears || "не указаны"}.`,
+    `Друзья, близкие и важные детали: ${child.additional_context || "не указаны"}.`,
     `Тема истории: ${request.situation}.`,
     `Место действия: ${request.setting}.`,
     `Дополнительные персонажи: ${request.additionalCharacters || "без дополнительных персонажей"}.`,

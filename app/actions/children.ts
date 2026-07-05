@@ -22,7 +22,10 @@ export async function createChild(
   const parsed = childSchema.safeParse({
     name: formData.get("name"),
     age: formData.get("age"),
-    gender: formData.get("gender")
+    gender: formData.get("gender"),
+    interests: formData.get("interests"),
+    fears: formData.get("fears"),
+    additional_context: formData.get("additionalContext")
   });
 
   if (!parsed.success) {
@@ -79,7 +82,10 @@ export async function updateChild(
   const parsed = childSchema.safeParse({
     name: formData.get("name"),
     age: formData.get("age"),
-    gender: formData.get("gender")
+    gender: formData.get("gender"),
+    interests: formData.get("interests"),
+    fears: formData.get("fears"),
+    additional_context: formData.get("additionalContext")
   });
 
   if (!parsed.success) {
