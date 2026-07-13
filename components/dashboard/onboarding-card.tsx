@@ -33,7 +33,7 @@ export function OnboardingCard({
           Что сделать дальше
         </h2>
         <p className="max-w-2xl text-sm leading-6 text-white/70">
-          Два шага до первой сказки.
+          Два шага до первого вечернего сериала.
         </p>
       </div>
 
@@ -52,7 +52,7 @@ export function OnboardingCard({
           </div>
 
           <p className="mt-4 text-base leading-7 text-white/72">
-            Заполните профиль ребенка для персональных сказок.
+            Заполните профиль ребенка для персональных серий.
           </p>
 
           <Link
@@ -70,21 +70,21 @@ export function OnboardingCard({
                 Шаг 2
               </p>
               <h3 className="mt-2 text-2xl font-semibold text-white">
-                Создать сказку
+                Создать сериал
               </h3>
             </div>
             <StatusPill done={hasStories} />
           </div>
 
           <p className="mt-4 text-base leading-7 text-white/72">
-            Выберите тему дня и получите готовую персональную историю.
+            Задайте героев один раз, а потом каждый вечер создавайте продолжение одной кнопкой.
           </p>
 
           <Link
-            href={hasStories ? "/stories" : "/stories/new"}
+            href={hasStories ? "/series" : "/series/new"}
             className="mt-6 inline-flex rounded-full bg-brand-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-800"
           >
-            {hasStories ? "Открыть библиотеку" : "Создать первую сказку"}
+            {hasStories ? "Открыть сериалы" : "Создать первый сериал"}
           </Link>
         </article>
       </div>

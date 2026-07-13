@@ -15,7 +15,7 @@ type StoriesListProps = {
 const statusLabels: Record<string, string> = {
   pending: "В очереди",
   text_generating: "Генерация текста",
-  completed: "Сказка готова",
+  completed: "Серия готова",
   failed: "Ошибка"
 };
 
@@ -34,15 +34,15 @@ export function StoriesList({ stories }: StoriesListProps) {
         className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-8 text-center"
         style={{ boxShadow: "var(--glow-shadow)" }}
       >
-        <p className="text-lg font-medium text-[var(--text-main)]">Сказок пока нет</p>
+        <p className="text-lg font-medium text-[var(--text-main)]">Серий пока нет</p>
         <p className="mt-3 text-sm text-[var(--text-soft)]">
-          Создайте первую сказку и она сразу появится в вашей библиотеке.
+          Создайте первый сериал, а затем первую серию. Она сразу появится в библиотеке.
         </p>
         <Link
-          href="/stories/new"
+          href="/series/new"
           className="mt-6 inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
         >
-          Создать сказку
+          Создать сериал
         </Link>
       </div>
     );
@@ -60,9 +60,9 @@ export function StoriesList({ stories }: StoriesListProps) {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-[var(--text-main)]">
-                {story.title ?? "Новая сказка"}
+                {story.title ?? "Новая серия"}
               </h2>
-              <p className="mt-2 text-sm text-[var(--text-soft)]">Тема: {story.theme}</p>
+              <p className="mt-2 text-sm text-[var(--text-soft)]">Контекст: {story.theme}</p>
             </div>
             <div className="text-sm text-[var(--text-soft)]">
               <p

@@ -10,7 +10,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "MagicStory",
-  description: "Персональные сказки для детей на основе реальных ситуаций дня.",
+  description: "Персональные вечерние сериалы для детей, которые продолжаются одной кнопкой.",
   icons: {
     icon: "/favicon.svg"
   }

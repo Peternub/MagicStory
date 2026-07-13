@@ -19,10 +19,10 @@ export default async function StoriesPage() {
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">
-            Библиотека сказок
+            Библиотека серий
           </p>
           <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">
-            Все созданные истории
+            Все созданные продолжения
           </h1>
         </div>
         <div className="flex flex-wrap gap-3">
@@ -30,13 +30,13 @@ export default async function StoriesPage() {
             href="/series"
             className="inline-flex rounded-lg border border-[var(--border-strong)] px-5 py-3 text-sm font-medium text-[var(--text-main)]"
           >
-            Сериалы
+            Мои сериалы
           </Link>
           <Link
-            href="/stories/new"
+            href="/series/new"
             className="inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
           >
-            Создать сказку
+            Создать сериал
           </Link>
         </div>
       </header>

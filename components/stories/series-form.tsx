@@ -32,17 +32,61 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Название сериала</span>
-        <input name="title" required maxLength={120} placeholder="Приключения Миши и звездолета" className={fieldClassName} />
+        <input name="title" required maxLength={120} placeholder="Сонный город Маши" className={fieldClassName} />
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">О чем будет сериал</span>
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Главная идея</span>
         <textarea
           name="premise"
           required
-          rows={4}
+          rows={3}
           maxLength={600}
-          placeholder="Кто главные герои, где они живут и что любят делать"
+          placeholder="Например: каждый вечер ребенок и его друзья находят маленькое доброе дело в знакомом дворе"
+          className={fieldClassName}
+        />
+      </label>
+
+      <label className="block">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Места и атмосфера</span>
+        <textarea
+          name="setting"
+          rows={2}
+          maxLength={220}
+          placeholder="Дом, садик, двор, комната, любимая площадка, спокойный тон перед сном"
+          className={fieldClassName}
+        />
+      </label>
+
+      <label className="block">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Постоянные герои</span>
+        <textarea
+          name="mainCharacters"
+          rows={2}
+          maxLength={400}
+          placeholder="Друзья, брат или сестра, любимая игрушка, питомец, бабушка, папа, мама"
+          className={fieldClassName}
+        />
+      </label>
+
+      <label className="block">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Что сериал должен помогать делать вечером</span>
+        <textarea
+          name="eveningGoal"
+          rows={2}
+          maxLength={320}
+          placeholder="Ложиться спокойнее, меньше спорить, не бояться темноты, привыкать к садику"
+          className={fieldClassName}
+        />
+      </label>
+
+      <label className="block">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Что учитывать</span>
+        <textarea
+          name="parentRules"
+          rows={2}
+          maxLength={400}
+          placeholder="Что ребенку нравится, чего лучше избегать, какие слова или темы не использовать"
           className={fieldClassName}
         />
       </label>
@@ -58,7 +102,7 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
         disabled={isPending}
         className="w-full rounded-lg bg-[var(--button-dark)] px-4 py-4 font-semibold text-[var(--button-dark-text)] disabled:opacity-70"
       >
-        {isPending ? "Создаем сериал..." : "Создать сериал"}
+        {isPending ? "Создаем сериал..." : "Создать сериал и перейти к первой серии"}
       </button>
     </form>
   );

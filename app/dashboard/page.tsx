@@ -23,8 +23,8 @@ export default async function DashboardPage() {
           Здравствуйте, <span className="text-[var(--logo-text)]">{displayName}</span>
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--text-soft)]">
-          Здесь под рукой все главное: остаток сказок, быстрый переход к созданию
-          новой истории и ваша библиотека.
+          Здесь под рукой все главное: остаток серий, ваши вечерние сериалы и
+          библиотека готовых продолжений.
         </p>
 
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
@@ -33,13 +33,13 @@ export default async function DashboardPage() {
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm uppercase tracking-[0.2em] text-[var(--logo-text)]">
-              Осталось сказок
+              Осталось серий
             </p>
             <p className="mt-3 text-4xl font-semibold text-[var(--text-main)]">
               {summary.storiesBalance}
             </p>
             <p className="mt-2 text-sm text-[var(--text-soft)]">
-              Можно создать прямо сейчас без дополнительных шагов.
+              Можно создать прямо сейчас одной кнопкой внутри сериала.
             </p>
           </article>
 
@@ -48,20 +48,20 @@ export default async function DashboardPage() {
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm uppercase tracking-[0.2em] text-[var(--logo-text)]">
-              Создать сказку
+              Вечерний сериал
             </p>
             <h2 className="mt-3 text-2xl font-semibold text-[var(--text-main)]">
-              Новый вечерний сюжет
+              Новый сериал для ребенка
             </h2>
             <p className="mt-3 text-base leading-7 text-[var(--text-soft)]">
-              Заполните данные о ребенке, выберите настроение и сразу перейдите к
-              новой сказке.
+              Задайте героев один раз, а потом каждый вечер создавайте новую
+              серию без настроек.
             </p>
             <Link
-              href="/stories/new"
+              href="/series/new"
               className="mt-6 inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-semibold text-[var(--button-dark-text)] transition hover:opacity-90"
             >
-              Создать сказку
+              Создать сериал
             </Link>
           </article>
 
@@ -73,11 +73,11 @@ export default async function DashboardPage() {
               Библиотека
             </p>
             <h2 className="mt-3 text-2xl font-semibold text-[var(--text-main)]">
-              Все ваши сказки
+              Все ваши серии
             </h2>
             <p className="mt-3 text-base leading-7 text-[var(--text-soft)]">
-              Уже сохранено сказок: {summary.storiesCount}. Откройте библиотеку,
-              чтобы читать и пересматривать готовые истории.
+              Уже сохранено серий: {summary.storiesCount}. Откройте библиотеку,
+              чтобы читать и пересматривать готовые продолжения.
             </p>
             <Link
               href="/stories"

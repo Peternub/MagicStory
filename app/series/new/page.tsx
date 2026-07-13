@@ -23,9 +23,9 @@ export default async function NewSeriesPage() {
         Назад к сериалам
       </Link>
       <section className="mt-6 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8">
-        <h1 className="text-3xl font-semibold text-[var(--text-main)]">Новый сериал</h1>
+        <h1 className="text-3xl font-semibold text-[var(--text-main)]">Новый вечерний сериал</h1>
         <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
-          Задайте героев и основную идею один раз. Каждый вечер можно добавлять новое событие.
+          Один раз задайте героев, мир и правила. Потом каждый вечер достаточно нажать одну кнопку.
         </p>
         <div className="mt-8">
           {childrenItems.length > 0 ? (

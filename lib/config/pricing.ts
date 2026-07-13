@@ -16,8 +16,8 @@ export const libraryPlan: LibraryPlan = {
   priceMonthly: 59,
   subtitle: "Каждый месяц",
   features: [
-    "Каталог готовых сказок",
-    "Новые истории каждую неделю",
+    "Каталог готовых вечерних серий",
+    "Новые истории и сериалы каждую неделю",
     "Без списания лимита генераций"
   ]
 };
@@ -39,11 +39,11 @@ export const planFormats: Array<{
 }> = [
   {
     code: "stories",
-    label: "Сказки"
+    label: "Серии"
   },
   {
     code: "audio",
-    label: "Сказки с озвучкой"
+    label: "Серии с озвучкой"
   }
 ];
 
@@ -67,7 +67,7 @@ export const planModels: Array<{
 export const magicPlans: MagicPlan[] = [
   {
     code: "stories-10",
-    name: "10 сказок",
+    name: "10 серий",
     stories: 10,
     storiesPrice: 149,
     audioPrice: 249,
@@ -76,7 +76,7 @@ export const magicPlans: MagicPlan[] = [
   },
   {
     code: "stories-20",
-    name: "20 сказок",
+    name: "20 серий",
     stories: 20,
     storiesPrice: 249,
     audioPrice: 449,
@@ -86,7 +86,7 @@ export const magicPlans: MagicPlan[] = [
   },
   {
     code: "stories-30",
-    name: "30 сказок",
+    name: "30 серий",
     stories: 30,
     storiesPrice: 299,
     audioPrice: 549,
@@ -114,5 +114,5 @@ export function getPlanIncludedLabel(
   const modelLabel = model === "premium" ? "премиум" : "обычных";
   const ending = format === "audio" ? " с озвучкой" : "";
 
-  return `${plan.stories} ${modelLabel} сказок${ending}`;
+  return `${plan.stories} ${modelLabel} серий${ending}`;
 }

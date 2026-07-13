@@ -75,7 +75,7 @@ async function saveReadyStoryAudio(input: {
       .from("stories")
       .update({
         tts_status: "failed",
-        tts_error_message: status.errorMessage ?? "SaluteSpeech не смог озвучить сказку."
+        tts_error_message: status.errorMessage ?? "SaluteSpeech не смог озвучить серию."
       })
       .eq("id", input.storyId)
       .eq("user_id", input.userId);
@@ -139,7 +139,7 @@ export async function createStory(
 
   if ((profile?.stories_balance ?? 0) <= 0) {
     return {
-      error: "Лимит сказок закончился. Пополните пакет, чтобы создать новую сказку."
+      error: "Лимит серий закончился. Пополните пакет, чтобы создать новую серию."
     };
   }
 
@@ -190,24 +190,33 @@ export async function createStory(
     const addition = typeof rawAddition === "string" ? rawAddition.trim() : "";
     const continuity = previousEpisode?.text_content
       ? [
-          `Это эпизод ${episodeNumber} сериала «${series.title}».`,
-          "Продолжи сюжет напрямую, сохрани характеры героев и не пересказывай предыдущую серию.",
-          `Предыдущий эпизод «${previousEpisode.title ?? "Без названия"}»:`,
+          `Это серия ${episodeNumber} сериала «${series.title}».`,
+          "Продолжи сюжет напрямую, сохрани характеры героев, тон сериала и не пересказывай предыдущую серию.",
+          addition
+            ? `Сегодня родитель добавил событие для серии: ${addition}.`
+            : "Родитель ничего не добавил сегодня. Сам придумай спокойное естественное продолжение из паспорта сериала и прошлой серии.",
+          `Предыдущая серия «${previousEpisode.title ?? "Без названия"}»:`,
           previousEpisode.text_content.slice(-7000)
         ].join("\n\n")
-      : `Это первый эпизод сериала «${series.title}». Представь постоянных героев и оставь возможность для продолжения.`;
+      : [
+          `Это первая серия сериала «${series.title}».`,
+          "Представь постоянных героев через действие, задай уютный вечерний тон и оставь спокойную возможность для продолжения.",
+          addition
+            ? `Начальное событие от родителя: ${addition}.`
+            : "Родитель не добавил отдельное событие. Начни с основной идеи сериала."
+        ].join("\n\n");
 
     storyRequest = {
       ...parsed.data,
-      situation: addition || series.premise,
+      situation: addition || "автоматическое продолжение сериала на сегодняшний вечер",
       setting: `мир сериала «${series.title}»`,
-      goal: "завершить сегодняшний эпизод спокойно и оставить небольшой повод для следующей серии",
-      extraWishes: [series.premise, continuity].join("\n\n")
+      goal: "завершить сегодняшнюю серию спокойно и оставить небольшой повод для следующей серии",
+      extraWishes: [`ПАСПОРТ СЕРИАЛА «${series.title}»:`, series.premise, continuity].join("\n\n")
     };
   }
 
   const storySummary = seriesId
-    ? `Эпизод ${episodeNumber}: ${storyRequest.situation}`
+    ? `Серия ${episodeNumber}: ${storyRequest.situation}`
     : buildStorySummary(storyRequest);
   const storyInsert = {
     user_id: user.id,
@@ -239,7 +248,7 @@ export async function createStory(
     });
 
     return {
-      error: "Не удалось создать запись сказки"
+      error: "Не удалось создать запись серии"
     };
   }
 
@@ -289,13 +298,13 @@ export async function createStory(
       .from("stories")
       .update({
         status: "failed",
-        error_message: "Не удалось сгенерировать текст сказки"
+        error_message: "Не удалось сгенерировать текст серии"
       })
       .eq("id", storyRecord.id)
       .eq("user_id", user.id);
 
     return {
-      error: "Не удалось создать сказку. Попробуйте еще раз."
+      error: "Не удалось создать серию. Попробуйте еще раз."
     };
   }
 
@@ -458,7 +467,7 @@ export async function refreshStoryAudio(formData: FormData) {
         .from("stories")
         .update({
           tts_status: "failed",
-          tts_error_message: status.errorMessage ?? "SaluteSpeech не смог озвучить сказку."
+          tts_error_message: status.errorMessage ?? "SaluteSpeech не смог озвучить серию."
         })
         .eq("id", storyId)
         .eq("user_id", user.id);

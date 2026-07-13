@@ -10,8 +10,9 @@ const productLinks = [
 const appLinks = [
   { href: "/dashboard", label: "Кабинет" },
   { href: "/children", label: "Профили детей" },
-  { href: "/stories/new", label: "Создать сказку" },
-  { href: "/stories", label: "Библиотека" },
+  { href: "/series/new", label: "Создать сериал" },
+  { href: "/series", label: "Сериалы" },
+  { href: "/stories", label: "Библиотека серий" },
   { href: "/billing", label: "Подписка" }
 ];
 
@@ -24,7 +25,7 @@ export function SiteFooter() {
             MagicStory
           </p>
           <p className="mt-4 max-w-sm text-sm leading-7 text-[var(--text-soft)]">
-            Персональные сказки, которые превращают обычный вечер в маленькое чудо.
+            Персональные вечерние сериалы, которые продолжаются одной кнопкой.
           </p>
         </div>
 

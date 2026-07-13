@@ -33,7 +33,7 @@ export default async function SeriesPage() {
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-[var(--text-main)]">{series.title}</h2>
             <p className="mt-3 line-clamp-2 text-sm leading-6 text-[var(--text-soft)]">{series.premise}</p>
-            <p className="mt-5 text-sm text-[var(--text-muted)]">Эпизодов: {series.stories?.[0]?.count ?? 0}</p>
+            <p className="mt-5 text-sm text-[var(--text-muted)]">Серий: {series.stories?.[0]?.count ?? 0}</p>
           </Link>
         ))}
         {seriesItems?.length === 0 ? (

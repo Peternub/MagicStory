@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 const statusLabels: Record<string, string> = {
   pending: "В очереди",
   text_generating: "Генерация текста",
-  completed: "Сказка готова",
+  completed: "Серия готова",
   failed: "Ошибка"
 };
 
@@ -58,10 +58,10 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">
-              Персональная сказка
+              Персональная серия
             </p>
             <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">
-              {story.title ?? "Новая сказка"}
+              {story.title ?? "Новая серия"}
             </h1>
             <div className="mt-4 flex flex-col gap-2 text-sm text-[var(--text-soft)] sm:flex-row sm:items-center sm:gap-4">
               <p
@@ -89,18 +89,18 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
 
         {story.status === "text_generating" ? (
           <div className="mt-6 rounded-lg border border-amber-400/20 bg-amber-500/10 px-5 py-4 text-sm text-amber-200">
-            Создаем текст сказки. Обновите страницу чуть позже.
+            Создаем текст серии. Обновите страницу чуть позже.
           </div>
         ) : null}
 
         {story.status === "completed" ? (
           <div className="mt-6 rounded-lg border border-emerald-400/20 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-200">
-            Сказка полностью готова и сохранена в вашей библиотеке.
+            Серия готова и сохранена в вашей библиотеке.
           </div>
         ) : null}
 
         <article className="mt-8 whitespace-pre-line text-base leading-8 text-[var(--text-main)]">
-          {story.text_content ?? "Текст сказки еще не готов."}
+          {story.text_content ?? "Текст серии еще не готов."}
         </article>
       </section>
     </main>

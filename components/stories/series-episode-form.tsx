@@ -30,13 +30,17 @@ export function SeriesEpisodeForm({
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
-          {hasEpisodes ? "Что добавить в следующую серию" : "С чего начнется первая серия"}
+          {hasEpisodes ? "Что добавить сегодня" : "С чего начнется первая серия"}
         </span>
         <textarea
           name="situation"
           rows={3}
           maxLength={500}
-          placeholder={hasEpisodes ? "Например: сегодня герои находят старую карту" : "Можно оставить пустым"}
+          placeholder={
+            hasEpisodes
+              ? "Можно оставить пустым - серия продолжится сама"
+              : "Можно оставить пустым - первая серия начнется по паспорту сериала"
+          }
           className="w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-4 py-3 text-base text-[var(--text-main)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--border-strong)]"
         />
       </label>
@@ -52,7 +56,7 @@ export function SeriesEpisodeForm({
         disabled={isPending}
         className="w-full rounded-lg bg-[var(--button-dark)] px-4 py-4 font-semibold text-[var(--button-dark-text)] disabled:opacity-70"
       >
-        {isPending ? "Создаем эпизод..." : hasEpisodes ? "Продолжить сериал" : "Создать первую серию"}
+        {isPending ? "Создаем серию..." : hasEpisodes ? "Создать новую серию" : "Создать первую серию"}
       </button>
     </form>
   );

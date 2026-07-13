@@ -29,7 +29,7 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
           Пока нет ни одного профиля ребенка
         </p>
         <p className="mt-3 text-sm text-[var(--text-soft)]">
-          Добавьте первый профиль, чтобы затем быстро выбирать ребенка при создании сказки.
+          Добавьте первый профиль, чтобы затем быстро запускать личный сериал ребенка.
         </p>
         <Link
           href="/children/new"

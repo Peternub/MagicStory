@@ -3,15 +3,15 @@ import { PricingTabs } from "@/components/site/pricing-tabs";
 
 const storyScenes = [
   "Вы пришли с работы, а ребенка уже надо укладывать спать.",
-  "Ребенок хочет спать, но слушать устаревшие сказки не хочет.",
+  "Ребенок хочет знакомую историю, где он сам главный герой.",
   "Но вы вспоминаете про MagicStory...",
-  "И можете создать персональную сказку про ребенка и его друзей!"
+  "И одной кнопкой создаете новую серию его личного вечернего сериала."
 ];
 
 const qualityCards = [
   {
     title: "Бесплатная модель",
-    subtitle: "Для 3 пробных сказок",
+    subtitle: "Для 3 пробных серий",
     value: 60,
     tone: "soft"
   },
@@ -37,7 +37,7 @@ const metrics = [
 
 const reviews = [
   "После работы реально стало проще уложить сына: новая история каждый вечер и никаких уговоров.",
-  "Дочке нравится, что в сказках появляются ее друзья, любимые места и знакомые мелочи дня.",
+  "Дочке нравится, что в сериях появляются ее друзья, любимые места и знакомые мелочи дня.",
   "Текст получается живым, а не шаблонным, поэтому сервис быстро стал частью нашего вечернего ритуала."
 ];
 
@@ -62,7 +62,7 @@ export default function HomePage() {
             MagicStory
           </p>
           <p className="hero-copy__subtitle mt-6 max-w-2xl text-lg leading-8 text-[var(--logo-text)] sm:text-xl">
-            Сказки, которые превращают обычный вечер в маленькое чудо.
+            Вечерние сериалы, которые продолжаются одной кнопкой.
           </p>
         </div>
       </section>
@@ -81,7 +81,7 @@ export default function HomePage() {
       <section id="pricing" className="px-6 pb-24 pt-8 text-[var(--text-main)] sm:pt-12">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-display text-3xl sm:text-5xl">
-            Качество генерации сказки
+            Качество генерации серии
           </h2>
 
           <div className="mt-14 grid gap-6 lg:grid-cols-3">
@@ -133,7 +133,7 @@ export default function HomePage() {
               Тарифы
             </p>
             <h2 className="mt-4 font-display text-3xl sm:text-5xl">
-              Выберите удобный запас сказок
+              Выберите удобный запас серий
             </h2>
           </div>
 

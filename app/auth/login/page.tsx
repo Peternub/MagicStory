@@ -24,7 +24,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <AuthForm
         action={signIn}
         title="Вход в кабинет"
-        description="Войдите, чтобы создавать персональные сказки и хранить историю."
+        description="Войдите, чтобы создавать персональные сериалы и хранить серии."
         submitLabel="Войти"
         alternateHref="/auth/sign-up"
         alternateLabel="Создать аккаунт"

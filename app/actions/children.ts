@@ -62,7 +62,7 @@ export async function createChild(
   }
 
   revalidatePath("/children");
-  revalidatePath("/stories/new");
+  revalidatePath("/series/new");
   redirect("/children");
 }
 
@@ -123,7 +123,7 @@ export async function updateChild(
   }
 
   revalidatePath("/children");
-  revalidatePath("/stories/new");
+  revalidatePath("/series/new");
   redirect("/children");
 }
 
@@ -144,5 +144,5 @@ export async function deleteChild(formData: FormData) {
     .eq("user_id", user.id);
 
   revalidatePath("/children");
-  revalidatePath("/stories/new");
+  revalidatePath("/series/new");
 }

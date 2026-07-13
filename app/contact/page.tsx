@@ -23,7 +23,7 @@ export default function ContactPage() {
             <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5">
               <p className="text-sm font-medium text-[var(--text-main)]">Для родителей</p>
               <p className="mt-2 text-sm text-[var(--text-soft)]">
-                Вопросы по регистрации, кабинету родителя, сказкам и подписке.
+                Вопросы по регистрации, кабинету родителя, сериалам и подписке.
               </p>
             </div>
             <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5">

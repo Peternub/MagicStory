@@ -148,10 +148,10 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
       </Link>
 
       <Link
-        href="/stories/new"
+        href="/series/new"
         className="shrink-0 whitespace-nowrap rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
       >
-        Создать сказку
+        Создать сериал
       </Link>
 
       <ProfileMenu

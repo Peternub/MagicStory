@@ -9,7 +9,7 @@ export default function SignUpPage() {
       <AuthForm
         action={signUp}
         title="Регистрация"
-        description="Создайте аккаунт, чтобы получить доступ к персональным сказкам."
+        description="Создайте аккаунт, чтобы получить доступ к персональным сериалам."
         submitLabel="Зарегистрироваться"
         alternateHref="/auth/login"
         alternateLabel="Войти"

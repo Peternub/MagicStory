@@ -26,7 +26,7 @@ export default async function NewChildPage() {
         </h1>
         <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
           Заполните основные данные и добавьте друзей, близких и интересы. Они будут
-          автоматически появляться в новых сказках.
+          автоматически появляться в новых сериях.
         </p>
 
         <div className="mt-8">
