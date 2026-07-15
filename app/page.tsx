@@ -11,7 +11,7 @@ const storyScenes = [
 const qualityCards = [
   {
     title: "Бесплатная модель",
-    subtitle: "Для 3 пробных серий",
+    subtitle: "Без ограничений в пробном периоде",
     value: 60,
     tone: "soft"
   },

@@ -27,7 +27,6 @@ export async function GET() {
         displayName: getUserDisplayName(user),
         email: user.email ?? "",
         initials: getUserInitials(user),
-        storiesBalance: summary.storiesBalance,
         subscriptionStatus: summary.subscriptionStatus
       }
     },

@@ -8,7 +8,6 @@ type ProfileMenuProps = {
   displayName: string;
   email: string;
   initials: string;
-  storiesBalance: number;
   subscriptionStatus: string;
 };
 
@@ -27,7 +26,6 @@ export function ProfileMenu({
   displayName,
   email,
   initials,
-  storiesBalance,
   subscriptionStatus
 }: ProfileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -90,12 +88,12 @@ export function ProfileMenu({
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] p-4">
               <p className="text-xs uppercase tracking-[0.18em] text-[var(--logo-text)]">
-                Лимиты
+                Серии
               </p>
               <p className="mt-2 text-lg font-semibold text-[var(--text-main)]">
-                {storiesBalance}
+                Без ограничений
               </p>
-              <p className="mt-1 text-xs text-[var(--text-soft)]">сказок осталось</p>
+              <p className="mt-1 text-xs text-[var(--text-soft)]">в пробном периоде</p>
             </div>
 
             <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] p-4">

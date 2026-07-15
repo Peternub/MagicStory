@@ -70,20 +70,9 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Что сериал должен помогать делать вечером</span>
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Дополнительные пожелания (не обязательно)</span>
         <textarea
-          name="eveningGoal"
-          rows={2}
-          maxLength={320}
-          placeholder="Ложиться спокойнее, меньше спорить, не бояться темноты, привыкать к садику"
-          className={fieldClassName}
-        />
-      </label>
-
-      <label className="block">
-        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Что учитывать</span>
-        <textarea
-          name="parentRules"
+          name="additionalWishes"
           rows={2}
           maxLength={400}
           placeholder="Что ребенку нравится, чего лучше избегать, какие слова или темы не использовать"

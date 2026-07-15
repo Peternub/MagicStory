@@ -23,7 +23,7 @@ export default async function DashboardPage() {
           Здравствуйте, <span className="text-[var(--logo-text)]">{displayName}</span>
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--text-soft)]">
-          Здесь под рукой все главное: остаток серий, ваши вечерние сериалы и
+          Здесь под рукой все главное: ваши вечерние сериалы и
           библиотека готовых продолжений.
         </p>
 
@@ -33,10 +33,10 @@ export default async function DashboardPage() {
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm uppercase tracking-[0.2em] text-[var(--logo-text)]">
-              Осталось серий
+              Пробный период
             </p>
             <p className="mt-3 text-4xl font-semibold text-[var(--text-main)]">
-              {summary.storiesBalance}
+              Без ограничений
             </p>
             <p className="mt-2 text-sm text-[var(--text-soft)]">
               Можно создать прямо сейчас одной кнопкой внутри сериала.

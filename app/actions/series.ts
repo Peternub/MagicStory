@@ -16,8 +16,7 @@ const seriesSchema = z.object({
   premise: z.string().trim().min(5, "Коротко опишите героев и основную идею").max(600),
   setting: z.string().trim().max(220).optional(),
   mainCharacters: z.string().trim().max(400).optional(),
-  eveningGoal: z.string().trim().max(320).optional(),
-  parentRules: z.string().trim().max(400).optional()
+  additionalWishes: z.string().trim().max(400).optional()
 });
 
 function cleanOptional(value: FormDataEntryValue | null) {
@@ -29,8 +28,7 @@ function buildSeriesPremise(input: z.infer<typeof seriesSchema>) {
     `Основная идея: ${input.premise}`,
     input.setting ? `Мир и места: ${input.setting}` : null,
     input.mainCharacters ? `Постоянные герои: ${input.mainCharacters}` : null,
-    input.eveningGoal ? `Задача сериала для вечера: ${input.eveningGoal}` : null,
-    input.parentRules ? `Что учитывать и чего избегать: ${input.parentRules}` : null,
+    input.additionalWishes ? `Дополнительные пожелания: ${input.additionalWishes}` : null,
     "Формат: каждая новая серия создается одной кнопкой, продолжает общий сюжет, мягко закрывает вечер и оставляет спокойный повод вернуться завтра."
   ]
     .filter(Boolean)
@@ -50,8 +48,7 @@ export async function createSeries(
     premise: formData.get("premise"),
     setting: cleanOptional(formData.get("setting")),
     mainCharacters: cleanOptional(formData.get("mainCharacters")),
-    eveningGoal: cleanOptional(formData.get("eveningGoal")),
-    parentRules: cleanOptional(formData.get("parentRules"))
+    additionalWishes: cleanOptional(formData.get("additionalWishes"))
   });
 
   if (!parsed.success) {
@@ -82,8 +79,16 @@ export async function createSeries(
     .single();
 
   if (error || !series) {
-    console.error("createSeries error", error);
-    return { error: "Не удалось создать сериал. Проверьте, применена ли миграция базы." };
+    console.warn("Не удалось создать сериал", {
+      code: error?.code,
+      message: error?.message
+    });
+
+    if (error?.code === "42P01" || error?.code === "42703") {
+      return { error: "База сериалов ещё не подключена." };
+    }
+
+    return { error: "Не удалось создать сериал. Попробуйте ещё раз." };
   }
 
   redirect(`/series/${series.id}`);

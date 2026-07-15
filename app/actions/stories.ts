@@ -108,22 +108,6 @@ export async function createStory(
   }
 
   const supabase = createSupabaseAdminClient();
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("stories_balance")
-    .eq("id", user.id)
-    .single();
-
-  if (profileError) {
-    console.error("createStory profile error", {
-      userId: user.id,
-      message: profileError.message,
-      code: profileError.code,
-      details: profileError.details,
-      hint: profileError.hint
-    });
-  }
-
   let { data: child, error: childError } = await supabase
     .from("children")
     .select("id, name, age, gender, interests, fears, additional_context")
@@ -134,12 +118,6 @@ export async function createStory(
   if (isMissingColumnError(childError, "gender")) {
     return {
       error: "В базе не применена миграция пола ребенка. Примените 20260420_006_add_child_gender.sql."
-    };
-  }
-
-  if ((profile?.stories_balance ?? 0) <= 0) {
-    return {
-      error: "Лимит серий закончился. Пополните пакет, чтобы создать новую серию."
     };
   }
 
@@ -272,17 +250,6 @@ export async function createStory(
 
     if (storyUpdateError) {
       throw storyUpdateError;
-    }
-
-    const { error: balanceError } = await supabase
-      .from("profiles")
-      .update({
-        stories_balance: Math.max((profile?.stories_balance ?? 0) - 1, 0)
-      })
-      .eq("id", user.id);
-
-    if (balanceError) {
-      throw balanceError;
     }
 
     await supabase.from("usage_events").insert({

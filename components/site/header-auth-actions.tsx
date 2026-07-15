@@ -15,7 +15,6 @@ type AccountSummary =
         displayName: string;
         email: string;
         initials: string;
-        storiesBalance: number;
         subscriptionStatus: string;
       };
     };
@@ -133,7 +132,6 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
       displayName: "Профиль",
       email: "",
       initials: "MS",
-      storiesBalance: 0,
       subscriptionStatus: "free"
     };
 
@@ -158,7 +156,6 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
         displayName={profileSummary.displayName}
         email={profileSummary.email}
         initials={profileSummary.initials}
-        storiesBalance={profileSummary.storiesBalance}
         subscriptionStatus={profileSummary.subscriptionStatus}
       />
     </>
@@ -190,7 +187,6 @@ function createFallbackSummary(
       displayName,
       email: email ?? "",
       initials: createInitials(displayName, email),
-      storiesBalance: 0,
       subscriptionStatus: "free"
     }
   };
