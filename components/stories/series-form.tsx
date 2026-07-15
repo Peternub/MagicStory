@@ -42,7 +42,7 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
           required
           rows={3}
           maxLength={600}
-          placeholder="Например: каждый вечер ребенок и его друзья находят маленькое доброе дело в знакомом дворе"
+          placeholder="Например: каждый вечер ребёнок становится главным героем нового приключения в знакомом дворе"
           className={fieldClassName}
         />
       </label>
@@ -59,12 +59,12 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Постоянные герои</span>
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Постоянные герои и связь с ребёнком</span>
         <textarea
           name="mainCharacters"
           rows={2}
           maxLength={400}
-          placeholder="Друзья, брат или сестра, любимая игрушка, питомец, бабушка, папа, мама"
+          placeholder="Например: Миша — друг из садика, Аня — старшая сестра, Барсик — домашний кот"
           className={fieldClassName}
         />
       </label>
