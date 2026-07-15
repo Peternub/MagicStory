@@ -12,6 +12,7 @@ type SeriesActionState = {
 
 const seriesSchema = z.object({
   childId: z.string().uuid("Выберите ребенка"),
+  protagonistMode: z.enum(["child", "series_cast"]).default("child"),
   title: z.string().trim().min(2, "Напишите название сериала").max(120),
   premise: z.string().trim().min(5, "Коротко опишите героев и основную идею").max(600),
   setting: z.string().trim().max(220).optional(),
@@ -26,6 +27,7 @@ function cleanOptional(value: FormDataEntryValue | null) {
 function buildSeriesPremise(input: z.infer<typeof seriesSchema>) {
   return [
     `Основная идея: ${input.premise}`,
+    `Главный герой: ${input.protagonistMode === "child" ? "ребёнок из профиля" : "персонажи, указанные в паспорте сериала"}`,
     input.setting ? `Мир и места: ${input.setting}` : null,
     input.mainCharacters ? `Постоянные герои: ${input.mainCharacters}` : null,
     input.additionalWishes ? `Дополнительные пожелания: ${input.additionalWishes}` : null,
@@ -44,6 +46,7 @@ export async function createSeries(
 
   const parsed = seriesSchema.safeParse({
     childId: formData.get("childId"),
+    protagonistMode: formData.get("protagonistMode") || "child",
     title: formData.get("title"),
     premise: formData.get("premise"),
     setting: cleanOptional(formData.get("setting")),
