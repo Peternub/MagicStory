@@ -26,7 +26,7 @@ export function SeriesEpisodeForm({
       <input type="hidden" name="childId" value={childId} />
       <input type="hidden" name="seriesId" value={seriesId} />
       <input type="hidden" name="storyMode" value="adventure" />
-      <input type="hidden" name="durationMinutes" value="5" />
+      <input type="hidden" name="durationMinutes" value="4" />
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">

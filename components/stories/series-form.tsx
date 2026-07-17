@@ -30,24 +30,6 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
         </select>
       </label>
 
-      <fieldset>
-        <legend className="mb-2 block text-sm font-medium text-[var(--text-main)]">Кто главный герой</legend>
-        <div className="grid grid-cols-2 gap-2 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] p-1">
-          <label className="cursor-pointer">
-            <input className="peer sr-only" type="radio" name="protagonistMode" value="child" defaultChecked />
-            <span className="flex min-h-11 items-center justify-center rounded-md px-3 text-center text-sm text-[var(--text-soft)] transition peer-checked:bg-[var(--button-dark)] peer-checked:text-[var(--button-dark-text)]">
-              Ребёнок
-            </span>
-          </label>
-          <label className="cursor-pointer">
-            <input className="peer sr-only" type="radio" name="protagonistMode" value="series_cast" />
-            <span className="flex min-h-11 items-center justify-center rounded-md px-3 text-center text-sm text-[var(--text-soft)] transition peer-checked:bg-[var(--button-dark)] peer-checked:text-[var(--button-dark-text)]">
-              Другие герои
-            </span>
-          </label>
-        </div>
-      </fieldset>
-
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Название сериала</span>
         <input name="title" required maxLength={120} placeholder="Сонный город Маши" className={fieldClassName} />
@@ -60,7 +42,7 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
           required
           rows={3}
           maxLength={600}
-          placeholder="Например: каждый вечер ребёнок становится главным героем нового приключения в знакомом дворе"
+          placeholder="Например: каждый вечер ребенок и его друзья находят маленькое доброе дело в знакомом дворе"
           className={fieldClassName}
         />
       </label>
@@ -77,12 +59,12 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
       </label>
 
       <label className="block">
-        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Постоянные герои и связь с ребёнком</span>
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Постоянные герои</span>
         <textarea
           name="mainCharacters"
           rows={2}
           maxLength={400}
-          placeholder="Например: Миша — друг из садика, Аня — старшая сестра, Барсик — домашний кот"
+          placeholder="Друзья, брат или сестра, любимая игрушка, питомец, бабушка, папа, мама"
           className={fieldClassName}
         />
       </label>

@@ -21,31 +21,6 @@ type StoryActionState = {
 
 type SupabaseAdminClient = ReturnType<typeof createSupabaseAdminClient>;
 
-function normalizeSeriesText(value: string) {
-  return value.toLocaleLowerCase("ru-RU").replaceAll("ё", "е");
-}
-
-function isChildSeriesProtagonist(input: {
-  childName: string;
-  title: string;
-  premise: string;
-}) {
-  const premise = normalizeSeriesText(input.premise);
-
-  if (premise.includes("главный герой: персонажи, указанные в паспорте сериала")) {
-    return false;
-  }
-
-  if (premise.includes("главный герой: ребенок из профиля")) {
-    return true;
-  }
-
-  const seriesText = normalizeSeriesText(`${input.title}\n${input.premise}`);
-  const childName = normalizeSeriesText(input.childName);
-
-  return seriesText.includes(childName) || seriesText.includes("ребен");
-}
-
 function buildStorySummary(input: {
   situation?: string;
   goal: string;
@@ -165,7 +140,6 @@ export async function createStory(
   const seriesId = typeof rawSeriesId === "string" && rawSeriesId ? rawSeriesId : null;
   let episodeNumber: number | null = null;
   let storyRequest = parsed.data;
-  let childIsProtagonist = true;
 
   if (seriesId) {
     const [{ data: series }, { data: previousEpisode }] = await Promise.all([
@@ -189,22 +163,13 @@ export async function createStory(
       return { error: "Сериал не найден" };
     }
 
-    childIsProtagonist = isChildSeriesProtagonist({
-      childName: child.name,
-      title: series.title,
-      premise: series.premise
-    });
-
     episodeNumber = (previousEpisode?.episode_number ?? 0) + 1;
     const rawAddition = formData.get("situation");
     const addition = typeof rawAddition === "string" ? rawAddition.trim() : "";
     const continuity = previousEpisode?.text_content
       ? [
           `Это серия ${episodeNumber} сериала «${series.title}».`,
-          "Продолжи события напрямую и не пересказывай предыдущую серию.",
-          childIsProtagonist
-            ? "Предыдущий текст нужен только для последовательности событий. Факты о семье, дружбе и связях персонажей бери только из профиля ребенка и паспорта сериала. Не повторяй выдуманные прошлой серией связи, если родитель их не указывал."
-            : `Главные герои указаны только в паспорте сериала. ${child.name} и сведения из профиля ребенка не относятся к этому сериалу. Игнорируй все фрагменты прошлой серии с их упоминанием.`,
+          "Продолжи сюжет напрямую, сохрани характеры героев, тон сериала и не пересказывай предыдущую серию.",
           addition
             ? `Сегодня родитель добавил событие для серии: ${addition}.`
             : "Родитель ничего не добавил сегодня. Сам придумай спокойное естественное продолжение из паспорта сериала и прошлой серии.",
@@ -213,7 +178,7 @@ export async function createStory(
         ].join("\n\n")
       : [
           `Это первая серия сериала «${series.title}».`,
-          "Сделай ребенка главным действующим героем. Представь только указанных родителем постоянных героев через действие, задай уютный вечерний тон и оставь спокойную возможность для продолжения.",
+          "Представь постоянных героев через действие, задай уютный вечерний тон и оставь спокойную возможность для продолжения.",
           addition
             ? `Начальное событие от родителя: ${addition}.`
             : "Родитель не добавил отдельное событие. Начни с основной идеи сериала."
@@ -268,8 +233,7 @@ export async function createStory(
   try {
     const generated = await generateStory({
       child,
-      request: storyRequest,
-      childIsProtagonist
+      request: storyRequest
     });
 
     const { error: storyUpdateError } = await supabase
