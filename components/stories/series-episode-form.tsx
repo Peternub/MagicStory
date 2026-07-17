@@ -22,7 +22,7 @@ export function SeriesEpisodeForm({
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} autoComplete="off" className="space-y-4">
       <input type="hidden" name="childId" value={childId} />
       <input type="hidden" name="seriesId" value={seriesId} />
       <input type="hidden" name="storyMode" value="adventure" />
@@ -34,6 +34,7 @@ export function SeriesEpisodeForm({
         </span>
         <textarea
           name="situation"
+          autoComplete="off"
           rows={3}
           maxLength={500}
           placeholder={

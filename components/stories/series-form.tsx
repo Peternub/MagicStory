@@ -18,7 +18,7 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form action={formAction} autoComplete="off" className="space-y-5">
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Для кого сериал</span>
         <select name="childId" defaultValue={childrenItems[0]?.id} className={fieldClassName}>
@@ -32,13 +32,14 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Название сериала</span>
-        <input name="title" required maxLength={120} placeholder="Сонный город Маши" className={fieldClassName} />
+        <input name="title" autoComplete="off" required maxLength={120} placeholder="Сонный город Маши" className={fieldClassName} />
       </label>
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Главная идея</span>
         <textarea
           name="premise"
+          autoComplete="off"
           required
           rows={3}
           maxLength={600}
@@ -51,6 +52,7 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Места и атмосфера</span>
         <textarea
           name="setting"
+          autoComplete="off"
           rows={2}
           maxLength={220}
           placeholder="Дом, садик, двор, комната, любимая площадка, спокойный тон перед сном"
@@ -62,6 +64,7 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Постоянные герои</span>
         <textarea
           name="mainCharacters"
+          autoComplete="off"
           rows={2}
           maxLength={400}
           placeholder="Друзья, брат или сестра, любимая игрушка, питомец, бабушка, папа, мама"
@@ -73,6 +76,7 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Дополнительные пожелания (не обязательно)</span>
         <textarea
           name="additionalWishes"
+          autoComplete="off"
           rows={2}
           maxLength={400}
           placeholder="Что ребенку нравится, чего лучше избегать, какие слова или темы не использовать"
