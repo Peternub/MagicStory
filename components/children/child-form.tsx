@@ -83,19 +83,21 @@ export function ChildForm({
         </label>
       </div>
 
-      <label className="block">
-        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
-          Друзья, близкие и важные персонажи
-        </span>
-        <textarea
-          name="additionalContext"
-          rows={3}
-          maxLength={800}
-          placeholder="Например: Миша — лучший друг, Аня — старшая сестра, Барсик — любимый кот"
-          defaultValue={child?.additional_context ?? ""}
-          className={fieldClassName}
-        />
-      </label>
+      {child ? (
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
+            Друзья, близкие и важные персонажи
+          </span>
+          <textarea
+            name="additionalContext"
+            rows={3}
+            maxLength={800}
+            placeholder="Например: Миша — лучший друг, Аня — старшая сестра, Барсик — любимый кот"
+            defaultValue={child.additional_context ?? ""}
+            className={fieldClassName}
+          />
+        </label>
+      ) : null}
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">
