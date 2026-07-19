@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { HeaderAuthActions } from "@/components/site/header-auth-actions";
-import { ThemeToggle } from "@/components/site/theme-toggle";
 
 const navigation = [
   { href: "/", label: "Главная" },
@@ -33,7 +32,6 @@ export function SiteHeader() {
         </Link>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <ThemeToggle />
           <HeaderAuthActions />
         </div>
       </div>
