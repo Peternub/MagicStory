@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BookOpen, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ProfileMenu } from "@/components/site/profile-menu";
@@ -111,13 +112,13 @@ function PublicAuthLinks() {
     <>
       <Link
         href="/auth/login"
-        className="rounded-lg border border-[var(--border-soft)] px-4 py-2 text-sm text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)]"
+        className="hidden rounded-lg border border-[var(--border-soft)] px-4 py-2 text-sm text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] sm:inline-flex"
       >
         Войти
       </Link>
       <Link
         href="/auth/sign-up"
-        className="rounded-lg bg-[var(--button-dark)] px-4 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
+        className="rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
       >
         Начать
       </Link>
@@ -137,20 +138,30 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
 
   return (
     <>
-      <Link
-        href="/children"
-        className="shrink-0 whitespace-nowrap rounded-lg border border-[var(--border-soft)] px-3 py-2 text-sm font-medium text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] sm:px-4"
+      <nav
+        aria-label="Разделы приложения"
+        className="flex shrink-0 items-center rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] p-1"
       >
-        <span className="hidden sm:inline">Профиль ребенка</span>
-        <span className="sm:hidden">Дети</span>
-      </Link>
+        <Link
+          href="/stories"
+          aria-label="Библиотека"
+          title="Библиотека"
+          className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-secondary)] hover:text-[var(--text-main)]"
+        >
+          <BookOpen aria-hidden="true" size={17} strokeWidth={1.8} />
+          <span className="hidden xl:inline">Библиотека</span>
+        </Link>
 
-      <Link
-        href="/series/new"
-        className="shrink-0 whitespace-nowrap rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
-      >
-        Создать сериал
-      </Link>
+        <Link
+          href="/series/new"
+          aria-label="Создать новую серию"
+          title="Создать новую серию"
+          className="inline-flex h-10 items-center gap-2 rounded-md bg-[var(--button-dark)] px-3 text-sm font-semibold text-[var(--button-dark-text)] transition hover:opacity-90"
+        >
+          <Plus aria-hidden="true" size={18} strokeWidth={2} />
+          <span className="hidden sm:inline">Новая серия</span>
+        </Link>
+      </nav>
 
       <ProfileMenu
         displayName={profileSummary.displayName}
