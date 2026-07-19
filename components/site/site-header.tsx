@@ -11,8 +11,8 @@ const navigation = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-[60] border-b border-[var(--border-soft)] bg-[var(--header-bg)] backdrop-blur-xl">
-      <div className="site-header__inner mx-auto grid w-full max-w-[90rem] grid-cols-[auto_1fr] items-center gap-3 px-4 py-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:px-10">
-        <nav className="site-header__marketing col-start-1 row-start-1 hidden items-center gap-6 text-sm text-[var(--logo-text)] lg:flex">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-5 sm:px-10">
+        <nav className="hidden items-center gap-6 text-sm text-[var(--logo-text)] md:flex">
           {navigation.map((item) => (
             <Link
               key={item.href}
@@ -24,19 +24,14 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <Link
-          href="/"
-          className="site-header__brand col-start-1 row-start-1 flex items-center gap-3 justify-self-center text-[var(--logo-text)] lg:col-start-2"
-        >
+        <Link href="/" className="flex items-center gap-3 text-[var(--logo-text)]">
           <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface-soft)] text-sm font-semibold">
             MS
           </span>
-          <span className="hidden font-display text-lg tracking-[0.24em] sm:inline">
-            MagicStory
-          </span>
+          <span className="font-display text-lg tracking-[0.24em]">MagicStory</span>
         </Link>
 
-        <div className="site-header__actions col-start-2 row-start-1 flex min-w-0 items-center justify-self-end gap-2 sm:gap-3 lg:col-start-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <HeaderAuthActions />
         </div>
       </div>

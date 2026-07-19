@@ -93,36 +93,6 @@ a {
   text-decoration: none;
 }
 
-.site-header__inner:has([data-app-navigation]) {
-  grid-template-rows: auto auto;
-}
-
-.site-header__inner:has([data-app-navigation]) .site-header__actions {
-  display: contents;
-}
-
-.site-header__inner:has([data-app-navigation]) [data-app-navigation] {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  justify-self: stretch;
-}
-
-.site-header__inner:has([data-app-navigation]) [data-profile-menu] {
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: end;
-}
-
-@media (min-width: 1024px) {
-  .site-header__inner:has([data-app-navigation]) [data-app-navigation] {
-    justify-self: center;
-  }
-
-  .site-header__inner:has([data-app-navigation]) [data-profile-menu] {
-    grid-column: 3;
-  }
-}
-
 * {
   box-sizing: border-box;
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, LayoutDashboard, UserRound } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 
@@ -55,26 +54,23 @@ export function ProfileMenu({
   }, []);
 
   return (
-    <div ref={rootRef} data-profile-menu className="relative z-[70]">
+    <div ref={rootRef} className="relative z-[70]">
       <button
         type="button"
         onClick={() => setIsOpen((value) => !value)}
-        aria-expanded={isOpen}
-        aria-haspopup="menu"
-        aria-label="Открыть меню профиля"
         className="flex items-center gap-3 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--text-main)] transition hover:border-[var(--border-strong)]"
       >
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--surface-secondary)] text-xs font-semibold text-[var(--logo-text)]">
           {initials}
         </span>
-        <span className="hidden max-w-[12rem] truncate font-medium text-[var(--text-main)] 2xl:block">
+        <span className="hidden max-w-[12rem] truncate font-medium text-[var(--text-main)] sm:block">
           {displayName}
         </span>
-        <ChevronDown
-          aria-hidden="true"
-          size={16}
+        <span
           className={`text-[var(--text-muted)] transition ${isOpen ? "rotate-180" : ""}`}
-        />
+        >
+          ▾
+        </span>
       </button>
 
       {isOpen ? (
@@ -110,25 +106,13 @@ export function ProfileMenu({
             </div>
           </div>
 
-          <nav aria-label="Меню профиля" className="mt-3 grid gap-2">
-            <Link
-              href="/children"
-              onClick={() => setIsOpen(false)}
-              className="inline-flex w-full items-center gap-3 rounded-lg border border-[var(--border-soft)] px-4 py-3 text-sm font-medium text-[var(--text-main)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)]"
-            >
-              <UserRound aria-hidden="true" size={17} strokeWidth={1.8} />
-              Профили детей
-            </Link>
-
-            <Link
-              href="/dashboard"
-              onClick={() => setIsOpen(false)}
-              className="inline-flex w-full items-center gap-3 rounded-lg border border-[var(--border-soft)] px-4 py-3 text-sm font-medium text-[var(--text-main)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)]"
-            >
-              <LayoutDashboard aria-hidden="true" size={17} strokeWidth={1.8} />
-              Кабинет
-            </Link>
-          </nav>
+          <Link
+            href="/dashboard"
+            onClick={() => setIsOpen(false)}
+            className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-[var(--border-soft)] px-4 py-3 text-sm font-medium text-[var(--text-main)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)]"
+          >
+            Открыть кабинет
+          </Link>
 
           <SignOutButton className="mt-3 w-full justify-center rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-4 py-3 text-sm text-[var(--text-main)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)]" />
         </div>

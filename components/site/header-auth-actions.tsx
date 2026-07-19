@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, FilePlus2, Plus, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ProfileMenu } from "@/components/site/profile-menu";
@@ -112,13 +111,13 @@ function PublicAuthLinks() {
     <>
       <Link
         href="/auth/login"
-        className="hidden rounded-lg border border-[var(--border-soft)] px-4 py-2 text-sm text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] sm:inline-flex"
+        className="rounded-lg border border-[var(--border-soft)] px-4 py-2 text-sm text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)]"
       >
         Войти
       </Link>
       <Link
         href="/auth/sign-up"
-        className="rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
+        className="rounded-lg bg-[var(--button-dark)] px-4 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
       >
         Начать
       </Link>
@@ -138,51 +137,20 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
 
   return (
     <>
-      <nav
-        aria-label="Разделы приложения"
-        data-app-navigation
-        className="grid w-full grid-cols-2 gap-1 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] p-1 sm:flex sm:w-auto sm:items-center"
+      <Link
+        href="/children"
+        className="shrink-0 whitespace-nowrap rounded-lg border border-[var(--border-soft)] px-3 py-2 text-sm font-medium text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] sm:px-4"
       >
-        <Link
-          href="/stories"
-          aria-label="Библиотека"
-          title="Библиотека"
-          className="inline-flex h-10 items-center justify-start gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-secondary)] sm:justify-center"
-        >
-          <BookOpen aria-hidden="true" size={17} strokeWidth={1.8} />
-          <span>Библиотека</span>
-        </Link>
+        <span className="hidden sm:inline">Профиль ребенка</span>
+        <span className="sm:hidden">Дети</span>
+      </Link>
 
-        <Link
-          href="/series"
-          aria-label="Создать новую серию"
-          title="Создать новую серию"
-          className="inline-flex h-10 items-center justify-start gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-secondary)] sm:justify-center"
-        >
-          <FilePlus2 aria-hidden="true" size={18} strokeWidth={1.9} />
-          <span>Новая серия</span>
-        </Link>
-
-        <Link
-          href="/series/new"
-          aria-label="Создать сериал"
-          title="Создать сериал"
-          className="inline-flex h-10 items-center justify-start gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-secondary)] sm:justify-center"
-        >
-          <Plus aria-hidden="true" size={18} strokeWidth={2} />
-          <span>Создать сериал</span>
-        </Link>
-
-        <Link
-          href="/children"
-          aria-label="Профиль ребёнка"
-          title="Профиль ребёнка"
-          className="inline-flex h-10 items-center justify-start gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-secondary)] sm:justify-center"
-        >
-          <UserRound aria-hidden="true" size={18} strokeWidth={1.8} />
-          <span>Профиль ребёнка</span>
-        </Link>
-      </nav>
+      <Link
+        href="/series/new"
+        className="shrink-0 whitespace-nowrap rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
+      >
+        Создать сериал
+      </Link>
 
       <ProfileMenu
         displayName={profileSummary.displayName}
