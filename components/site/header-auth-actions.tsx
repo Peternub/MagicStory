@@ -140,6 +140,7 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
     <>
       <nav
         aria-label="Разделы приложения"
+        data-app-navigation
         className="flex shrink-0 items-center rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] p-1"
       >
         <Link
@@ -149,7 +150,7 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
           className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-secondary)] hover:text-[var(--text-main)]"
         >
           <BookOpen aria-hidden="true" size={17} strokeWidth={1.8} />
-          <span className="hidden 2xl:inline">Библиотека</span>
+          <span className="hidden xl:inline">Библиотека</span>
         </Link>
 
         <Link
@@ -169,7 +170,7 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
           className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-secondary)] hover:text-[var(--text-main)]"
         >
           <Plus aria-hidden="true" size={18} strokeWidth={2} />
-          <span className="hidden 2xl:inline">Создать сериал</span>
+          <span className="hidden xl:inline">Создать сериал</span>
         </Link>
 
         <Link
@@ -179,7 +180,7 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
           className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-secondary)] hover:text-[var(--text-main)]"
         >
           <UserRound aria-hidden="true" size={18} strokeWidth={1.8} />
-          <span className="hidden 2xl:inline">Профиль ребёнка</span>
+          <span className="hidden xl:inline">Профиль ребёнка</span>
         </Link>
       </nav>
 

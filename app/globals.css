@@ -93,6 +93,25 @@ a {
   text-decoration: none;
 }
 
+@media (min-width: 1280px) {
+  .site-header__inner:has([data-app-navigation]) {
+    grid-template-columns: auto minmax(1rem, 1fr) auto;
+  }
+
+  .site-header__inner:has([data-app-navigation]) .site-header__marketing {
+    display: none;
+  }
+
+  .site-header__inner:has([data-app-navigation]) .site-header__brand {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .site-header__inner:has([data-app-navigation]) .site-header__actions {
+    grid-column: 3;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
