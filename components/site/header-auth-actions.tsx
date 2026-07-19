@@ -141,46 +141,46 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
       <nav
         aria-label="Разделы приложения"
         data-app-navigation
-        className="flex shrink-0 items-center rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] p-1"
+        className="grid w-full grid-cols-2 gap-1 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] p-1 sm:flex sm:w-auto sm:items-center"
       >
         <Link
           href="/stories"
           aria-label="Библиотека"
           title="Библиотека"
-          className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-secondary)] hover:text-[var(--text-main)]"
+          className="inline-flex h-10 items-center justify-start gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-secondary)] sm:justify-center"
         >
           <BookOpen aria-hidden="true" size={17} strokeWidth={1.8} />
-          <span className="hidden xl:inline">Библиотека</span>
+          <span>Библиотека</span>
         </Link>
 
         <Link
           href="/series"
           aria-label="Создать новую серию"
           title="Создать новую серию"
-          className="inline-flex h-10 items-center gap-2 rounded-md bg-[var(--button-dark)] px-3 text-sm font-semibold text-[var(--button-dark-text)] transition hover:opacity-90"
+          className="inline-flex h-10 items-center justify-start gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-secondary)] sm:justify-center"
         >
           <FilePlus2 aria-hidden="true" size={18} strokeWidth={1.9} />
-          <span className="hidden sm:inline">Новая серия</span>
+          <span>Новая серия</span>
         </Link>
 
         <Link
           href="/series/new"
           aria-label="Создать сериал"
           title="Создать сериал"
-          className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-secondary)] hover:text-[var(--text-main)]"
+          className="inline-flex h-10 items-center justify-start gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-secondary)] sm:justify-center"
         >
           <Plus aria-hidden="true" size={18} strokeWidth={2} />
-          <span className="hidden xl:inline">Создать сериал</span>
+          <span>Создать сериал</span>
         </Link>
 
         <Link
           href="/children"
           aria-label="Профиль ребёнка"
           title="Профиль ребёнка"
-          className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-secondary)] hover:text-[var(--text-main)]"
+          className="inline-flex h-10 items-center justify-start gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium text-[var(--text-main)] transition hover:bg-[var(--surface-secondary)] sm:justify-center"
         >
           <UserRound aria-hidden="true" size={18} strokeWidth={1.8} />
-          <span className="hidden xl:inline">Профиль ребёнка</span>
+          <span>Профиль ребёнка</span>
         </Link>
       </nav>
 

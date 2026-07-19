@@ -55,7 +55,7 @@ export function ProfileMenu({
   }, []);
 
   return (
-    <div ref={rootRef} className="relative z-[70]">
+    <div ref={rootRef} data-profile-menu className="relative z-[70]">
       <button
         type="button"
         onClick={() => setIsOpen((value) => !value)}
