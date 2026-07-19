@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Plus } from "lucide-react";
+import { BookOpen, FilePlus2, Plus, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ProfileMenu } from "@/components/site/profile-menu";
@@ -149,17 +149,37 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
           className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-secondary)] hover:text-[var(--text-main)]"
         >
           <BookOpen aria-hidden="true" size={17} strokeWidth={1.8} />
-          <span className="hidden xl:inline">Библиотека</span>
+          <span className="hidden 2xl:inline">Библиотека</span>
         </Link>
 
         <Link
-          href="/series/new"
+          href="/series"
           aria-label="Создать новую серию"
           title="Создать новую серию"
           className="inline-flex h-10 items-center gap-2 rounded-md bg-[var(--button-dark)] px-3 text-sm font-semibold text-[var(--button-dark-text)] transition hover:opacity-90"
         >
-          <Plus aria-hidden="true" size={18} strokeWidth={2} />
+          <FilePlus2 aria-hidden="true" size={18} strokeWidth={1.9} />
           <span className="hidden sm:inline">Новая серия</span>
+        </Link>
+
+        <Link
+          href="/series/new"
+          aria-label="Создать сериал"
+          title="Создать сериал"
+          className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-secondary)] hover:text-[var(--text-main)]"
+        >
+          <Plus aria-hidden="true" size={18} strokeWidth={2} />
+          <span className="hidden 2xl:inline">Создать сериал</span>
+        </Link>
+
+        <Link
+          href="/children"
+          aria-label="Профиль ребёнка"
+          title="Профиль ребёнка"
+          className="inline-flex h-10 items-center gap-2 rounded-md px-3 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-secondary)] hover:text-[var(--text-main)]"
+        >
+          <UserRound aria-hidden="true" size={18} strokeWidth={1.8} />
+          <span className="hidden 2xl:inline">Профиль ребёнка</span>
         </Link>
       </nav>
 
