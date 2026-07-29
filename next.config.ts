@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
-import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 
-const nextConfig = (phase: string): NextConfig => ({
-  distDir: phase === PHASE_DEVELOPMENT_SERVER ? ".next" : ".next-build",
+const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
@@ -11,6 +9,6 @@ const nextConfig = (phase: string): NextConfig => ({
       }
     ];
   }
-});
+};
 
 export default nextConfig;
