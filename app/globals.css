@@ -446,18 +446,6 @@ select:-webkit-autofill:focus {
   padding: 0 1.5rem;
 }
 
-.story-sequence__label {
-  position: absolute;
-  top: max(1.5rem, env(safe-area-inset-top));
-  left: 1.5rem;
-  margin: 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--logo-text) 82%, transparent);
-  pointer-events: none;
-}
-
 .story-sequence__line {
   position: relative;
   width: min(100%, 62rem);
@@ -636,21 +624,13 @@ select:-webkit-autofill:focus {
   }
 
   .story-sequence__panel {
-    min-height: 56svh;
-    padding: 3rem 0;
+    min-height: calc(100svh - 4rem);
+    padding: 2rem 0;
     border-bottom: 1px solid var(--border-soft);
   }
 
   .story-sequence__content {
     padding: 0 1rem;
-  }
-
-  .story-sequence__label {
-    position: static;
-    margin-bottom: 1rem;
-    text-align: center;
-    font-size: 0.66rem;
-    letter-spacing: 0.22em;
   }
 
   .story-sequence__line {

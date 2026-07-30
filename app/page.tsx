@@ -68,10 +68,9 @@ export default function HomePage() {
       </section>
 
       <section className="story-sequence">
-        {storyScenes.map((scene, index) => (
+        {storyScenes.map((scene) => (
           <section key={scene} className="story-sequence__panel">
             <div className="story-sequence__content">
-              <p className="story-sequence__label">MagicStory / 0{index + 1}</p>
               <p className="story-sequence__line is-active">{scene}</p>
             </div>
           </section>
