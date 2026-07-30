@@ -37,11 +37,6 @@ export function SeriesEpisodeForm({
           autoComplete="off"
           rows={3}
           maxLength={500}
-          placeholder={
-            hasEpisodes
-              ? "Можно оставить пустым - серия продолжится сама"
-              : "Можно оставить пустым - первая серия начнется по паспорту сериала"
-          }
           className="w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-4 py-3 text-base text-[var(--text-main)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--border-strong)]"
         />
       </label>

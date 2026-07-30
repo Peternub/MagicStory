@@ -68,7 +68,6 @@ export function AuthForm({
                 className={inputClassName}
                 type="text"
                 name="firstName"
-                placeholder="Анна"
                 required
               />
             </label>
@@ -81,7 +80,6 @@ export function AuthForm({
                 className={inputClassName}
                 type="text"
                 name="lastName"
-                placeholder="Иванова"
                 required
               />
             </label>
@@ -96,7 +94,6 @@ export function AuthForm({
             className={inputClassName}
             type="email"
             name="email"
-            placeholder="parent@example.ru"
             required
           />
         </label>
@@ -117,7 +114,6 @@ export function AuthForm({
             className={inputClassName}
             type="password"
             name="password"
-            placeholder="Минимум 8 символов"
             required
             minLength={8}
           />

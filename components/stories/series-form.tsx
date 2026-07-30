@@ -32,7 +32,7 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Название сериала</span>
-        <input name="title" autoComplete="off" required maxLength={120} placeholder="Сонный город Маши" className={fieldClassName} />
+        <input name="title" autoComplete="off" required maxLength={120} className={fieldClassName} />
       </label>
 
       <label className="block">
@@ -43,7 +43,6 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
           required
           rows={3}
           maxLength={600}
-          placeholder="Например: каждый вечер ребенок и его друзья находят маленькое доброе дело в знакомом дворе"
           className={fieldClassName}
         />
       </label>
@@ -55,7 +54,6 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
           autoComplete="off"
           rows={2}
           maxLength={220}
-          placeholder="Дом, садик, двор, комната, любимая площадка, спокойный тон перед сном"
           className={fieldClassName}
         />
       </label>
@@ -67,7 +65,6 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
           autoComplete="off"
           rows={2}
           maxLength={400}
-          placeholder="Друзья, брат или сестра, любимая игрушка, питомец, бабушка, папа, мама"
           className={fieldClassName}
         />
       </label>
@@ -79,7 +76,6 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
           autoComplete="off"
           rows={2}
           maxLength={400}
-          placeholder="Что ребенку нравится, чего лучше избегать, какие слова или темы не использовать"
           className={fieldClassName}
         />
       </label>

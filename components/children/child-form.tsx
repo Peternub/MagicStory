@@ -45,7 +45,6 @@ export function ChildForm({
           name="name"
           type="text"
           required
-          placeholder="Петя"
           defaultValue={child?.name ?? ""}
           className={fieldClassName}
         />
@@ -60,7 +59,6 @@ export function ChildForm({
             min={3}
             max={12}
             required
-            placeholder="6"
             defaultValue={child?.age ?? ""}
             className={fieldClassName}
           />
@@ -92,7 +90,6 @@ export function ChildForm({
             name="additionalContext"
             rows={3}
             maxLength={800}
-            placeholder="Например: Миша — лучший друг, Аня — старшая сестра, Барсик — любимый кот"
             defaultValue={child.additional_context ?? ""}
             className={fieldClassName}
           />
@@ -107,7 +104,6 @@ export function ChildForm({
           name="interests"
           rows={3}
           maxLength={500}
-          placeholder="Динозавры, космос, рисование, футбол, конструктор"
           defaultValue={child?.interests ?? ""}
           className={fieldClassName}
         />
@@ -122,7 +118,6 @@ export function ChildForm({
           name="fears"
           rows={3}
           maxLength={500}
-          placeholder="Темнота, новый садик, знакомство с другими детьми"
           defaultValue={child?.fears ?? ""}
           className={fieldClassName}
         />

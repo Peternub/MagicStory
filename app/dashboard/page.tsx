@@ -232,7 +232,7 @@ export default async function DashboardPage() {
             href={latestSeries ? `/series/${latestSeries.id}` : "/series/new"}
             className="inline-flex w-full items-center justify-center rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-semibold text-[var(--button-dark-text)] transition hover:opacity-90 sm:w-auto"
           >
-            {latestSeries ? "Продолжить сериал" : "Создать сериал"}
+            {latestSeries ? "Создать новую серию" : "Создать сериал"}
           </Link>
         </div>
       </section>
