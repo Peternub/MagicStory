@@ -22,7 +22,7 @@ export default async function BillingPage() {
             Тарифы
           </p>
           <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">
-            Пакеты персональных серий
+            Безлимитные персональные серии
           </h1>
         </div>
         <Link
@@ -38,7 +38,7 @@ export default async function BillingPage() {
         style={{ boxShadow: "var(--glow-shadow)" }}
       >
         <p className="text-sm text-[var(--logo-text)]">
-          Серии и два уровня модели генерации
+          Два тарифа без ограничений по количеству серий
         </p>
         <p className="mt-2 text-sm text-[var(--text-soft)]">
           Статус подписки: {profile?.subscription_status ?? "free"}

@@ -1,118 +1,46 @@
-export type MagicPlanTone = "starter" | "family" | "premium";
-export type MagicPlanFormat = "stories" | "audio";
+export type MagicPlanTone = "standard" | "premium";
 export type MagicPlanModel = "plus" | "premium";
-
-export type LibraryPlan = {
-  code: string;
-  name: string;
-  priceMonthly: number;
-  subtitle: string;
-  features: string[];
-};
-
-export const libraryPlan: LibraryPlan = {
-  code: "library-monthly",
-  name: "Библиотека",
-  priceMonthly: 59,
-  subtitle: "Каждый месяц",
-  features: [
-    "Каталог готовых вечерних серий",
-    "Новые истории и сериалы каждую неделю",
-    "Без списания лимита генераций"
-  ]
-};
 
 export type MagicPlan = {
   code: string;
   name: string;
-  stories: number;
-  storiesPrice: number;
-  audioPrice: number;
+  priceMonthly: number;
+  model: MagicPlanModel;
   subtitle: string;
+  description: string;
+  features: string[];
   tone: MagicPlanTone;
   highlight?: boolean;
 };
 
-export const planFormats: Array<{
-  code: MagicPlanFormat;
-  label: string;
-}> = [
-  {
-    code: "stories",
-    label: "Серии"
-  },
-  {
-    code: "audio",
-    label: "Серии с озвучкой"
-  }
-];
-
-export const planModels: Array<{
-  code: MagicPlanModel;
-  label: string;
-  priceExtra: number;
-}> = [
-  {
-    code: "plus",
-    label: 'Модель "Plus"',
-    priceExtra: 0
-  },
-  {
-    code: "premium",
-    label: 'Модель "Premium"',
-    priceExtra: 50
-  }
-];
-
 export const magicPlans: MagicPlan[] = [
   {
-    code: "stories-10",
-    name: "10 серий",
-    stories: 10,
-    storiesPrice: 149,
-    audioPrice: 249,
-    subtitle: "Спокойный старт",
-    tone: "starter"
+    code: "unlimited-plus",
+    name: "Обычные серии",
+    priceMonthly: 555,
+    model: "plus",
+    subtitle: "Без ограничений",
+    description: "Создавайте сколько угодно серий с обычной моделью генерации.",
+    features: [
+      "Неограниченное количество серий",
+      'Модель генерации "Plus"',
+      "Все профили детей и сериалы в одном кабинете"
+    ],
+    tone: "standard"
   },
   {
-    code: "stories-20",
-    name: "20 серий",
-    stories: 20,
-    storiesPrice: 249,
-    audioPrice: 449,
-    subtitle: "Семейный запас",
-    tone: "family",
+    code: "unlimited-premium",
+    name: "Премиум-серии",
+    priceMonthly: 888,
+    model: "premium",
+    subtitle: "Максимальное качество",
+    description: "Создавайте сколько угодно серий с премиальной моделью генерации.",
+    features: [
+      "Неограниченное количество премиум-серий",
+      'Модель генерации "Premium"',
+      "Более глубокий сюжет и проработка персонажей"
+    ],
+    tone: "premium",
     highlight: true
-  },
-  {
-    code: "stories-30",
-    name: "30 серий",
-    stories: 30,
-    storiesPrice: 299,
-    audioPrice: 549,
-    subtitle: "Большой набор",
-    tone: "premium"
   }
 ];
-
-export function getPlanPrice(
-  plan: MagicPlan,
-  format: MagicPlanFormat,
-  model: MagicPlanModel
-) {
-  const modelConfig = planModels.find((item) => item.code === model) ?? planModels[0];
-  const basePrice = format === "audio" ? plan.audioPrice : plan.storiesPrice;
-
-  return basePrice + modelConfig.priceExtra;
-}
-
-export function getPlanIncludedLabel(
-  plan: MagicPlan,
-  format: MagicPlanFormat,
-  model: MagicPlanModel
-) {
-  const modelLabel = model === "premium" ? "премиум" : "обычных";
-  const ending = format === "audio" ? " с озвучкой" : "";
-
-  return `${plan.stories} ${modelLabel} серий${ending}`;
-}

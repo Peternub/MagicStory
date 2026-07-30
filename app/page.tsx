@@ -10,12 +10,6 @@ const storyScenes = [
 
 const qualityCards = [
   {
-    title: "Бесплатная модель",
-    subtitle: "Без ограничений в пробном периоде",
-    value: 60,
-    tone: "soft"
-  },
-  {
     title: 'Модель "Plus"',
     subtitle: "Более ровный сюжет и аккуратная детализация",
     value: 73,
@@ -50,7 +44,7 @@ function getQualityCardClass(tone: (typeof qualityCards)[number]["tone"]) {
     return "border-[var(--border-strong)] bg-[var(--surface-card-alt)]";
   }
 
-  return "border-[var(--border-soft)] bg-[var(--surface-card)]";
+  return "border-[var(--border-strong)] bg-[var(--surface-card-alt)]";
 }
 
 export default function HomePage() {
@@ -83,7 +77,7 @@ export default function HomePage() {
             Качество генерации серии
           </h2>
 
-          <div className="mt-8 grid gap-4 sm:mt-14 sm:gap-6 lg:grid-cols-3">
+          <div className="mx-auto mt-8 grid max-w-4xl gap-4 sm:mt-14 sm:gap-6 md:grid-cols-2">
             {qualityCards.map((card) => (
               <article
                 key={card.title}
@@ -132,7 +126,7 @@ export default function HomePage() {
               Тарифы
             </p>
             <h2 className="mt-4 font-display text-3xl sm:text-5xl">
-              Выберите удобный запас серий
+              Выберите качество без ограничений
             </h2>
           </div>
 
