@@ -18,16 +18,16 @@ export default async function NewSeriesPage() {
   const childrenItems = (data ?? []) as ChildRecord[];
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-4xl px-6 py-10 sm:px-10">
+    <main className="mx-auto min-h-screen w-full max-w-4xl px-4 py-6 sm:px-10 sm:py-10">
       <Link href="/series" className="text-sm font-medium text-[var(--logo-text)]">
         Назад к сериалам
       </Link>
-      <section className="mt-6 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8">
-        <h1 className="text-3xl font-semibold text-[var(--text-main)]">Новый вечерний сериал</h1>
+      <section className="mt-5 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-5 sm:mt-6 sm:p-8">
+        <h1 className="text-2xl font-semibold text-[var(--text-main)] sm:text-3xl">Новый вечерний сериал</h1>
         <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
           Один раз задайте героев, мир и правила. Потом каждый вечер достаточно нажать одну кнопку.
         </p>
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           {childrenItems.length > 0 ? (
             <SeriesForm action={createSeries} childrenItems={childrenItems} />
           ) : (

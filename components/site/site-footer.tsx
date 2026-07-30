@@ -19,7 +19,7 @@ const appLinks = [
 export function SiteFooter() {
   return (
     <footer className="border-t border-[var(--border-soft)] bg-[var(--footer-bg)] text-[var(--text-main)]">
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-14 sm:px-10 lg:grid-cols-[1.15fr_0.85fr_0.85fr_1fr]">
+      <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-10 sm:gap-10 sm:px-10 sm:py-14 lg:grid-cols-[1.15fr_0.85fr_0.85fr_1fr]">
         <div>
           <p className="font-display text-lg tracking-[0.18em] text-[var(--logo-text)]">
             MagicStory

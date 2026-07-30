@@ -11,31 +11,31 @@ export default async function DashboardPage() {
   const summary = await getUserSummary(user.id);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-6 sm:px-10 sm:py-10">
       <section
-        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8 sm:p-10"
+        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-5 sm:p-10"
         style={{ boxShadow: "var(--glow-shadow)" }}
       >
         <p className="text-sm uppercase tracking-[0.22em] text-[var(--logo-text)]">
           Кабинет родителя
         </p>
-        <h1 className="mt-3 max-w-4xl text-4xl font-semibold text-[var(--text-main)] sm:text-6xl">
+        <h1 className="mt-3 max-w-4xl break-words text-3xl font-semibold text-[var(--text-main)] sm:text-6xl">
           Здравствуйте, <span className="text-[var(--logo-text)]">{displayName}</span>
         </h1>
-        <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--text-soft)]">
+        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-soft)] sm:mt-5 sm:text-lg sm:leading-8">
           Здесь под рукой все главное: ваши вечерние сериалы и
           библиотека готовых продолжений.
         </p>
 
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
           <article
-            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-6"
+            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-6"
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm uppercase tracking-[0.2em] text-[var(--logo-text)]">
               Пробный период
             </p>
-            <p className="mt-3 text-4xl font-semibold text-[var(--text-main)]">
+            <p className="mt-3 break-words text-3xl font-semibold text-[var(--text-main)] sm:text-4xl">
               Без ограничений
             </p>
             <p className="mt-2 text-sm text-[var(--text-soft)]">
@@ -44,7 +44,7 @@ export default async function DashboardPage() {
           </article>
 
           <article
-            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-6"
+            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-5 sm:p-6"
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm uppercase tracking-[0.2em] text-[var(--logo-text)]">
@@ -66,7 +66,7 @@ export default async function DashboardPage() {
           </article>
 
           <article
-            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-6"
+            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-6"
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm uppercase tracking-[0.2em] text-[var(--logo-text)]">

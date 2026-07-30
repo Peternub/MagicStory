@@ -111,13 +111,13 @@ function PublicAuthLinks() {
     <>
       <Link
         href="/auth/login"
-        className="rounded-lg border border-[var(--border-soft)] px-4 py-2 text-sm text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)]"
+        className="rounded-lg border border-[var(--border-soft)] px-3 py-2 text-sm text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] sm:px-4"
       >
         Войти
       </Link>
       <Link
         href="/auth/sign-up"
-        className="rounded-lg bg-[var(--button-dark)] px-4 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
+        className="rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
       >
         Начать
       </Link>
@@ -139,15 +139,14 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
     <>
       <Link
         href="/children"
-        className="shrink-0 whitespace-nowrap rounded-lg border border-[var(--border-soft)] px-3 py-2 text-sm font-medium text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] sm:px-4"
+        className="hidden shrink-0 whitespace-nowrap rounded-lg border border-[var(--border-soft)] px-4 py-2 text-sm font-medium text-[var(--logo-text)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-main)] lg:inline-flex"
       >
-        <span className="hidden sm:inline">Профиль ребенка</span>
-        <span className="sm:hidden">Дети</span>
+        Профиль ребенка
       </Link>
 
       <Link
         href="/series/new"
-        className="shrink-0 whitespace-nowrap rounded-lg bg-[var(--button-dark)] px-3 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:px-4"
+        className="hidden shrink-0 whitespace-nowrap rounded-lg bg-[var(--button-dark)] px-4 py-2 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 lg:inline-flex"
       >
         Создать сериал
       </Link>

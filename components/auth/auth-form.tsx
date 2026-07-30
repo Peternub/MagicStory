@@ -26,7 +26,7 @@ type AuthFormProps = {
 };
 
 const inputClassName =
-  "w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-5 py-4 text-lg text-[var(--text-main)] placeholder:text-[var(--text-muted)] caret-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)] focus:ring-4 focus:ring-[var(--accent-gold-soft)]";
+  "w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-4 py-3 text-base text-[var(--text-main)] placeholder:text-[var(--text-muted)] caret-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)] focus:ring-4 focus:ring-[var(--accent-gold-soft)] sm:px-5 sm:py-4 sm:text-lg";
 
 export function AuthForm({
   action,
@@ -46,19 +46,19 @@ export function AuthForm({
 
   return (
     <div
-      className="w-full max-w-3xl rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8 backdrop-blur sm:p-10"
+      className="w-full max-w-3xl rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-5 backdrop-blur sm:p-10"
       style={{ boxShadow: "var(--glow-shadow)" }}
     >
       <div>
-        <h1 className="text-4xl font-semibold text-[var(--text-main)] sm:text-5xl">
+        <h1 className="text-3xl font-semibold text-[var(--text-main)] sm:text-5xl">
           {title}
         </h1>
-        <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--text-soft)]">
+        <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--text-soft)] sm:mt-4 sm:text-lg sm:leading-8">
           {description}
         </p>
       </div>
 
-      <form action={formAction} className="mt-10 space-y-5">
+      <form action={formAction} className="mt-7 space-y-4 sm:mt-10 sm:space-y-5">
         {showNameFields ? (
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block">

@@ -43,7 +43,7 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-6 py-10 sm:px-10">
+    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-10 sm:py-10">
       <Link
         href="/stories"
         className="text-sm font-medium text-[var(--logo-text)] transition hover:text-[var(--text-main)]"
@@ -52,7 +52,7 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
       </Link>
 
       <section
-        className="mt-6 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8"
+        className="mt-5 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-5 sm:mt-6 sm:p-8"
         style={{ boxShadow: "var(--glow-shadow)" }}
       >
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">

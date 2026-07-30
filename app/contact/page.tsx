@@ -2,16 +2,16 @@ import { ContactForm } from "@/components/site/contact-form";
 
 export default function ContactPage() {
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
+    <main className="mx-auto flex w-full max-w-6xl flex-col px-4 py-6 sm:px-10 sm:py-10">
       <section className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <div
-          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8 sm:p-10"
+          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-5 sm:p-10"
           style={{ boxShadow: "var(--glow-shadow)" }}
         >
           <p className="text-sm uppercase tracking-[0.24em] text-[var(--logo-text)]">
             Контакты
           </p>
-          <h1 className="mt-4 font-display text-4xl text-[var(--text-main)]">
+          <h1 className="mt-4 font-display text-3xl text-[var(--text-main)] sm:text-4xl">
             Связаться с нами и обсудить проект
           </h1>
           <p className="mt-6 text-lg leading-8 text-[var(--text-soft)]">

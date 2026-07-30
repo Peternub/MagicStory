@@ -22,7 +22,7 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
   if (childrenItems.length === 0) {
     return (
       <div
-        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-8 text-center"
+        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 text-center sm:p-8"
         style={{ boxShadow: "var(--glow-shadow)" }}
       >
         <p className="text-lg font-medium text-[var(--text-main)]">
@@ -46,7 +46,7 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
       {childrenItems.map((child) => (
         <article
           key={child.id}
-          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-6"
+          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-6"
           style={{ boxShadow: "var(--glow-shadow)" }}
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -70,19 +70,19 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
               ) : null}
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
               <Link
                 href={`/children/${child.id}`}
-                className="rounded-lg border border-[var(--border-strong)] px-4 py-2 text-sm text-[var(--text-main)] transition hover:bg-[var(--surface-card-alt)]"
+                className="inline-flex items-center justify-center rounded-lg border border-[var(--border-strong)] px-4 py-2 text-sm text-[var(--text-main)] transition hover:bg-[var(--surface-card-alt)]"
               >
                 Изменить
               </Link>
 
-              <form action={deleteChild}>
+              <form action={deleteChild} className="contents sm:block">
                 <input type="hidden" name="childId" value={child.id} />
                 <button
                   type="submit"
-                  className="rounded-lg border border-red-400/25 px-4 py-2 text-sm text-red-200 transition hover:border-red-300/50 hover:bg-red-500/10"
+                  className="w-full rounded-lg border border-red-400/25 px-4 py-2 text-sm text-red-200 transition hover:border-red-300/50 hover:bg-red-500/10"
                 >
                   Удалить
                 </button>

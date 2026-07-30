@@ -20,7 +20,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       : undefined;
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 py-10">
+    <main className="flex min-h-screen items-center justify-center px-4 py-6 sm:px-6 sm:py-10">
       <AuthForm
         action={signIn}
         title="Вход в кабинет"

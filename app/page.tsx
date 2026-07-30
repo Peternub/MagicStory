@@ -56,12 +56,12 @@ function getQualityCardClass(tone: (typeof qualityCards)[number]["tone"]) {
 export default function HomePage() {
   return (
     <main>
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-16">
+      <section className="relative flex min-h-[calc(100svh-4rem)] items-center justify-center overflow-hidden px-4 py-12 sm:min-h-screen sm:px-6 sm:py-16">
         <div className="hero-copy relative z-10 flex max-w-4xl flex-col items-center text-center">
-          <p className="hero-copy__title font-display text-[clamp(3.2rem,9vw,6.4rem)] tracking-[0.28em] text-[var(--logo-text)]">
+          <p className="hero-copy__title max-w-full font-display text-[clamp(2.15rem,11vw,3rem)] tracking-[0.12em] text-[var(--logo-text)] sm:text-[clamp(3.2rem,9vw,6.4rem)] sm:tracking-[0.28em]">
             MagicStory
           </p>
-          <p className="hero-copy__subtitle mt-6 max-w-2xl text-lg leading-8 text-[var(--logo-text)] sm:text-xl">
+          <p className="hero-copy__subtitle mt-5 max-w-2xl text-base leading-7 text-[var(--logo-text)] sm:mt-6 sm:text-xl sm:leading-8">
             Вечерние сериалы, которые продолжаются одной кнопкой.
           </p>
         </div>
@@ -78,17 +78,17 @@ export default function HomePage() {
         ))}
       </section>
 
-      <section id="pricing" className="px-6 pb-24 pt-8 text-[var(--text-main)] sm:pt-12">
+      <section id="pricing" className="px-4 pb-16 pt-10 text-[var(--text-main)] sm:px-6 sm:pb-24 sm:pt-12">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-display text-3xl sm:text-5xl">
             Качество генерации серии
           </h2>
 
-          <div className="mt-14 grid gap-6 lg:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:mt-14 sm:gap-6 lg:grid-cols-3">
             {qualityCards.map((card) => (
               <article
                 key={card.title}
-                className={`rounded-lg border p-6 shadow-glow ${getQualityCardClass(card.tone)}`}
+                className={`rounded-lg border p-5 shadow-glow sm:p-6 ${getQualityCardClass(card.tone)}`}
                 style={{
                   boxShadow:
                     card.tone === "premium"
@@ -119,16 +119,16 @@ export default function HomePage() {
             ))}
           </div>
 
-          <p className="mx-auto mt-8 max-w-3xl text-center text-lg leading-8 text-[var(--text-soft)]">
+          <p className="mx-auto mt-8 max-w-3xl text-center text-base leading-7 text-[var(--text-soft)] sm:text-lg sm:leading-8">
             Модель "Plus" дает заметно более ровный результат, а модель "Premium" делает
             историю глубже, живее и богаче по деталям.
           </p>
         </div>
       </section>
 
-      <section className="px-6 pb-24 text-[var(--text-main)]">
+      <section className="px-4 pb-16 text-[var(--text-main)] sm:px-6 sm:pb-24">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-10 text-center">
+          <div className="mb-8 text-center sm:mb-10">
             <p className="text-sm uppercase tracking-[0.3em] text-[var(--logo-text)]">
               Тарифы
             </p>
@@ -141,7 +141,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="reviews" className="px-6 py-24 text-[var(--text-main)]">
+      <section id="reviews" className="px-4 py-16 text-[var(--text-main)] sm:px-6 sm:py-24">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
             <p className="text-sm uppercase tracking-[0.3em] text-[var(--logo-text)]">
@@ -152,11 +152,11 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 lg:grid-cols-3">
             {reviews.map((review, index) => (
               <article
                 key={review}
-                className={`rounded-lg border p-6 ${
+                className={`rounded-lg border p-5 sm:p-6 ${
                   index === 1
                     ? "border-[var(--border-strong)] bg-[var(--surface-card-alt)]"
                     : "border-[var(--border-soft)] bg-[var(--surface-card)]"
@@ -170,10 +170,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="contact" className="px-6 py-24 text-[var(--text-main)]">
+      <section id="contact" className="px-4 py-16 text-[var(--text-main)] sm:px-6 sm:py-24">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr]">
           <div
-            className="contact-card magic-hover rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-8"
+            className="contact-card magic-hover rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-5 sm:p-8"
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm uppercase tracking-[0.3em] text-[var(--logo-text)]">

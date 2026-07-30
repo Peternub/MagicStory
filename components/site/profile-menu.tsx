@@ -58,9 +58,9 @@ export function ProfileMenu({
       <button
         type="button"
         onClick={() => setIsOpen((value) => !value)}
-        className="flex items-center gap-3 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--text-main)] transition hover:border-[var(--border-strong)]"
+        className="flex items-center gap-2 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] px-2 py-1.5 text-sm text-[var(--text-main)] transition hover:border-[var(--border-strong)] sm:gap-3 sm:px-3 sm:py-2"
       >
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--surface-secondary)] text-xs font-semibold text-[var(--logo-text)]">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-secondary)] text-xs font-semibold text-[var(--logo-text)] sm:h-9 sm:w-9">
           {initials}
         </span>
         <span className="hidden max-w-[12rem] truncate font-medium text-[var(--text-main)] sm:block">
@@ -75,7 +75,7 @@ export function ProfileMenu({
 
       {isOpen ? (
         <div
-          className="absolute right-0 mt-3 w-[19rem] rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-4"
+          className="absolute right-0 mt-3 w-[min(19rem,calc(100vw-2rem))] rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-3 sm:p-4"
           style={{ boxShadow: "var(--glow-shadow)" }}
         >
           <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] p-4">
@@ -85,7 +85,31 @@ export function ProfileMenu({
             <p className="mt-2 break-all text-sm text-[var(--text-main)]">{email}</p>
           </div>
 
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <nav className="mt-3 grid gap-2 lg:hidden">
+            <Link
+              href="/children"
+              onClick={() => setIsOpen(false)}
+              className="rounded-lg border border-[var(--border-soft)] px-4 py-3 text-sm font-medium text-[var(--text-main)]"
+            >
+              Профиль ребенка
+            </Link>
+            <Link
+              href="/series/new"
+              onClick={() => setIsOpen(false)}
+              className="rounded-lg bg-[var(--button-dark)] px-4 py-3 text-center text-sm font-medium text-[var(--button-dark-text)]"
+            >
+              Создать сериал
+            </Link>
+            <Link
+              href="/stories"
+              onClick={() => setIsOpen(false)}
+              className="rounded-lg border border-[var(--border-soft)] px-4 py-3 text-sm font-medium text-[var(--text-main)]"
+            >
+              Библиотека
+            </Link>
+          </nav>
+
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:gap-3">
             <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] p-4">
               <p className="text-xs uppercase tracking-[0.18em] text-[var(--logo-text)]">
                 Серии

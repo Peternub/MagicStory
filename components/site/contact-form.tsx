@@ -19,7 +19,7 @@ export function ContactForm() {
   return (
     <form
       action={formAction}
-      className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-8"
+      className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-8"
       style={{ boxShadow: "var(--glow-shadow)" }}
     >
       <div className="grid gap-4">

@@ -8,15 +8,15 @@ const principles = [
 
 export default function AboutPage() {
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
+    <main className="mx-auto flex w-full max-w-6xl flex-col px-4 py-6 sm:px-10 sm:py-10">
       <section
-        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8 sm:p-10"
+        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-5 sm:p-10"
         style={{ boxShadow: "var(--glow-shadow)" }}
       >
         <p className="text-sm uppercase tracking-[0.24em] text-[var(--logo-text)]">
           О сервисе
         </p>
-        <h1 className="mt-4 font-display text-4xl text-[var(--text-main)]">
+        <h1 className="mt-4 font-display text-3xl text-[var(--text-main)] sm:text-4xl">
           Мы строим сервис, который соединяет семейную заботу и AI-инструменты
         </h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--text-soft)]">
@@ -30,7 +30,7 @@ export default function AboutPage() {
         {principles.map((item) => (
           <article
             key={item}
-            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-8 text-sm leading-7 text-[var(--text-soft)]"
+            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 text-sm leading-7 text-[var(--text-soft)] sm:p-8"
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             {item}
@@ -40,7 +40,7 @@ export default function AboutPage() {
 
       <section className="mt-10 grid gap-8 lg:grid-cols-[1fr_1fr]">
         <article
-          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-8"
+          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-8"
           style={{ boxShadow: "var(--glow-shadow)" }}
         >
           <h2 className="font-display text-2xl text-[var(--text-main)]">
@@ -55,7 +55,7 @@ export default function AboutPage() {
         </article>
 
         <article
-          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-8"
+          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-5 sm:p-8"
           style={{ boxShadow: "var(--glow-shadow)" }}
         >
           <h2 className="font-display text-2xl text-[var(--text-main)]">

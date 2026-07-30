@@ -19,15 +19,15 @@ const reviews = [
 
 export default function ReviewsPage() {
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
+    <main className="mx-auto flex w-full max-w-6xl flex-col px-4 py-6 sm:px-10 sm:py-10">
       <section
-        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8 sm:p-10"
+        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-5 sm:p-10"
         style={{ boxShadow: "var(--glow-shadow)" }}
       >
         <p className="text-sm uppercase tracking-[0.24em] text-[var(--logo-text)]">
           Отзывы
         </p>
-        <h1 className="mt-4 font-display text-4xl text-[var(--text-main)]">
+        <h1 className="mt-4 font-display text-3xl text-[var(--text-main)] sm:text-4xl">
           Как выглядит ценность продукта глазами родителей
         </h1>
       </section>
@@ -36,7 +36,7 @@ export default function ReviewsPage() {
         {reviews.map((review) => (
           <article
             key={review.name}
-            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-8"
+            className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-8"
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm leading-7 text-[var(--text-soft)]">"{review.text}"</p>

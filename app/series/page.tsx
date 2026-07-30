@@ -14,7 +14,7 @@ export default async function SeriesPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-6xl px-6 py-10 sm:px-10">
+    <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-6 sm:px-10 sm:py-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">Сериалы</p>
@@ -37,7 +37,7 @@ export default async function SeriesPage() {
           </Link>
         ))}
         {seriesItems?.length === 0 ? (
-          <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-8 text-center md:col-span-2">
+          <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 text-center sm:p-8 md:col-span-2">
             <p className="text-[var(--text-main)]">Сериалов пока нет</p>
             <Link href="/series/new" className="mt-4 inline-flex text-[var(--logo-text)]">Создать первый сериал</Link>
           </div>

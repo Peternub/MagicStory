@@ -31,11 +31,11 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
   if (!series) notFound();
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-5xl px-6 py-10 sm:px-10">
+    <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-6 sm:px-10 sm:py-10">
       <Link href="/series" className="text-sm font-medium text-[var(--logo-text)]">Назад к сериалам</Link>
       <header className="mt-6 border-b border-[var(--border-soft)] pb-8">
         <p className="text-sm uppercase tracking-[0.2em] text-[var(--logo-text)]">Сериал для {series.children?.[0]?.name}</p>
-        <h1 className="mt-2 text-4xl font-semibold text-[var(--text-main)]">{series.title}</h1>
+        <h1 className="mt-2 break-words text-3xl font-semibold text-[var(--text-main)] sm:text-4xl">{series.title}</h1>
         <p className="mt-4 max-w-3xl whitespace-pre-line leading-7 text-[var(--text-soft)]">{series.premise}</p>
       </header>
 

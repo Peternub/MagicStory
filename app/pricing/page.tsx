@@ -3,10 +3,10 @@ import { PricingTabs } from "@/components/site/pricing-tabs";
 
 export default function PricingPage() {
   return (
-    <main className="mx-auto flex w-full max-w-[96rem] flex-col px-6 py-10 sm:px-10">
-      <section className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-8 text-[var(--text-main)] sm:p-10">
+    <main className="mx-auto flex w-full max-w-[96rem] flex-col px-4 py-6 sm:px-10 sm:py-10">
+      <section className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-5 text-[var(--text-main)] sm:p-10">
         <p className="text-sm uppercase tracking-[0.24em] text-[var(--logo-text)]">Тарифы</p>
-        <h1 className="mt-4 font-display text-4xl">
+        <h1 className="mt-4 font-display text-3xl sm:text-4xl">
           Пакеты персональных сказок
         </h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-[var(--text-soft)]">

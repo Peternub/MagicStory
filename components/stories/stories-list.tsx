@@ -31,7 +31,7 @@ export function StoriesList({ stories }: StoriesListProps) {
   if (stories.length === 0) {
     return (
       <div
-        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-8 text-center"
+        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 text-center sm:p-8"
         style={{ boxShadow: "var(--glow-shadow)" }}
       >
         <p className="text-lg font-medium text-[var(--text-main)]">Серий пока нет</p>

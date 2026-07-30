@@ -18,7 +18,7 @@ export default async function ChildrenPage() {
   const childrenItems = (data ?? []) as ChildRecord[];
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 sm:px-10">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-6 sm:px-10 sm:py-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">
@@ -31,13 +31,13 @@ export default async function ChildrenPage() {
 
         <Link
           href="/children/new"
-          className="inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
+          className="inline-flex w-full items-center justify-center rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:w-auto"
         >
           Добавить ребенка
         </Link>
       </header>
 
-      <section className="mt-10">
+      <section className="mt-7 sm:mt-10">
         <ChildrenList childrenItems={childrenItems} />
       </section>
     </main>

@@ -630,10 +630,57 @@ select:-webkit-autofill:focus {
 }
 
 @media (max-width: 640px) {
+  body::after,
+  .cursor-magic {
+    display: none;
+  }
+
+  .story-sequence__panel {
+    min-height: 56svh;
+    padding: 3rem 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .story-sequence__content {
+    padding: 0 1rem;
+  }
+
   .story-sequence__label {
-    top: max(1rem, env(safe-area-inset-top));
-    left: 1rem;
+    position: static;
+    margin-bottom: 1rem;
+    text-align: center;
     font-size: 0.66rem;
     letter-spacing: 0.22em;
+  }
+
+  .story-sequence__line {
+    font-size: clamp(1.65rem, 7.5vw, 2.2rem);
+    line-height: 1.2;
+  }
+
+  main > section,
+  main > header,
+  main > div,
+  article,
+  footer > div {
+    animation-duration: 0.45s;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  html.scroll-reveal-ready main article.is-revealed:hover,
+  html.scroll-reveal-ready .magic-hover.is-revealed:hover,
+  article:hover,
+  .magic-hover:hover,
+  .contact-card:hover,
+  button:not(:disabled):hover,
+  a[href]:hover,
+  [role="button"]:hover {
+    transform: none;
+  }
+
+  article:hover::before,
+  .magic-hover:hover::before {
+    opacity: 0;
   }
 }
