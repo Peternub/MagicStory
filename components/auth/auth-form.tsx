@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
-import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 
 type AuthActionState = {
   error?: string;
@@ -144,15 +143,6 @@ export function AuthForm({
           {isPending ? "Подождите..." : submitLabel}
         </button>
       </form>
-
-      <div className="mt-5">
-        <div className="mb-5 flex items-center gap-3 text-sm text-[var(--text-muted)]">
-          <span className="h-px flex-1 bg-[var(--border-soft)]" />
-          <span>или</span>
-          <span className="h-px flex-1 bg-[var(--border-soft)]" />
-        </div>
-        <GoogleAuthButton />
-      </div>
 
       <p className="mt-8 text-base text-[var(--text-soft)]">
         {alternateText}{" "}

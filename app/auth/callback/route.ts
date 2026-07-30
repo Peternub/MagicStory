@@ -9,9 +9,9 @@ type CookieToSet = {
   options?: CookieOptions;
 };
 
-function createOAuthErrorResponse(request: NextRequest, reason?: string | null) {
+function createCallbackErrorResponse(request: NextRequest, reason?: string | null) {
   const url = new URL("/auth/login", request.url);
-  url.searchParams.set("error", "oauth");
+  url.searchParams.set("error", "callback");
 
   if (reason) {
     url.searchParams.set("reason", reason.slice(0, 180));
@@ -48,26 +48,29 @@ export async function GET(request: NextRequest) {
   );
 
   if (!code) {
-    console.error("Google callback missing code", {
+    console.error("Auth callback missing code", {
       providerError
     });
-    return createOAuthErrorResponse(request, providerError ?? "Google не вернул код авторизации");
+    return createCallbackErrorResponse(
+      request,
+      providerError ?? "Сервис авторизации не вернул код подтверждения"
+    );
   }
 
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error || !data.user) {
-    console.error("Google callback error", {
+    console.error("Auth callback error", {
       status: error?.status,
       message: error?.message
     });
-    return createOAuthErrorResponse(request, error?.message ?? "Supabase не создал сессию");
+    return createCallbackErrorResponse(request, error?.message ?? "Supabase не создал сессию");
   }
 
   try {
     await ensureUserProfile(data.user.id, data.user.email);
   } catch {
-    console.error("Google callback profile creation failed", {
+    console.error("Auth callback profile creation failed", {
       userId: data.user.id
     });
   }

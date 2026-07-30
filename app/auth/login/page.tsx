@@ -13,10 +13,8 @@ type LoginPageProps = {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const { error, reason } = await searchParams;
   const initialError =
-    error === "oauth"
-      ? `Google не передал действующую сессию${reason ? `: ${reason}` : "."}`
-      : error === "oauth_start"
-        ? "Не удалось начать вход через Google. Проверьте настройки Google в Supabase."
+    error === "callback"
+      ? `Не удалось подтвердить ссылку${reason ? `: ${reason}` : "."}`
       : undefined;
 
   return (

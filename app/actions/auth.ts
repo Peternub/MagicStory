@@ -49,7 +49,7 @@ function mapAuthErrorMessage(message?: string, status?: number) {
   }
 
   if (normalized.includes("invalid login credentials")) {
-    return "Неверный email или пароль. Если аккаунт создан через Google, войдите кнопкой «Продолжить через Google».";
+    return "Неверный email или пароль.";
   }
 
   if (normalized.includes("email not confirmed")) {
@@ -114,32 +114,6 @@ export async function signIn(
   }
 
   redirect("/dashboard");
-}
-
-export async function signInWithGoogle() {
-  const siteOrigin = await getRequestOrigin();
-
-  if (!siteOrigin) {
-    redirect("/auth/login?error=oauth_start");
-  }
-
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: `${siteOrigin}/auth/callback?next=/dashboard`
-    }
-  });
-
-  if (error || !data.url) {
-    console.error("Google sign in start error", {
-      status: error?.status,
-      message: error?.message
-    });
-    redirect("/auth/login?error=oauth_start");
-  }
-
-  redirect(data.url);
 }
 
 export async function requestPasswordReset(
