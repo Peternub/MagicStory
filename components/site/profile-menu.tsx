@@ -11,6 +11,39 @@ type ProfileMenuProps = {
   subscriptionStatus: string;
 };
 
+const accountLinks = [
+  {
+    href: "/dashboard",
+    label: "Главная кабинета",
+    description: "Профиль и последние серии"
+  },
+  {
+    href: "/series/new",
+    label: "Создать сериал",
+    description: "Начать новую историю"
+  },
+  {
+    href: "/series",
+    label: "Мои сериалы",
+    description: "Продолжить созданные истории"
+  },
+  {
+    href: "/stories",
+    label: "Библиотека",
+    description: "Все готовые серии"
+  },
+  {
+    href: "/children",
+    label: "Профиль ребенка",
+    description: "Добавить или изменить данные"
+  },
+  {
+    href: "/billing",
+    label: "Тариф и оплата",
+    description: "Управление подпиской"
+  }
+];
+
 function formatPlanLabel(status?: string | null) {
   switch (status) {
     case "active":
@@ -58,16 +91,17 @@ export function ProfileMenu({
       <button
         type="button"
         onClick={() => setIsOpen((value) => !value)}
-        className="flex items-center gap-2 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] px-2 py-1.5 text-sm text-[var(--text-main)] transition hover:border-[var(--border-strong)] sm:gap-3 sm:px-3 sm:py-2"
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        className="flex items-center gap-2 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-soft)] px-2.5 py-1.5 text-sm text-[var(--text-main)] transition hover:bg-[var(--surface-secondary)] sm:px-3 sm:py-2"
       >
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface-secondary)] text-xs font-semibold text-[var(--logo-text)] sm:h-9 sm:w-9">
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--surface-secondary)] text-[0.65rem] font-semibold text-[var(--logo-text)] sm:h-8 sm:w-8 sm:text-xs">
           {initials}
         </span>
-        <span className="hidden max-w-[12rem] truncate font-medium text-[var(--text-main)] sm:block">
-          {displayName}
-        </span>
+        <span className="whitespace-nowrap text-xs font-semibold sm:text-sm">Личный кабинет</span>
         <span
-          className={`text-[var(--text-muted)] transition ${isOpen ? "rotate-180" : ""}`}
+          aria-hidden="true"
+          className={`text-xs text-[var(--text-muted)] transition ${isOpen ? "rotate-180" : ""}`}
         >
           ▾
         </span>
@@ -75,70 +109,49 @@ export function ProfileMenu({
 
       {isOpen ? (
         <div
-          className="absolute right-0 mt-3 w-[min(19rem,calc(100vw-2rem))] rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-3 sm:p-4"
+          role="menu"
+          className="absolute right-0 mt-3 w-[min(22rem,calc(100vw-2rem))] rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-3 sm:p-4"
           style={{ boxShadow: "var(--glow-shadow)" }}
         >
-          <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] p-4">
-            <p className="text-xs uppercase tracking-[0.18em] text-[var(--logo-text)]">
-              Почта
-            </p>
-            <p className="mt-2 break-all text-sm text-[var(--text-main)]">{email}</p>
+          <div className="flex items-center gap-3 border-b border-[var(--border-soft)] px-1 pb-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-secondary)] text-xs font-semibold text-[var(--logo-text)]">
+              {initials}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-[var(--text-main)]">
+                {displayName}
+              </p>
+              <p className="mt-0.5 truncate text-xs text-[var(--text-soft)]">{email}</p>
+            </div>
           </div>
 
-          <nav className="mt-3 grid gap-2 lg:hidden">
-            <Link
-              href="/children"
-              onClick={() => setIsOpen(false)}
-              className="rounded-lg border border-[var(--border-soft)] px-4 py-3 text-sm font-medium text-[var(--text-main)]"
-            >
-              Профиль ребенка
-            </Link>
-            <Link
-              href="/series/new"
-              onClick={() => setIsOpen(false)}
-              className="rounded-lg bg-[var(--button-dark)] px-4 py-3 text-center text-sm font-medium text-[var(--button-dark-text)]"
-            >
-              Создать сериал
-            </Link>
-            <Link
-              href="/stories"
-              onClick={() => setIsOpen(false)}
-              className="rounded-lg border border-[var(--border-soft)] px-4 py-3 text-sm font-medium text-[var(--text-main)]"
-            >
-              Библиотека
-            </Link>
+          <nav className="mt-3 grid gap-1">
+            {accountLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                role="menuitem"
+                onClick={() => setIsOpen(false)}
+                className="rounded-lg px-3 py-2.5 transition hover:bg-[var(--surface-secondary)]"
+              >
+                <span className="block text-sm font-medium text-[var(--text-main)]">
+                  {item.label}
+                </span>
+                <span className="mt-0.5 block text-xs text-[var(--text-soft)]">
+                  {item.description}
+                </span>
+              </Link>
+            ))}
           </nav>
 
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:gap-3">
-            <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] p-4">
-              <p className="text-xs uppercase tracking-[0.18em] text-[var(--logo-text)]">
-                Серии
-              </p>
-              <p className="mt-2 text-lg font-semibold text-[var(--text-main)]">
-                Без ограничений
-              </p>
-              <p className="mt-1 text-xs text-[var(--text-soft)]">в пробном периоде</p>
-            </div>
+          <p className="mt-3 border-t border-[var(--border-soft)] px-3 pt-3 text-xs text-[var(--text-soft)]">
+            Тариф:{" "}
+            <span className="font-medium text-[var(--text-main)]">
+              {formatPlanLabel(subscriptionStatus)}
+            </span>
+          </p>
 
-            <div className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] p-4">
-              <p className="text-xs uppercase tracking-[0.18em] text-[var(--logo-text)]">
-                Тариф
-              </p>
-              <p className="mt-2 text-lg font-semibold text-[var(--text-main)]">
-                {formatPlanLabel(subscriptionStatus)}
-              </p>
-            </div>
-          </div>
-
-          <Link
-            href="/dashboard"
-            onClick={() => setIsOpen(false)}
-            className="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-[var(--border-soft)] px-4 py-3 text-sm font-medium text-[var(--text-main)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)]"
-          >
-            Открыть кабинет
-          </Link>
-
-          <SignOutButton className="mt-3 w-full justify-center rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-4 py-3 text-sm text-[var(--text-main)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)]" />
+          <SignOutButton className="mt-3 w-full justify-center rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-4 py-2.5 text-sm text-[var(--text-main)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)]" />
         </div>
       ) : null}
     </div>
