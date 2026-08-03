@@ -3,8 +3,7 @@
 import { useEffect } from "react";
 
 const revealSelector = [
-  "main > section",
-  ".story-sequence__panel",
+  "main > section:not(.story-sequence)",
   "main article",
   ".magic-hover"
 ].join(",");

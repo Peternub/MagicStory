@@ -106,16 +106,14 @@ footer > div {
   animation-delay: var(--magic-delay, 0ms);
 }
 
-html.scroll-reveal-ready main > section,
-html.scroll-reveal-ready .story-sequence__panel,
+html.scroll-reveal-ready main > section:not(.story-sequence),
 html.scroll-reveal-ready main article,
 html.scroll-reveal-ready .magic-hover {
   opacity: 0;
   transform: translateY(28px) scale(0.985);
 }
 
-html.scroll-reveal-ready main > section.is-revealed,
-html.scroll-reveal-ready .story-sequence__panel.is-revealed,
+html.scroll-reveal-ready main > section:not(.story-sequence).is-revealed,
 html.scroll-reveal-ready main article.is-revealed,
 html.scroll-reveal-ready .magic-hover.is-revealed {
   opacity: 1;
