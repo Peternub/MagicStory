@@ -34,7 +34,7 @@ export function ChildForm({
   const genderDefaultValue = child ? child.gender ?? "" : "boy";
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form action={formAction} autoComplete="off" className="space-y-5">
       {child ? <input type="hidden" name="childId" value={child.id} /> : null}
 
       <label className="block">
@@ -44,6 +44,7 @@ export function ChildForm({
         <input
           name="name"
           type="text"
+          autoComplete="off"
           required
           defaultValue={child?.name ?? ""}
           className={fieldClassName}
@@ -56,6 +57,7 @@ export function ChildForm({
           <input
             name="age"
             type="number"
+            autoComplete="off"
             min={3}
             max={12}
             required
@@ -68,6 +70,7 @@ export function ChildForm({
           <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Пол</span>
           <select
             name="gender"
+            autoComplete="off"
             required
             defaultValue={genderDefaultValue}
             className={fieldClassName}
@@ -88,6 +91,7 @@ export function ChildForm({
           </span>
           <textarea
             name="additionalContext"
+            autoComplete="off"
             rows={3}
             maxLength={800}
             defaultValue={child.additional_context ?? ""}
@@ -102,6 +106,7 @@ export function ChildForm({
         </span>
         <textarea
           name="interests"
+          autoComplete="off"
           rows={3}
           maxLength={500}
           defaultValue={child?.interests ?? ""}
@@ -116,6 +121,7 @@ export function ChildForm({
         </span>
         <textarea
           name="fears"
+          autoComplete="off"
           rows={3}
           maxLength={500}
           defaultValue={child?.fears ?? ""}

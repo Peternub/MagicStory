@@ -19,6 +19,7 @@ export function ContactForm() {
   return (
     <form
       action={formAction}
+      autoComplete="off"
       className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-8"
       style={{ boxShadow: "var(--glow-shadow)" }}
     >
@@ -28,6 +29,7 @@ export function ContactForm() {
           <input
             name="name"
             type="text"
+            autoComplete="off"
             required
             className="w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)]"
           />
@@ -40,6 +42,7 @@ export function ContactForm() {
           <input
             name="contact"
             type="text"
+            autoComplete="off"
             required
             className="w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)]"
           />
@@ -49,6 +52,7 @@ export function ContactForm() {
           <span className="mb-2 block text-sm text-[var(--text-soft)]">Сообщение</span>
           <textarea
             name="message"
+            autoComplete="off"
             rows={6}
             required
             className="w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)]"
