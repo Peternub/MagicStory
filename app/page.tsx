@@ -166,7 +166,7 @@ export default function HomePage() {
       <section id="contact" className="px-4 py-16 text-[var(--text-main)] sm:px-6 sm:py-24">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.85fr_1.15fr]">
           <div
-            className="contact-card magic-hover rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-5 sm:p-8"
+            className="contact-card rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card-alt)] p-5 sm:p-8"
             style={{ boxShadow: "var(--glow-shadow)" }}
           >
             <p className="text-sm uppercase tracking-[0.3em] text-[var(--logo-text)]">

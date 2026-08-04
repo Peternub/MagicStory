@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 const revealSelector = [
-  "main > section:not(.story-sequence)",
+  "main > section:not(.story-sequence):not(#contact)",
   "main article",
   ".magic-hover"
 ].join(",");
