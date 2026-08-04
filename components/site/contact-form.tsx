@@ -60,13 +60,13 @@ export function ContactForm() {
         </label>
       </div>
 
-      {state.error ? (
+      {state?.error ? (
         <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
           {state.error}
         </p>
       ) : null}
 
-      {state.success ? (
+      {state?.success ? (
         <p className="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           {state.success}
         </p>
