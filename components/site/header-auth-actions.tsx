@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ProfileMenu } from "@/components/site/profile-menu";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 type AccountSummary =
@@ -128,12 +127,15 @@ function AuthenticatedLinks({ summary }: { summary?: AccountUser }) {
     };
 
   return (
-    <ProfileMenu
-      displayName={profileSummary.displayName}
-      email={profileSummary.email}
-      initials={profileSummary.initials}
-      subscriptionStatus={profileSummary.subscriptionStatus}
-    />
+    <Link
+      href="/dashboard"
+      className="flex shrink-0 items-center gap-2 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-soft)] px-2.5 py-1.5 text-[var(--text-main)] transition hover:bg-[var(--surface-secondary)] sm:px-3 sm:py-2"
+    >
+      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--surface-secondary)] text-[0.65rem] font-semibold text-[var(--logo-text)] sm:h-8 sm:w-8 sm:text-xs">
+        {profileSummary.initials}
+      </span>
+      <span className="whitespace-nowrap text-xs font-semibold sm:text-sm">Личный кабинет</span>
+    </Link>
   );
 }
 

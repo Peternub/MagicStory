@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { AccountNavigation } from "@/components/dashboard/account-navigation";
 import { getUserSummary } from "@/lib/account/user-summary";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getUserDisplayName } from "@/lib/user/display-name";
+import { getUserDisplayName, getUserInitials } from "@/lib/user/display-name";
 
 export const dynamic = "force-dynamic";
 
@@ -111,6 +112,7 @@ function getSubscriptionDisplay(subscription: SubscriptionPreview | null) {
 export default async function DashboardPage() {
   const user = await requireUser();
   const displayName = getUserDisplayName(user);
+  const initials = getUserInitials(user);
   const supabase = await createSupabaseServerClient();
 
   const [
@@ -160,6 +162,13 @@ export default async function DashboardPage() {
           Добрый вечер, {displayName}
         </h1>
       </header>
+
+      <AccountNavigation
+        displayName={displayName}
+        email={user.email ?? ""}
+        initials={initials}
+        plan={subscriptionDisplay.plan}
+      />
 
       <section className="mt-6 grid gap-4 md:grid-cols-2">
         <article className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-6">
