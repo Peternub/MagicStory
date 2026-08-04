@@ -1,5 +1,6 @@
 "use server";
 
+import { sendContactMessageToTelegram } from "@/lib/telegram/contact";
 import { contactSchema } from "@/lib/validators/contact";
 
 type ContactActionState = {
@@ -23,7 +24,15 @@ export async function sendContactRequest(
     };
   }
 
-  console.log("contact request", parsed.data);
+  try {
+    await sendContactMessageToTelegram(parsed.data);
+  } catch (error) {
+    console.error("Не удалось отправить обращение в Telegram", error);
+
+    return {
+      error: "Не удалось отправить сообщение. Попробуйте еще раз немного позже."
+    };
+  }
 
   return {
     success: "Сообщение отправлено. Мы свяжемся с вами по указанному контакту."
