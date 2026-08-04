@@ -7,5 +7,5 @@ export const contactSchema = z.object({
     .trim()
     .min(4, "Укажите, как с вами связаться")
     .max(160, "Контакт слишком длинный"),
-  message: z.string().trim().min(10, "Сообщение слишком короткое").max(2000)
+  message: z.string().trim().min(1, "Введите сообщение").max(2000)
 });
