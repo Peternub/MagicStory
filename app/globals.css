@@ -362,6 +362,26 @@ a[class*="bg-[var(--button-dark)]"]::after {
   transform: translateY(-7px);
 }
 
+.contact-success {
+  animation: contact-success-visible 7s ease both;
+}
+
+@keyframes contact-success-visible {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  7%,
+  93% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
 input,
 textarea,
 select {

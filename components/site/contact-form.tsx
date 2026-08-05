@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { sendContactRequest } from "@/app/actions/contact";
 
 type ContactActionState = {
@@ -11,13 +11,31 @@ type ContactActionState = {
 const initialState: ContactActionState = {};
 
 export function ContactForm() {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isSuccessVisible, setIsSuccessVisible] = useState(false);
   const [state, formAction, isPending] = useActionState(
     sendContactRequest,
     initialState
   );
 
+  useEffect(() => {
+    if (!state?.success) {
+      return;
+    }
+
+    formRef.current?.reset();
+    setIsSuccessVisible(true);
+
+    const timer = window.setTimeout(() => {
+      setIsSuccessVisible(false);
+    }, 7000);
+
+    return () => window.clearTimeout(timer);
+  }, [state]);
+
   return (
     <form
+      ref={formRef}
       action={formAction}
       autoComplete="off"
       className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-8"
@@ -66,19 +84,23 @@ export function ContactForm() {
         </p>
       ) : null}
 
-      {state?.success ? (
-        <p className="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+      {isSuccessVisible && state?.success ? (
+        <p
+          role="status"
+          aria-live="polite"
+          className="contact-success mt-6 flex min-h-[2.75rem] w-full items-center justify-center rounded-lg bg-emerald-50 px-4 py-3 text-center text-sm text-emerald-700"
+        >
           {state.success}
         </p>
-      ) : null}
-
-      <button
-        type="submit"
-        disabled={isPending}
-        className="mt-6 w-full rounded-lg bg-[var(--button-dark)] px-4 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-      >
-        {isPending ? "Отправляем..." : "Отправить"}
-      </button>
+      ) : (
+        <button
+          type="submit"
+          disabled={isPending}
+          className="mt-6 min-h-[2.75rem] w-full rounded-lg bg-[var(--button-dark)] px-4 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {isPending ? "Отправляем..." : "Отправить"}
+        </button>
+      )}
     </form>
   );
 }
