@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { createStory } from "@/app/actions/stories";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { SeriesEpisodeForm } from "@/components/stories/series-episode-form";
 import { getUserSummary } from "@/lib/account/user-summary";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -15,6 +17,7 @@ type ChildPreview = {
 
 type SeriesPreview = {
   id: string;
+  child_id: string;
   title: string;
   children?: unknown;
   stories?: unknown;
@@ -124,7 +127,7 @@ export default async function DashboardPage() {
       .limit(1),
     supabase
       .from("story_series")
-      .select("id, title, children(name), stories(count)")
+      .select("id, child_id, title, children(name), stories(count)")
       .eq("user_id", user.id)
       .order("updated_at", { ascending: false })
       .limit(3),
@@ -184,12 +187,23 @@ export default async function DashboardPage() {
             >
               Все сериалы
             </Link>
-            <Link
-              href={latestSeries ? `/series/${latestSeries.id}` : "/series/new"}
-              className="order-1 inline-flex min-h-[2.75rem] w-full items-center justify-center rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-semibold text-[var(--button-dark-text)] transition hover:opacity-90 sm:order-2 sm:w-auto"
-            >
-              {latestSeries ? "Создать новую серию" : "Создать сериал"}
-            </Link>
+            {latestSeries ? (
+              <div className="order-1 w-full sm:order-2 sm:w-72">
+                <SeriesEpisodeForm
+                  action={createStory}
+                  childId={latestSeries.child_id}
+                  seriesId={latestSeries.id}
+                  hasEpisodes={episodeCount > 0}
+                />
+              </div>
+            ) : (
+              <Link
+                href="/series/new"
+                className="order-1 inline-flex min-h-[2.75rem] w-full items-center justify-center rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-semibold text-[var(--button-dark-text)] transition hover:opacity-90 sm:order-2 sm:w-auto"
+              >
+                Создать сериал
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -211,21 +225,26 @@ export default async function DashboardPage() {
               const childName = getRelationName(series.children) ?? "Персональный сериал";
 
               return (
-                <Link
+                <div
                   key={series.id}
-                  href={`/series/${series.id}`}
-                  className="flex min-h-16 items-center justify-between gap-4 px-5 py-3 transition hover:bg-[var(--surface-soft)] sm:px-6"
+                  className="flex min-h-16 items-center justify-between gap-3 px-5 py-3 sm:px-6"
                 >
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold text-[var(--text-main)]">
+                  <Link href={`/series/${series.id}`} className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-[var(--text-main)] transition hover:text-[var(--logo-text)]">
                       {series.title}
                     </span>
                     <span className="mt-1 block text-xs text-[var(--text-soft)]">
                       {childName} · {count} {formatStoryCount(count)}
                     </span>
-                  </span>
-                  <span className="shrink-0 text-sm font-medium text-[var(--logo-text)]">Открыть</span>
-                </Link>
+                  </Link>
+                  <SeriesEpisodeForm
+                    action={createStory}
+                    childId={series.child_id}
+                    seriesId={series.id}
+                    hasEpisodes={count > 0}
+                    compact
+                  />
+                </div>
               );
             })}
           </div>
