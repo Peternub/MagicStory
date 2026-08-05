@@ -1,0 +1,49 @@
+import type { ReactNode } from "react";
+import Link from "next/link";
+
+type HouseSectionProps = {
+  actions?: ReactNode;
+  children: ReactNode;
+  description: string;
+  eyebrow: string;
+  room: "cinema" | "gallery" | "study";
+  title: string;
+};
+
+export function HouseSection({
+  actions,
+  children,
+  description,
+  eyebrow,
+  room,
+  title
+}: HouseSectionProps) {
+  return (
+    <main className={`house-section house-section--${room}`}>
+      <div className="house-section__scene" aria-hidden="true">
+        <div className="house-section__scene-object">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+
+      <div className="house-section__workspace">
+        <header className="house-section__header">
+          <div className="house-section__heading">
+            <Link href="/dashboard" className="house-section__home-link">
+              <span aria-hidden="true">⌂</span>
+              Вернуться в дом
+            </Link>
+            <p>{eyebrow}</p>
+            <h1>{title}</h1>
+            <div>{description}</div>
+          </div>
+          {actions ? <div className="house-section__actions">{actions}</div> : null}
+        </header>
+
+        <div className="house-section__body">{children}</div>
+      </div>
+    </main>
+  );
+}
