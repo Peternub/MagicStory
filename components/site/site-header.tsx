@@ -32,12 +32,30 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+
+          <span aria-hidden="true" className="mx-2 h-6 w-px bg-[var(--border-soft)]" />
+
+          <Link href="/series/new" className="header-create-link">
+            Создать сериал
+          </Link>
+          <Link href="/series" className="header-create-link">
+            Новая серия
+          </Link>
         </nav>
 
         <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
           <HeaderAuthActions />
         </div>
       </div>
+
+      <nav aria-label="Быстрое создание" className="mobile-create-actions lg:hidden">
+        <Link href="/series/new" className="mobile-create-actions__link">
+          Создать сериал
+        </Link>
+        <Link href="/series" className="mobile-create-actions__link">
+          Новая серия
+        </Link>
+      </nav>
     </header>
   );
 }
