@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { AccountNavigation } from "@/components/dashboard/account-navigation";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import { getUserSummary } from "@/lib/account/user-summary";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getUserDisplayName, getUserInitials } from "@/lib/user/display-name";
+import { getUserDisplayName } from "@/lib/user/display-name";
 
 export const dynamic = "force-dynamic";
 
@@ -65,42 +65,36 @@ function formatChildAge(age: number) {
   return `${age} лет`;
 }
 
-function formatDays(value: number) {
-  const lastTwoDigits = value % 100;
-  const lastDigit = value % 10;
+function formatStoryCount(count: number) {
+  const lastTwoDigits = count % 100;
+  const lastDigit = count % 10;
 
   if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
-    return `${value} дней`;
+    return "серий";
   }
 
   if (lastDigit === 1) {
-    return `${value} день`;
+    return "серия";
   }
 
   if (lastDigit >= 2 && lastDigit <= 4) {
-    return `${value} дня`;
+    return "серии";
   }
 
-  return `${value} дней`;
+  return "серий";
 }
 
 function getSubscriptionDisplay(subscription: SubscriptionPreview | null) {
   if (!subscription?.current_period_end) {
     return {
-      value: "Не оформлена",
-      detail: "Выберите подходящий тариф",
+      detail: "Выбрать тариф",
       plan: "Пробный доступ"
     };
   }
 
   const renewalDate = new Date(subscription.current_period_end);
-  const daysLeft = Math.max(
-    0,
-    Math.ceil((renewalDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-  );
 
   return {
-    value: daysLeft === 0 ? "Сегодня" : formatDays(daysLeft),
     detail: `До ${new Intl.DateTimeFormat("ru-RU", {
       day: "numeric",
       month: "long"
@@ -112,7 +106,7 @@ function getSubscriptionDisplay(subscription: SubscriptionPreview | null) {
 export default async function DashboardPage() {
   const user = await requireUser();
   const displayName = getUserDisplayName(user);
-  const initials = getUserInitials(user);
+  const greetingName = displayName.split(/\s+/)[0] || displayName;
   const supabase = await createSupabaseServerClient();
 
   const [
@@ -153,78 +147,24 @@ export default async function DashboardPage() {
   const seriesChildName = getRelationName(latestSeries?.children);
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
-      <header className="border-b border-[var(--border-soft)] pb-6 sm:pb-8">
-        <p className="text-xs uppercase tracking-[0.2em] text-[var(--logo-text)]">
-          Личный кабинет
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)] sm:text-4xl">
-          Добрый вечер, {displayName}
-        </h1>
+    <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-10">
+      <header className="flex flex-col gap-4 border-b border-[var(--border-soft)] pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--logo-text)]">
+            Личный кабинет
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)] sm:text-4xl">
+            Добрый вечер, {greetingName}
+          </h1>
+        </div>
+        <SignOutButton className="self-start px-1 py-2 text-sm text-[var(--text-soft)] transition hover:text-[var(--text-main)] sm:self-auto" />
       </header>
 
-      <AccountNavigation
-        displayName={displayName}
-        email={user.email ?? ""}
-        initials={initials}
-        plan={subscriptionDisplay.plan}
-      />
-
-      <section className="mt-6 grid gap-4 md:grid-cols-2">
-        <article className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-6">
-          <p className="text-xs uppercase tracking-[0.18em] text-[var(--logo-text)]">
-            Ребёнок
-          </p>
-          <div className="mt-3 flex items-end justify-between gap-4">
-            <div className="min-w-0">
-              <h2 className="truncate text-2xl font-semibold text-[var(--text-main)]">
-                {child?.name ?? "Профиль не создан"}
-              </h2>
-              <p className="mt-1 text-sm text-[var(--text-soft)]">
-                {child
-                  ? `${formatChildAge(child.age)}${
-                      (childrenCount ?? 0) > 1 ? ` · ещё ${(childrenCount ?? 1) - 1}` : ""
-                    }`
-                  : "Добавьте данные для персональных историй"}
-              </p>
-            </div>
-            <Link
-              href={child ? "/children" : "/children/new"}
-              className="shrink-0 text-sm font-semibold text-[var(--logo-text)] transition hover:text-[var(--text-main)]"
-            >
-              {child ? "Изменить" : "Добавить"}
-            </Link>
-          </div>
-        </article>
-
-        <article className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-[var(--logo-text)]">
-                До продления
-              </p>
-              <p className="mt-3 text-2xl font-semibold text-[var(--text-main)]">
-                {subscriptionDisplay.value}
-              </p>
-              <p className="mt-1 text-sm text-[var(--text-soft)]">
-                {subscriptionDisplay.plan} · {subscriptionDisplay.detail}
-              </p>
-            </div>
-            <Link
-              href="/billing"
-              className="shrink-0 text-sm font-semibold text-[var(--logo-text)] transition hover:text-[var(--text-main)]"
-            >
-              Тарифы
-            </Link>
-          </div>
-        </article>
-      </section>
-
-      <section className="mt-4 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-card-alt)] p-5 sm:p-7">
+      <section className="mt-6 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-card-alt)] p-5 sm:p-7">
         <p className="text-xs uppercase tracking-[0.18em] text-[var(--logo-text)]">
-          Сегодня вечером
+          Вечерняя серия
         </p>
-        <div className="mt-3 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mt-3 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
             <h2 className="text-2xl font-semibold text-[var(--text-main)] sm:text-3xl">
               {latestSeries?.title ?? "Создайте первый сериал"}
@@ -234,32 +174,67 @@ export default async function DashboardPage() {
                 ? `${seriesChildName ?? "Персональный сериал"} · ${episodeCount} ${
                     episodeCount === 1 ? "серия" : "серий"
                   }`
-                : "Один сериал — новые продолжения каждый вечер"}
+                : "Новая история каждый вечер"}
             </p>
           </div>
-          <Link
-            href={latestSeries ? `/series/${latestSeries.id}` : "/series/new"}
-            className="inline-flex w-full items-center justify-center rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-semibold text-[var(--button-dark-text)] transition hover:opacity-90 sm:w-auto"
-          >
-            {latestSeries ? "Создать новую серию" : "Создать сериал"}
-          </Link>
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <Link
+              href="/series"
+              className="order-2 text-center text-sm font-medium text-[var(--text-soft)] transition hover:text-[var(--text-main)] sm:order-1"
+            >
+              Все сериалы
+            </Link>
+            <Link
+              href={latestSeries ? `/series/${latestSeries.id}` : "/series/new"}
+              className="order-1 inline-flex min-h-[2.75rem] w-full items-center justify-center rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-semibold text-[var(--button-dark-text)] transition hover:opacity-90 sm:order-2 sm:w-auto"
+            >
+              {latestSeries ? "Создать новую серию" : "Создать сериал"}
+            </Link>
+          </div>
         </div>
       </section>
 
-      <section className="mt-4 flex flex-col gap-4 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-[var(--logo-text)]">
-            Библиотека
+      <section
+        aria-label="Краткая информация"
+        className="mt-4 overflow-hidden rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] sm:grid sm:grid-cols-3"
+      >
+        <Link
+          href={child ? "/children" : "/children/new"}
+          className="block p-5 transition hover:bg-[var(--surface-soft)] sm:p-6"
+        >
+          <p className="text-xs uppercase tracking-[0.16em] text-[var(--logo-text)]">Ребёнок</p>
+          <p className="mt-2 truncate text-xl font-semibold text-[var(--text-main)]">
+            {child?.name ?? "Добавить профиль"}
           </p>
-          <p className="mt-2 text-lg font-semibold text-[var(--text-main)]">
-            {summary.storiesCount} {summary.storiesCount === 1 ? "история" : "историй"}
+          <p className="mt-1 text-sm text-[var(--text-soft)]">
+            {child
+              ? `${formatChildAge(child.age)}${
+                  (childrenCount ?? 0) > 1 ? ` · ещё ${(childrenCount ?? 1) - 1}` : ""
+                }`
+              : "Для персональных серий"}
           </p>
-        </div>
+        </Link>
+
         <Link
           href="/stories"
-          className="inline-flex w-full items-center justify-center rounded-lg border border-[var(--border-strong)] px-5 py-3 text-sm font-semibold text-[var(--text-main)] transition hover:bg-[var(--surface-soft)] sm:w-auto"
+          className="block border-t border-[var(--border-soft)] p-5 transition hover:bg-[var(--surface-soft)] sm:border-l sm:border-t-0 sm:p-6"
         >
-          Открыть библиотеку
+          <p className="text-xs uppercase tracking-[0.16em] text-[var(--logo-text)]">Библиотека</p>
+          <p className="mt-2 text-xl font-semibold text-[var(--text-main)]">
+            {summary.storiesCount} {formatStoryCount(summary.storiesCount)}
+          </p>
+          <p className="mt-1 text-sm text-[var(--text-soft)]">Открыть истории</p>
+        </Link>
+
+        <Link
+          href="/billing"
+          className="block border-t border-[var(--border-soft)] p-5 transition hover:bg-[var(--surface-soft)] sm:border-l sm:border-t-0 sm:p-6"
+        >
+          <p className="text-xs uppercase tracking-[0.16em] text-[var(--logo-text)]">Тариф</p>
+          <p className="mt-2 truncate text-xl font-semibold text-[var(--text-main)]">
+            {subscriptionDisplay.plan}
+          </p>
+          <p className="mt-1 text-sm text-[var(--text-soft)]">{subscriptionDisplay.detail}</p>
         </Link>
       </section>
     </main>
