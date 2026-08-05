@@ -48,7 +48,9 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
         <div className="family-empty__frame" aria-hidden="true">
           <span>+</span>
         </div>
+        <p>Семейная галерея ждёт первую фотографию</p>
         <h2>Добавьте профиль ребёнка</h2>
+        <div>Данные профиля помогут создавать персональные сериалы и серии.</div>
         <Link
           href="/children/new"
           className="house-primary-button"
@@ -73,6 +75,7 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
           <div className="family-profile__details">
             <div className="family-profile__title">
               <div>
+                <p>Профиль ребёнка</p>
                 <h2>{child.name}</h2>
               </div>
               <span>{formatAge(child.age)}</span>
@@ -120,6 +123,7 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
       <Link href="/children/new" className="family-add-frame">
         <span aria-hidden="true">+</span>
         <strong>Добавить ребёнка</strong>
+        <small>Создать новый профиль</small>
       </Link>
     </div>
   );

@@ -55,13 +55,15 @@ export function PlanCard({ plan }: PlanCardProps) {
         ) : null}
       </div>
 
+      <p className="mt-4 text-sm leading-6 text-[var(--text-soft)]">{plan.description}</p>
+
       <div className="mt-7 flex items-end gap-2 text-[var(--text-main)]">
         <p className="text-4xl font-semibold">{plan.priceMonthly}</p>
         <p className="pb-1 text-sm text-[var(--text-soft)]">₽/месяц</p>
       </div>
 
       <ul className="mt-6 space-y-3 text-sm text-[var(--text-soft)]">
-        {plan.features.slice(0, 2).map((feature) => (
+        {plan.features.map((feature) => (
           <li key={feature} className="flex gap-2">
             <span className="text-[var(--logo-text)]" aria-hidden="true">
               •
