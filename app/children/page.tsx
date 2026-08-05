@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChildrenList } from "@/components/children/children-list";
-import { HouseSection } from "@/components/dashboard/house-section";
+import { AccountPageShell } from "@/components/dashboard/house-section";
 import type { ChildRecord } from "@/lib/types/database";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -19,23 +19,20 @@ export default async function ChildrenPage() {
   const childrenItems = (data ?? []) as ChildRecord[];
 
   return (
-    <HouseSection
-      room="gallery"
-      eyebrow="Семейная галерея"
-      title="Профиль ребёнка / детей"
-      description="Профили, интересы и важные детали для персональных историй."
+    <AccountPageShell
+      title="Профили детей"
       actions={
         <Link
           href="/children/new"
-          className="house-primary-button"
+          className="account-primary-button"
         >
-          + Добавить ребёнка
+          Добавить ребёнка
         </Link>
       }
     >
       <section aria-label="Семейная галерея">
         <ChildrenList childrenItems={childrenItems} />
       </section>
-    </HouseSection>
+    </AccountPageShell>
   );
 }

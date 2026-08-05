@@ -55,15 +55,13 @@ export function PlanCard({ plan }: PlanCardProps) {
         ) : null}
       </div>
 
-      <p className="mt-4 text-sm leading-6 text-[var(--text-soft)]">{plan.description}</p>
-
-      <div className="mt-7 flex items-end gap-2 text-[var(--text-main)]">
+      <div className="mt-5 flex items-end gap-2 text-[var(--text-main)]">
         <p className="text-4xl font-semibold">{plan.priceMonthly}</p>
         <p className="pb-1 text-sm text-[var(--text-soft)]">₽/месяц</p>
       </div>
 
-      <ul className="mt-6 space-y-3 text-sm text-[var(--text-soft)]">
-        {plan.features.map((feature) => (
+      <ul className="mt-5 space-y-2 text-sm text-[var(--text-soft)]">
+        {plan.features.slice(0, 2).map((feature) => (
           <li key={feature} className="flex gap-2">
             <span className="text-[var(--logo-text)]" aria-hidden="true">
               •
@@ -76,9 +74,9 @@ export function PlanCard({ plan }: PlanCardProps) {
       <button
         type="button"
         disabled
-        className={`mt-8 w-full rounded-xl border px-4 py-3 text-sm font-medium ${styles.button}`}
+        className={`mt-6 w-full rounded-lg border px-4 py-2.5 text-sm font-medium ${styles.button}`}
       >
-        Выбор тарифа скоро
+        Выбрать
       </button>
     </article>
   );
