@@ -11,43 +11,44 @@ const siteLinks = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-[60] border-b border-[var(--border-soft)] bg-[var(--header-bg)] backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-7xl items-center gap-2 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4 lg:px-10 lg:py-5">
-        <Link href="/" className="flex shrink-0 items-center gap-3 text-[var(--logo-text)]">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface-soft)] text-xs font-semibold sm:h-10 sm:w-10 sm:text-sm">
-            MS
-          </span>
-          <span className="font-display text-sm tracking-[0.16em] sm:text-lg sm:tracking-[0.24em]">
-            MagicStory
-          </span>
-        </Link>
+    <>
+      <header className="sticky top-0 z-[60] border-b border-[var(--border-soft)] bg-[var(--header-bg)] backdrop-blur-xl">
+        <div className="mx-auto flex w-full max-w-7xl items-center gap-2 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4 lg:px-10 lg:py-5">
+          <Link href="/" className="flex shrink-0 items-center gap-3 text-[var(--logo-text)]">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface-soft)] text-xs font-semibold sm:h-10 sm:w-10 sm:text-sm">
+              MS
+            </span>
+            <span className="font-display text-sm tracking-[0.16em] sm:text-lg sm:tracking-[0.24em]">
+              MagicStory
+            </span>
+          </Link>
 
-        <nav aria-label="Основная навигация" className="ml-5 hidden items-center gap-1 lg:flex">
-          {siteLinks.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text-main)]"
-            >
-              {item.label}
+          <nav aria-label="Основная навигация" className="ml-5 hidden items-center gap-1 lg:flex">
+            {siteLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-[var(--text-soft)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text-main)]"
+              >
+                {item.label}
+              </Link>
+            ))}
+
+            <span aria-hidden="true" className="mx-2 h-6 w-px bg-[var(--border-soft)]" />
+
+            <Link href="/series/new" className="header-create-link">
+              Создать сериал
             </Link>
-          ))}
+            <Link href="/series" className="header-create-link">
+              Новая серия
+            </Link>
+          </nav>
 
-          <span aria-hidden="true" className="mx-2 h-6 w-px bg-[var(--border-soft)]" />
-
-          <Link href="/series/new" className="header-create-link">
-            Создать сериал
-          </Link>
-          <Link href="/series" className="header-create-link">
-            Новая серия
-          </Link>
-        </nav>
-
-        <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
-          <HeaderAuthActions />
+          <div className="ml-auto flex min-w-0 items-center gap-2 sm:gap-3">
+            <HeaderAuthActions />
+          </div>
         </div>
-      </div>
-
+      </header>
       <nav aria-label="Быстрое создание" className="mobile-create-actions lg:hidden">
         <Link href="/series/new" className="mobile-create-actions__link">
           Создать сериал
@@ -56,6 +57,6 @@ export function SiteHeader() {
           Новая серия
         </Link>
       </nav>
-    </header>
+    </>
   );
 }

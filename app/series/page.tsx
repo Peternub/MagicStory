@@ -17,8 +17,14 @@ export default async function SeriesPage() {
     <main className="mx-auto min-h-screen w-full max-w-6xl px-4 py-6 sm:px-10 sm:py-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">Сериалы</p>
-          <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">Истории с продолжением</h1>
+          <Link
+            href="/dashboard"
+            className="mb-4 inline-flex text-sm font-medium text-[var(--logo-text)] transition hover:text-[var(--text-main)]"
+          >
+            ← Вернуться в комнату
+          </Link>
+          <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">Библиотека</p>
+          <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">Сериалы и серии</h1>
         </div>
         <Link href="/series/new" className="rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-semibold text-[var(--button-dark-text)]">
           Создать сериал

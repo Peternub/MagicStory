@@ -29,7 +29,7 @@ export default async function BillingPage() {
           href="/dashboard"
           className="inline-flex rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] px-5 py-3 text-sm font-medium text-[var(--text-main)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-soft)]"
         >
-          Вернуться в кабинет
+          ← Вернуться в комнату
         </Link>
       </header>
 
