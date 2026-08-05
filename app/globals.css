@@ -1158,7 +1158,7 @@ a[class*="bg-[var(--button-dark)]"]::after {
   font-size: 0.9rem;
   line-height: 1.65;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 3;
 }
 
 .media-featured__footer {
@@ -1391,7 +1391,7 @@ a[class*="bg-[var(--button-dark)]"]::after {
 }
 
 .media-empty-room > h2 {
-  margin-top: 0.45rem;
+  margin-top: 1.35rem;
   color: var(--text-main);
   font-size: clamp(1.5rem, 3vw, 2.2rem);
   font-weight: 650;
@@ -1640,7 +1640,7 @@ a[class*="bg-[var(--button-dark)]"]::after {
 }
 
 .family-empty > h2 {
-  margin-top: 0.4rem;
+  margin-top: 1.2rem;
   color: var(--text-main);
   font-size: clamp(1.5rem, 3vw, 2.1rem);
   font-weight: 650;
@@ -1949,6 +1949,10 @@ a[class*="bg-[var(--button-dark)]"]::after {
   color: var(--text-soft);
   font-size: 0.85rem;
   line-height: 1.6;
+}
+
+.billing-no-plan h2 + .house-primary-button {
+  margin-top: 1.2rem;
 }
 
 .billing-plans {

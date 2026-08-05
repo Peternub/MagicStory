@@ -67,7 +67,6 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
       room="cinema"
       eyebrow="Домашний кинотеатр"
       title="Библиотека сериалов и серий"
-      description="Все ваши истории с продолжением собраны в одной медиакомнате."
       actions={
         <>
           <Link href="/stories" className="house-secondary-button">Все серии</Link>
@@ -102,7 +101,7 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
 
             <aside className="house-panel media-collection">
               <div className="media-section-heading">
-                <div><p>Коллекция</p><h2>Все сериалы</h2></div>
+                <div><h2>Все сериалы</h2></div>
                 <span>{seriesItems.length}</span>
               </div>
               <div className="media-collection__grid">
@@ -131,7 +130,7 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
 
           <section className="house-panel media-episodes" aria-labelledby="episodes-title">
             <div className="media-section-heading">
-              <div><p>Кинолента</p><h2 id="episodes-title">Серии выбранного сериала</h2></div>
+              <div><h2 id="episodes-title">Серии</h2></div>
               <Link href={`/series/${selectedSeries.id}`} className="house-secondary-button">Новая серия</Link>
             </div>
 
@@ -159,9 +158,7 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
       ) : (
         <section className="house-panel media-empty-room">
           <div className="media-empty-room__screen" aria-hidden="true"><span>MS</span></div>
-          <p>Ваша медиакомната готова</p>
-          <h2>Здесь появятся ваши сериалы и серии</h2>
-          <div>Создайте первый сериал, чтобы начать семейную коллекцию историй.</div>
+          <h2>Сериалов пока нет</h2>
           <Link href="/series/new" className="house-primary-button">Создать первый сериал</Link>
         </section>
       )}

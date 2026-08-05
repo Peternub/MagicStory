@@ -4,7 +4,7 @@ import Link from "next/link";
 type HouseSectionProps = {
   actions?: ReactNode;
   children: ReactNode;
-  description: string;
+  description?: string;
   eyebrow: string;
   room: "cinema" | "gallery" | "study";
   title: string;
@@ -37,7 +37,7 @@ export function HouseSection({
             </Link>
             <p>{eyebrow}</p>
             <h1>{title}</h1>
-            <div>{description}</div>
+            {description ? <div>{description}</div> : null}
           </div>
           {actions ? <div className="house-section__actions">{actions}</div> : null}
         </header>
