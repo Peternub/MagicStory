@@ -22,11 +22,13 @@ export async function sendContactMessageToTelegram(data: ContactMessage) {
     body: JSON.stringify({
       chat_id: chatId,
       text: [
-        "Новое обращение с MagicStory",
-        `Имя: ${data.name}`,
-        `Контакт: ${data.contact}`,
+        "Новое сообщение:",
         "",
-        data.message
+        `Имя - ${data.name}`,
+        `Контакт - ${data.contact}`,
+        `Сообщение - "${data.message}"`,
+        "",
+        "С уважением MagicStory"
       ].join("\n"),
       disable_web_page_preview: true
     }),
