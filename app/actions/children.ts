@@ -18,7 +18,6 @@ export async function createChild(
   formData: FormData
 ): Promise<ChildActionState> {
   const user = await requireUser();
-  const returnTo = formData.get("returnTo") === "/series/new" ? "/series/new" : "/children";
   await ensureUserProfile(user.id, user.email);
   const parsed = childSchema.safeParse({
     name: formData.get("name"),
@@ -63,9 +62,8 @@ export async function createChild(
   }
 
   revalidatePath("/children");
-  revalidatePath("/dashboard");
   revalidatePath("/series/new");
-  redirect(returnTo);
+  redirect("/children");
 }
 
 export async function updateChild(

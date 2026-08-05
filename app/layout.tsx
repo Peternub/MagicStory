@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import { CursorMagic } from "@/components/site/cursor-magic";
-import { CabinetSidebar } from "@/components/dashboard/cabinet-sidebar";
-import { RouteShell } from "@/components/dashboard/route-shell";
 import { ScrollReveal } from "@/components/site/scroll-reveal";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
@@ -32,13 +30,9 @@ export default function RootLayout({
         <CursorMagic />
         <ScrollReveal />
         <div className="min-h-screen">
-          <RouteShell
-            header={<SiteHeader />}
-            sidebar={<CabinetSidebar />}
-            footer={<SiteFooter />}
-          >
-            {children}
-          </RouteShell>
+          <SiteHeader />
+          {children}
+          <SiteFooter />
         </div>
       </body>
     </html>

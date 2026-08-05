@@ -362,10 +362,6 @@ a[class*="bg-[var(--button-dark)]"]::after {
   transform: translateY(-7px);
 }
 
-.cabinet-shell {
-  background: rgba(10, 16, 16, 0.58);
-}
-
 .contact-success {
   animation: contact-success-visible 7s ease both;
 }

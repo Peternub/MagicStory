@@ -24,19 +24,14 @@ export default async function NewSeriesPage() {
       </Link>
       <section className="mt-5 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-5 sm:mt-6 sm:p-8">
         <h1 className="text-2xl font-semibold text-[var(--text-main)] sm:text-3xl">Новый вечерний сериал</h1>
+        <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
+          Один раз задайте героев, мир и правила. Потом каждый вечер достаточно нажать одну кнопку.
+        </p>
         <div className="mt-6 sm:mt-8">
           {childrenItems.length > 0 ? (
             <SeriesForm action={createSeries} childrenItems={childrenItems} />
           ) : (
-            <div className="rounded-lg border border-[var(--border-soft)] p-5 text-center">
-              <p className="text-[var(--text-main)]">Сначала добавьте ребёнка</p>
-              <Link
-                href="/children/new?returnTo=%2Fseries%2Fnew"
-                className="mt-4 inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-semibold text-[var(--button-dark-text)]"
-              >
-                Добавить ребёнка
-              </Link>
-            </div>
+            <Link href="/children/new" className="text-[var(--logo-text)]">Сначала добавьте ребенка</Link>
           )}
         </div>
       </section>

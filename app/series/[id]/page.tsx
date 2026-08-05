@@ -55,6 +55,7 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
 
         <aside className="h-fit rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-6">
           <h2 className="text-xl font-semibold text-[var(--text-main)]">Серия на сегодня</h2>
+          <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">Можно ничего не писать: система сама продолжит сериал по памяти.</p>
           <div className="mt-5">
             <SeriesEpisodeForm action={createStory} childId={series.child_id} seriesId={series.id} hasEpisodes={(episodes?.length ?? 0) > 0} />
           </div>
