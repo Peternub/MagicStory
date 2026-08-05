@@ -17,6 +17,7 @@ type ChildFormProps = {
   };
   submitLabel?: string;
   pendingLabel?: string;
+  returnTo?: string;
 };
 
 const initialState: ChildActionState = {};
@@ -28,7 +29,8 @@ export function ChildForm({
   action,
   child,
   submitLabel = "Сохранить профиль",
-  pendingLabel = "Сохраняем..."
+  pendingLabel = "Сохраняем...",
+  returnTo
 }: ChildFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
   const genderDefaultValue = child ? child.gender ?? "" : "boy";
@@ -36,6 +38,7 @@ export function ChildForm({
   return (
     <form action={formAction} autoComplete="off" className="space-y-5">
       {child ? <input type="hidden" name="childId" value={child.id} /> : null}
+      {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">

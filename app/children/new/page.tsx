@@ -5,13 +5,19 @@ import { requireUser } from "@/lib/supabase/auth";
 
 export const dynamic = "force-dynamic";
 
-export default async function NewChildPage() {
+type NewChildPageProps = {
+  searchParams: Promise<{ returnTo?: string }>;
+};
+
+export default async function NewChildPage({ searchParams }: NewChildPageProps) {
   await requireUser();
+  const query = await searchParams;
+  const returnTo = query.returnTo === "/series/new" ? "/series/new" : undefined;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-4 py-6 sm:px-10 sm:py-10">
       <Link
-        href="/children"
+        href={returnTo ?? "/children"}
         className="text-sm font-medium text-[var(--logo-text)] transition hover:text-[var(--text-main)]"
       >
         ← Назад к профилям
@@ -30,7 +36,7 @@ export default async function NewChildPage() {
         </p>
 
         <div className="mt-8">
-          <ChildForm action={createChild} />
+          <ChildForm action={createChild} returnTo={returnTo} />
         </div>
       </section>
     </main>

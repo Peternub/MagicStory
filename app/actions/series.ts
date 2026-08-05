@@ -10,20 +10,46 @@ type SeriesActionState = {
   error?: string;
 };
 
+const quickIdeas = {
+  magic: {
+    premise: "волшебное приключение в знакомом мире, где ребёнок становится главным героем",
+    title: (name: string) => `Волшебные приключения ${name}`
+  },
+  space: {
+    premise: "космическое путешествие к новым планетам с добрыми открытиями и командной работой",
+    title: (name: string) => `${name} среди звёзд`
+  },
+  mystery: {
+    premise: "уютная тайна рядом с домом, которую ребёнок раскрывает вместе со знакомыми героями",
+    title: (name: string) => `Тайна рядом с домом ${name}`
+  },
+  friendship: {
+    premise: "история о дружбе, взаимопомощи и совместных приключениях ребёнка и его друзей",
+    title: (name: string) => `${name} и настоящая дружба`
+  }
+} as const;
+
+const optionalText = (max: number) =>
+  z.preprocess(
+    (value) => (typeof value === "string" && value.trim() ? value.trim() : undefined),
+    z.string().max(max).optional()
+  );
+
 const seriesSchema = z.object({
   childId: z.string().uuid("Выберите ребенка"),
-  title: z.string().trim().min(2, "Напишите название сериала").max(120),
-  premise: z.string().trim().min(5, "Коротко опишите героев и основную идею").max(600),
-  setting: z.string().trim().max(220).optional(),
-  mainCharacters: z.string().trim().max(400).optional(),
-  additionalWishes: z.string().trim().max(400).optional()
+  quickIdea: z.enum(["magic", "space", "mystery", "friendship"]).default("magic"),
+  title: optionalText(120),
+  premise: optionalText(600),
+  setting: optionalText(220),
+  mainCharacters: optionalText(400),
+  additionalWishes: optionalText(400)
 });
 
 function cleanOptional(value: FormDataEntryValue | null) {
   return typeof value === "string" && value.trim() ? value.trim() : undefined;
 }
 
-function buildSeriesPremise(input: z.infer<typeof seriesSchema>) {
+function buildSeriesPremise(input: z.infer<typeof seriesSchema> & { premise: string }) {
   return [
     `Основная идея: ${input.premise}`,
     input.setting ? `Мир и места: ${input.setting}` : null,
@@ -44,6 +70,7 @@ export async function createSeries(
 
   const parsed = seriesSchema.safeParse({
     childId: formData.get("childId"),
+    quickIdea: formData.get("quickIdea") || "magic",
     title: formData.get("title"),
     premise: formData.get("premise"),
     setting: cleanOptional(formData.get("setting")),
@@ -58,7 +85,7 @@ export async function createSeries(
   const supabase = createSupabaseAdminClient();
   const { data: child } = await supabase
     .from("children")
-    .select("id")
+    .select("id, name")
     .eq("id", parsed.data.childId)
     .eq("user_id", user.id)
     .maybeSingle();
@@ -67,13 +94,17 @@ export async function createSeries(
     return { error: "Профиль ребенка не найден" };
   }
 
+  const selectedIdea = quickIdeas[parsed.data.quickIdea];
+  const title = parsed.data.title ?? selectedIdea.title(child.name);
+  const premise = parsed.data.premise ?? selectedIdea.premise;
+
   const { data: series, error } = await supabase
     .from("story_series")
     .insert({
       user_id: user.id,
       child_id: child.id,
-      title: parsed.data.title,
-      premise: buildSeriesPremise(parsed.data)
+      title,
+      premise: buildSeriesPremise({ ...parsed.data, premise })
     })
     .select("id")
     .single();
