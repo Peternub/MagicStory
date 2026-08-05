@@ -4,6 +4,7 @@ import { getUserSummary } from "@/lib/account/user-summary";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getUserDisplayName } from "@/lib/user/display-name";
+import { ParentDashboard } from "@/components/dashboard/parent-dashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -103,7 +104,7 @@ function getSubscriptionDisplay(subscription: SubscriptionPreview | null) {
   };
 }
 
-export default async function DashboardPage() {
+async function LegacyDashboardPage() {
   const user = await requireUser();
   const displayName = getUserDisplayName(user);
   const greetingName = displayName.split(/\s+/)[0] || displayName;
@@ -239,4 +240,8 @@ export default async function DashboardPage() {
       </section>
     </main>
   );
+}
+
+export default function DashboardPage() {
+  return <ParentDashboard />;
 }
