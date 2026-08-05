@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChildrenList } from "@/components/children/children-list";
+import { HouseSection } from "@/components/dashboard/house-section";
 import type { ChildRecord } from "@/lib/types/database";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -18,34 +19,23 @@ export default async function ChildrenPage() {
   const childrenItems = (data ?? []) as ChildRecord[];
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-6 sm:px-10 sm:py-10">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <Link
-            href="/dashboard"
-            className="mb-4 inline-flex text-sm font-medium text-[var(--logo-text)] transition hover:text-[var(--text-main)]"
-          >
-            ← Вернуться в комнату
-          </Link>
-          <p className="text-sm uppercase tracking-[0.25em] text-[var(--logo-text)]">
-            Профили детей
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold text-[var(--text-main)]">
-            Имя, возраст и пол
-          </h1>
-        </div>
-
+    <HouseSection
+      room="gallery"
+      eyebrow="Семейная галерея"
+      title="Профиль ребёнка / детей"
+      description="Профили, интересы и важные детали для персональных историй."
+      actions={
         <Link
           href="/children/new"
-          className="inline-flex w-full items-center justify-center rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90 sm:w-auto"
+          className="house-primary-button"
         >
-          Добавить ребенка
+          + Добавить ребёнка
         </Link>
-      </header>
-
-      <section className="mt-7 sm:mt-10">
+      }
+    >
+      <section aria-label="Семейная галерея">
         <ChildrenList childrenItems={childrenItems} />
       </section>
-    </main>
+    </HouseSection>
   );
 }

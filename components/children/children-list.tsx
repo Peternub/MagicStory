@@ -18,71 +18,99 @@ function formatGenderLabel(gender?: ChildRecord["gender"]) {
   return "Не указан";
 }
 
+function formatAge(age: number) {
+  const lastTwo = age % 100;
+  const last = age % 10;
+
+  if (lastTwo >= 11 && lastTwo <= 14) {
+    return `${age} лет`;
+  }
+
+  if (last === 1) {
+    return `${age} год`;
+  }
+
+  if (last >= 2 && last <= 4) {
+    return `${age} года`;
+  }
+
+  return `${age} лет`;
+}
+
+function getInitial(name: string) {
+  return name.trim().charAt(0).toUpperCase() || "MS";
+}
+
 export function ChildrenList({ childrenItems }: ChildrenListProps) {
   if (childrenItems.length === 0) {
     return (
-      <div
-        className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 text-center sm:p-8"
-        style={{ boxShadow: "var(--glow-shadow)" }}
-      >
-        <p className="text-lg font-medium text-[var(--text-main)]">
-          Пока нет ни одного профиля ребенка
-        </p>
-        <p className="mt-3 text-sm text-[var(--text-soft)]">
-          Добавьте первый профиль, чтобы затем быстро запускать личный сериал ребенка.
-        </p>
+      <div className="house-panel family-empty">
+        <div className="family-empty__frame" aria-hidden="true">
+          <span>+</span>
+        </div>
+        <p>Семейная галерея ждёт первую фотографию</p>
+        <h2>Добавьте профиль ребёнка</h2>
+        <div>Данные профиля помогут создавать персональные сериалы и серии.</div>
         <Link
           href="/children/new"
-          className="mt-6 inline-flex rounded-lg bg-[var(--button-dark)] px-5 py-3 text-sm font-medium text-[var(--button-dark-text)] transition hover:opacity-90"
+          className="house-primary-button"
         >
-          Добавить ребенка
+          Добавить ребёнка
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-4">
-      {childrenItems.map((child) => (
-        <article
-          key={child.id}
-          className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 sm:p-6"
-          style={{ boxShadow: "var(--glow-shadow)" }}
-        >
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-[var(--text-main)]">{child.name}</h2>
-              <p className="mt-2 text-sm text-[var(--text-soft)]">Возраст: {child.age}</p>
-              <p className="mt-1 text-sm text-[var(--text-soft)]">
-                Пол: {formatGenderLabel(child.gender)}
-              </p>
-              {child.additional_context ? (
-                <p className="mt-3 max-w-3xl text-sm leading-6 text-[var(--text-soft)]">
-                  <span className="font-medium text-[var(--text-main)]">Друзья и близкие:</span>{" "}
-                  {child.additional_context}
-                </p>
-              ) : null}
-              {child.interests ? (
-                <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--text-soft)]">
-                  <span className="font-medium text-[var(--text-main)]">Интересы:</span>{" "}
-                  {child.interests}
-                </p>
-              ) : null}
+    <div className="family-gallery-grid">
+      {childrenItems.map((child, index) => (
+        <article key={child.id} className={`house-panel family-profile family-profile--${index % 3}`}>
+          <div className="family-profile__portrait">
+            <div className="family-profile__avatar" aria-hidden="true">
+              <span>{getInitial(child.name)}</span>
+            </div>
+            <span>{formatGenderLabel(child.gender)}</span>
+          </div>
+
+          <div className="family-profile__details">
+            <div className="family-profile__title">
+              <div>
+                <p>Профиль ребёнка</p>
+                <h2>{child.name}</h2>
+              </div>
+              <span>{formatAge(child.age)}</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            <dl className="family-profile__facts">
+              <div>
+                <dt>Интересы</dt>
+                <dd>{child.interests || "Пока не указаны"}</dd>
+              </div>
+              <div>
+                <dt>Друзья и близкие</dt>
+                <dd>{child.additional_context || "Пока не указаны"}</dd>
+              </div>
+              {child.fears ? (
+                <div>
+                  <dt>Что важно учитывать</dt>
+                  <dd>{child.fears}</dd>
+                </div>
+              ) : null}
+            </dl>
+
+            <div className="family-profile__actions">
               <Link
                 href={`/children/${child.id}`}
-                className="inline-flex items-center justify-center rounded-lg border border-[var(--border-strong)] px-4 py-2 text-sm text-[var(--text-main)] transition hover:bg-[var(--surface-card-alt)]"
+                className="house-primary-button"
               >
-                Изменить
+                Открыть профиль
               </Link>
 
-              <form action={deleteChild} className="contents sm:block">
+              <form action={deleteChild}>
                 <input type="hidden" name="childId" value={child.id} />
                 <button
                   type="submit"
-                  className="w-full rounded-lg border border-red-400/25 px-4 py-2 text-sm text-red-200 transition hover:border-red-300/50 hover:bg-red-500/10"
+                  className="family-profile__delete"
                 >
                   Удалить
                 </button>
@@ -91,6 +119,12 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
           </div>
         </article>
       ))}
+
+      <Link href="/children/new" className="family-add-frame">
+        <span aria-hidden="true">+</span>
+        <strong>Добавить ребёнка</strong>
+        <small>Создать новый профиль</small>
+      </Link>
     </div>
   );
 }
