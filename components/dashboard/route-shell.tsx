@@ -32,7 +32,7 @@ export function RouteShell({ children, footer, header, sidebar }: RouteShellProp
   return (
     <>
       {header}
-      <div className="mx-auto flex w-full max-w-[96rem]">
+      <div className="cabinet-shell mx-auto flex min-h-[calc(100vh-4.5rem)] w-full max-w-[96rem]">
         {sidebar}
         <div className="min-w-0 flex-1 pb-20 lg:pb-0">{children}</div>
       </div>
