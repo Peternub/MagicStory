@@ -31,7 +31,7 @@ export function PlanCard({ plan }: PlanCardProps) {
 
   return (
     <article
-      className={`flex h-full flex-col rounded-lg border p-5 sm:p-6 ${styles.card}`}
+      className={`billing-plan-folder flex h-full flex-col border p-5 sm:p-6 ${styles.card}`}
       style={{
         boxShadow:
           plan.tone === "premium"
@@ -41,7 +41,7 @@ export function PlanCard({ plan }: PlanCardProps) {
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className={`inline-flex rounded-lg px-3 py-1 text-xs font-medium ${styles.badge}`}>
+          <p className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${styles.badge}`}>
             {plan.subtitle}
           </p>
           <h2 className="mt-5 text-2xl font-semibold text-[var(--text-main)] sm:text-3xl">
@@ -49,7 +49,7 @@ export function PlanCard({ plan }: PlanCardProps) {
           </h2>
         </div>
         {plan.highlight ? (
-          <span className="rounded-lg border border-[var(--border-strong)] bg-[var(--surface-soft)] px-2.5 py-1 text-xs font-medium text-[var(--accent-gold)]">
+          <span className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-soft)] px-2.5 py-1 text-xs font-medium text-[var(--accent-gold)]">
             Популярный
           </span>
         ) : null}
@@ -76,9 +76,9 @@ export function PlanCard({ plan }: PlanCardProps) {
       <button
         type="button"
         disabled
-        className={`mt-8 w-full rounded-lg border px-4 py-3 text-sm font-medium ${styles.button}`}
+        className={`mt-8 w-full rounded-xl border px-4 py-3 text-sm font-medium ${styles.button}`}
       >
-        Скоро подключим оплату
+        Выбор тарифа скоро
       </button>
     </article>
   );
