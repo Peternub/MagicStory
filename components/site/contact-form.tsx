@@ -48,7 +48,6 @@ export function ContactForm() {
             name="name"
             type="text"
             autoComplete="off"
-            required
             className="w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)]"
           />
         </label>
@@ -61,7 +60,6 @@ export function ContactForm() {
             name="contact"
             type="text"
             autoComplete="off"
-            required
             className="w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)]"
           />
         </label>
@@ -72,7 +70,6 @@ export function ContactForm() {
             name="message"
             autoComplete="off"
             rows={6}
-            required
             className="w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-soft)] px-4 py-3 text-[var(--text-main)] outline-none transition focus:border-[var(--border-strong)]"
           />
         </label>

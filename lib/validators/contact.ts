@@ -1,11 +1,12 @@
 import { z } from "zod";
 
+const formText = z.preprocess(
+  (value) => (typeof value === "string" ? value.trim() : ""),
+  z.string()
+);
+
 export const contactSchema = z.object({
-  name: z.string().trim().min(2, "Укажите имя").max(120),
-  contact: z
-    .string()
-    .trim()
-    .min(4, "Укажите, как с вами связаться")
-    .max(160, "Контакт слишком длинный"),
-  message: z.string().trim().min(1, "Введите сообщение").max(2000)
+  name: formText,
+  contact: formText,
+  message: formText
 });
