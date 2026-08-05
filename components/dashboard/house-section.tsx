@@ -1,26 +1,38 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 
-type AccountPageShellProps = {
+type HouseSectionProps = {
   actions?: ReactNode;
   children: ReactNode;
+  description?: string;
+  eyebrow: string;
+  room: "cinema" | "gallery" | "study";
   title: string;
 };
 
-export function AccountPageShell({ actions, children, title }: AccountPageShellProps) {
+export function HouseSection({
+  actions,
+  children,
+  description,
+  title
+}: HouseSectionProps) {
   return (
-    <main className="account-page">
-      <div className="account-page__container">
-        <Link href="/dashboard" className="account-page__back-link">
-          ← На главный экран
-        </Link>
-
-        <header className="account-page__header">
-          <h1>{title}</h1>
-          {actions ? <div className="account-page__actions">{actions}</div> : null}
+    <main className="account-section">
+      <div className="account-section__glow" aria-hidden="true" />
+      <div className="account-section__workspace">
+        <header className="account-section__header">
+          <div className="account-section__heading">
+            <Link href="/dashboard" className="account-section__back-link">
+              ← В кабинет
+            </Link>
+            <p>MagicStory</p>
+            <h1>{title}</h1>
+            {description ? <div>{description}</div> : null}
+          </div>
+          {actions ? <div className="account-section__actions">{actions}</div> : null}
         </header>
 
-        <div className="account-page__body">{children}</div>
+        <div className="account-section__body">{children}</div>
       </div>
     </main>
   );

@@ -9,9 +9,8 @@ export default async function DashboardPage() {
   return (
     <main className="dashboard-room-page">
       <header className="dashboard-room-intro">
-        <p>Личный кабинет</p>
-        <h1>Ваша комната MagicStory</h1>
-        <span>Выберите раздел, к которому хотите перейти</span>
+        <p>MagicStory</p>
+        <h1>Личный кабинет</h1>
       </header>
 
       <section className="dashboard-room" aria-label="Разделы личного кабинета">

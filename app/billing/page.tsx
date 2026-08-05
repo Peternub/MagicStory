@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AccountPageShell } from "@/components/dashboard/house-section";
+import { HouseSection } from "@/components/dashboard/house-section";
 import { PricingTabs } from "@/components/site/pricing-tabs";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -7,6 +7,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 type SubscriptionPlanPreview = {
+  code: string;
+  description: string | null;
   name: string;
   price_rub: number;
   stories_limit: number;
@@ -25,7 +27,7 @@ const statusLabels: Record<string, string> = {
   canceled: "Отменён",
   expired: "Завершён",
   past_due: "Требуется оплата",
-  pending: "Ожидает оплаты"
+  pending: "Ожидает подключения"
 };
 
 function getPlan(relation: unknown): SubscriptionPlanPreview | null {
@@ -39,7 +41,9 @@ function getPlan(relation: unknown): SubscriptionPlanPreview | null {
 }
 
 function formatDate(value: string | null) {
-  if (!value) return "Не указана";
+  if (!value) {
+    return "Не указана";
+  }
 
   return new Intl.DateTimeFormat("ru-RU", {
     day: "numeric",
@@ -51,86 +55,134 @@ function formatDate(value: string | null) {
 export default async function BillingPage() {
   const user = await requireUser();
   const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from("subscriptions")
-    .select(
-      "status, started_at, current_period_end, external_subscription_id, subscription_plans(name, price_rub, stories_limit)"
-    )
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  const [{ data: profile }, { data: subscriptionData }] = await Promise.all([
+    supabase.from("profiles").select("subscription_status").eq("id", user.id).single(),
+    supabase
+      .from("subscriptions")
+      .select(
+        "status, started_at, current_period_end, external_subscription_id, subscription_plans(code, name, description, price_rub, stories_limit)"
+      )
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+  ]);
 
-  const subscription = (data ?? null) as SubscriptionPreview | null;
+  const subscription = (subscriptionData ?? null) as SubscriptionPreview | null;
   const plan = getPlan(subscription?.subscription_plans);
-  const { count } = subscription?.started_at
+  const { count: storiesUsed } = subscription?.started_at
     ? await supabase
         .from("stories")
         .select("id", { count: "exact", head: true })
         .eq("user_id", user.id)
         .gte("created_at", subscription.started_at)
     : { count: 0 };
-
-  const storiesUsed = count ?? 0;
+  const usedCount = storiesUsed ?? 0;
+  const storiesLimit = plan?.stories_limit ?? 0;
+  const usagePercent = storiesLimit > 0 ? Math.min((usedCount / storiesLimit) * 100, 100) : 0;
 
   return (
-    <AccountPageShell title="Тариф">
-      {subscription && plan ? (
-        <section className="current-subscription">
-          <div className="current-subscription__header">
-            <div>
-              <span>Текущий тариф</span>
-              <h2>{plan.name}</h2>
-            </div>
-            <span className={`subscription-status subscription-status--${subscription.status}`}>
-              {statusLabels[subscription.status] ?? subscription.status}
-            </span>
+    <HouseSection
+      room="study"
+      eyebrow="Домашний кабинет"
+      title="Тариф и управление тарифом"
+      description="Подписка, период действия и доступные варианты — в одной понятной панели."
+      actions={
+        <Link
+          href="#plans"
+          className="house-primary-button"
+        >
+          Посмотреть тарифы
+        </Link>
+      }
+    >
+      <section className="billing-vault" aria-labelledby="current-plan-title">
+        <div className="billing-vault__safe" aria-hidden="true">
+          <div className="billing-vault__door"><span /></div>
+          <div className="billing-vault__inside">
+            <span>MS</span>
+            <span />
+            <span />
           </div>
-
-          <div className="current-subscription__price">
-            <strong>{plan.price_rub.toLocaleString("ru-RU")} ₽</strong>
-            <span>в месяц</span>
-          </div>
-
-          <dl className="subscription-facts">
-            <div>
-              <dt>Следующая дата</dt>
-              <dd>{formatDate(subscription.current_period_end)}</dd>
-            </div>
-            <div>
-              <dt>Лимит</dt>
-              <dd>
-                {plan.stories_limit > 0
-                  ? `${storiesUsed} из ${plan.stories_limit} серий`
-                  : "Без лимита"}
-              </dd>
-            </div>
-            <div>
-              <dt>Оплата</dt>
-              <dd>{subscription.external_subscription_id ? "YooKassa" : "Не подключена"}</dd>
-            </div>
-          </dl>
-
-          <div className="current-subscription__actions">
-            <Link href="#plans" className="account-primary-button">
-              Изменить тариф
-            </Link>
-            <button type="button" className="account-secondary-button" disabled>
-              Управление оплатой
-            </button>
-          </div>
-        </section>
-      ) : (
-        <div className="account-empty-state">
-          <p>Тариф не выбран</p>
-          <Link href="#plans">Выбрать тариф</Link>
         </div>
-      )}
 
-      <section id="plans" className="plan-comparison">
-        <h2>Другие тарифы</h2>
+        <article className="house-panel billing-current-plan">
+          {subscription && plan ? (
+            <>
+              <div className="billing-current-plan__topline">
+                <div>
+                  <p>Текущий тариф</p>
+                  <h2 id="current-plan-title">{plan.name}</h2>
+                </div>
+                <span className={`billing-status billing-status--${subscription.status}`}>
+                  {statusLabels[subscription.status] ?? subscription.status}
+                </span>
+              </div>
+
+              <div className="billing-current-plan__price">
+                <strong>{plan.price_rub.toLocaleString("ru-RU")} ₽</strong>
+                <span>в месяц</span>
+              </div>
+              {plan.description ? <p>{plan.description}</p> : null}
+
+              <dl className="billing-facts">
+                <div>
+                  <dt>Период начался</dt>
+                  <dd>{formatDate(subscription.started_at)}</dd>
+                </div>
+                <div>
+                  <dt>Следующая дата</dt>
+                  <dd>{formatDate(subscription.current_period_end)}</dd>
+                </div>
+                <div>
+                  <dt>Оплата</dt>
+                  <dd>{subscription.external_subscription_id ? "YooKassa подключена" : "Не подключена"}</dd>
+                </div>
+              </dl>
+
+              <div className="billing-usage">
+                <div>
+                  <span>Использование серий</span>
+                  <strong>
+                    {storiesLimit > 0 ? `${usedCount} из ${storiesLimit}` : `${usedCount} · без лимита`}
+                  </strong>
+                </div>
+                <div className="billing-usage__track">
+                  <span style={{ width: storiesLimit > 0 ? `${usagePercent}%` : "100%" }} />
+                </div>
+              </div>
+
+              <div className="billing-current-plan__actions">
+                <Link href="#plans" className="house-primary-button">Изменить тариф</Link>
+                <button type="button" className="house-secondary-button" disabled>
+                  Управление оплатой скоро
+                </button>
+              </div>
+              <p className="billing-cancel-note">
+                Отмена подписки станет доступна здесь после подключения управления оплатой.
+              </p>
+            </>
+          ) : (
+            <div className="billing-no-plan">
+              <p>Сейф открыт</p>
+              <h2 id="current-plan-title">Тариф пока не выбран</h2>
+              <div>
+                Текущий статус: {profile?.subscription_status ?? "free"}. Выберите подходящий вариант ниже.
+              </div>
+              <Link href="#plans" className="house-primary-button">Посмотреть варианты</Link>
+            </div>
+          )}
+        </article>
+      </section>
+
+      <section id="plans" className="house-panel billing-plans">
+        <div className="billing-plans__heading">
+          <p>Папки в сейфе</p>
+          <h2>Доступные тарифы</h2>
+          <div>Сравните возможности и выберите подходящий уровень качества.</div>
+        </div>
         <PricingTabs variant="billing" />
       </section>
-    </AccountPageShell>
+    </HouseSection>
   );
 }
