@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ChildrenList } from "@/components/children/children-list";
 import { HouseSection } from "@/components/dashboard/house-section";
 import type { ChildRecord } from "@/lib/types/database";
@@ -23,14 +22,6 @@ export default async function ChildrenPage() {
       room="gallery"
       eyebrow="Семейная галерея"
       title="Профиль ребёнка / детей"
-      actions={
-        <Link
-          href="/children/new"
-          className="house-primary-button"
-        >
-          + Добавить ребёнка
-        </Link>
-      }
     >
       <section aria-label="Семейная галерея">
         <ChildrenList childrenItems={childrenItems} />

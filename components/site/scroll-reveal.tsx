@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
+import { usePathname } from "next/navigation";
 
 const revealSelector = [
   "main > section:not(.story-sequence):not(#contact)",
@@ -9,6 +10,17 @@ const revealSelector = [
 ].join(",");
 
 export function ScrollReveal() {
+  const pathname = usePathname();
+
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const previousScrollBehavior = root.style.scrollBehavior;
+
+    root.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+    root.style.scrollBehavior = previousScrollBehavior;
+  }, [pathname]);
+
   useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -43,7 +55,7 @@ export function ScrollReveal() {
       observer.disconnect();
       document.documentElement.classList.remove("scroll-reveal-ready");
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

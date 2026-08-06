@@ -83,14 +83,6 @@ export default async function BillingPage() {
       room="study"
       eyebrow="Домашний кабинет"
       title="Тариф и управление тарифом"
-      actions={
-        <Link
-          href="#plans"
-          className="house-primary-button"
-        >
-          Посмотреть тарифы
-        </Link>
-      }
     >
       <section className="billing-vault" aria-labelledby="current-plan-title">
         <div className="billing-vault__safe" aria-hidden="true">
