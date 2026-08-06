@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HouseSection } from "@/components/dashboard/house-section";
 import { SeriesTree, type TreeEpisode } from "@/components/stories/series-tree";
+import { getSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -9,7 +10,7 @@ export const dynamic = "force-dynamic";
 type SeriesPreview = {
   children?: Array<{ name: string }>;
   id: string;
-  planned_episodes: number;
+  premise: string;
   stories?: TreeEpisode[];
   title: string;
   updated_at: string;
@@ -20,7 +21,7 @@ type SeriesPageProps = {
 };
 
 function getPlannedEpisodes(series: SeriesPreview) {
-  return Math.min(16, Math.max(8, series.planned_episodes ?? 8));
+  return getSeriesEpisodePlan(series.premise);
 }
 
 function isComplete(series: SeriesPreview) {
@@ -34,7 +35,7 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("story_series")
-    .select("id, title, planned_episodes, updated_at, children(name), stories(id, title, episode_number)")
+    .select("id, title, premise, updated_at, children(name), stories(id, title, episode_number)")
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
 

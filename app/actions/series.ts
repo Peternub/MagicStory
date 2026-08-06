@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
+import { addSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -75,8 +76,7 @@ export async function createSeries(
       user_id: user.id,
       child_id: child.id,
       title: parsed.data.title,
-      premise: buildSeriesPremise(parsed.data),
-      planned_episodes: parsed.data.plannedEpisodes
+      premise: addSeriesEpisodePlan(buildSeriesPremise(parsed.data), parsed.data.plannedEpisodes)
     })
     .select("id")
     .single();

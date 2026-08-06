@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { generateStory } from "@/lib/ai/generate-story";
+import { getSeriesEpisodePlan, stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -145,7 +146,7 @@ export async function createStory(
     const [{ data: series }, { data: previousEpisode }] = await Promise.all([
       supabase
         .from("story_series")
-        .select("id, child_id, title, premise, planned_episodes")
+        .select("id, child_id, title, premise")
         .eq("id", seriesId)
         .eq("user_id", user.id)
         .maybeSingle(),
@@ -164,7 +165,7 @@ export async function createStory(
     }
 
     const nextEpisodeNumber = (previousEpisode?.episode_number ?? 0) + 1;
-    if (nextEpisodeNumber > series.planned_episodes) {
+    if (nextEpisodeNumber > getSeriesEpisodePlan(series.premise)) {
       return { error: "Все запланированные серии уже созданы" };
     }
     episodeNumber = nextEpisodeNumber;
@@ -194,7 +195,7 @@ export async function createStory(
       situation: addition || "автоматическое продолжение сериала на сегодняшний вечер",
       setting: `мир сериала «${series.title}»`,
       goal: "завершить сегодняшнюю серию спокойно и оставить небольшой повод для следующей серии",
-      extraWishes: [`ПАСПОРТ СЕРИАЛА «${series.title}»:`, series.premise, continuity].join("\n\n")
+      extraWishes: [`ПАСПОРТ СЕРИАЛА «${series.title}»:`, stripSeriesEpisodePlan(series.premise), continuity].join("\n\n")
     };
   }
 

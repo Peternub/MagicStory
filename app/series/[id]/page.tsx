@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createStory } from "@/app/actions/stories";
 import { SeriesEpisodeForm } from "@/components/stories/series-episode-form";
+import { getSeriesEpisodePlan, stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -16,7 +17,7 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
   const [{ data: series }, { data: episodes }] = await Promise.all([
     supabase
       .from("story_series")
-      .select("id, child_id, title, premise, planned_episodes, children(name)")
+      .select("id, child_id, title, premise, children(name)")
       .eq("id", id)
       .eq("user_id", user.id)
       .single(),
@@ -31,7 +32,8 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
   if (!series) notFound();
 
   const episodesCount = episodes?.length ?? 0;
-  const isComplete = episodesCount >= series.planned_episodes;
+  const plannedEpisodes = getSeriesEpisodePlan(series.premise);
+  const isComplete = episodesCount >= plannedEpisodes;
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-6 sm:px-10 sm:py-10">
@@ -39,7 +41,7 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
       <header className="mt-6 border-b border-[var(--border-soft)] pb-8">
         <p className="text-sm uppercase tracking-[0.2em] text-[var(--logo-text)]">Сериал для {series.children?.[0]?.name}</p>
         <h1 className="mt-2 break-words text-3xl font-semibold text-[var(--text-main)] sm:text-4xl">{series.title}</h1>
-        <p className="mt-4 max-w-3xl whitespace-pre-line leading-7 text-[var(--text-soft)]">{series.premise}</p>
+        <p className="mt-4 max-w-3xl whitespace-pre-line leading-7 text-[var(--text-soft)]">{stripSeriesEpisodePlan(series.premise)}</p>
       </header>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_22rem]">
@@ -60,12 +62,12 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
           {isComplete ? (
             <>
               <h2 className="text-xl font-semibold text-[var(--text-main)]">Сериал завершён</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">Все {series.planned_episodes} серий готовы.</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">Все {plannedEpisodes} серий готовы.</p>
               <Link href="/series?view=completed" className="house-primary-button mt-5">Открыть коллекцию</Link>
             </>
           ) : (
             <>
-              <h2 className="text-xl font-semibold text-[var(--text-main)]">Серия {episodesCount + 1} из {series.planned_episodes}</h2>
+              <h2 className="text-xl font-semibold text-[var(--text-main)]">Серия {episodesCount + 1} из {plannedEpisodes}</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">Можно ничего не писать: система сама продолжит сериал по памяти.</p>
               <div className="mt-5">
                 <SeriesEpisodeForm action={createStory} childId={series.child_id} seriesId={series.id} hasEpisodes={episodesCount > 0} />

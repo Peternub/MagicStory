@@ -17,7 +17,6 @@ export type StorySeriesRecord = {
   child_id: string;
   title: string;
   premise: string;
-  planned_episodes: number;
   created_at: string;
   updated_at: string;
 };
