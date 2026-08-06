@@ -14,25 +14,35 @@ export function HouseSection({
   actions,
   children,
   description,
+  eyebrow,
+  room,
   title
 }: HouseSectionProps) {
   return (
-    <main className="account-section">
-      <div className="account-section__glow" aria-hidden="true" />
-      <div className="account-section__workspace">
-        <header className="account-section__header">
-          <div className="account-section__heading">
-            <Link href="/dashboard" className="account-section__back-link">
-              ← В кабинет
+    <main className={`house-section house-section--${room}`}>
+      <div className="house-section__scene" aria-hidden="true">
+        <div className="house-section__scene-object">
+          <span />
+          <span />
+          <span />
+        </div>
+      </div>
+
+      <div className="house-section__workspace">
+        <header className="house-section__header">
+          <div className="house-section__heading">
+            <Link href="/dashboard" className="house-section__home-link">
+              <span aria-hidden="true">⌂</span>
+              Вернуться в дом
             </Link>
-            <p>MagicStory</p>
+            <p>{eyebrow}</p>
             <h1>{title}</h1>
             {description ? <div>{description}</div> : null}
           </div>
-          {actions ? <div className="account-section__actions">{actions}</div> : null}
+          {actions ? <div className="house-section__actions">{actions}</div> : null}
         </header>
 
-        <div className="account-section__body">{children}</div>
+        <div className="house-section__body">{children}</div>
       </div>
     </main>
   );

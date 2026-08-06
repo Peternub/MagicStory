@@ -23,7 +23,6 @@ export default async function ChildrenPage() {
       room="gallery"
       eyebrow="Семейная галерея"
       title="Профиль ребёнка / детей"
-      description="Профили, интересы и важные детали для персональных историй."
       actions={
         <Link
           href="/children/new"

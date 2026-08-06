@@ -55,18 +55,15 @@ function formatDate(value: string | null) {
 export default async function BillingPage() {
   const user = await requireUser();
   const supabase = await createSupabaseServerClient();
-  const [{ data: profile }, { data: subscriptionData }] = await Promise.all([
-    supabase.from("profiles").select("subscription_status").eq("id", user.id).single(),
-    supabase
-      .from("subscriptions")
-      .select(
-        "status, started_at, current_period_end, external_subscription_id, subscription_plans(code, name, description, price_rub, stories_limit)"
-      )
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-  ]);
+  const { data: subscriptionData } = await supabase
+    .from("subscriptions")
+    .select(
+      "status, started_at, current_period_end, external_subscription_id, subscription_plans(code, name, description, price_rub, stories_limit)"
+    )
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   const subscription = (subscriptionData ?? null) as SubscriptionPreview | null;
   const plan = getPlan(subscription?.subscription_plans);
@@ -86,7 +83,6 @@ export default async function BillingPage() {
       room="study"
       eyebrow="Домашний кабинет"
       title="Тариф и управление тарифом"
-      description="Подписка, период действия и доступные варианты — в одной понятной панели."
       actions={
         <Link
           href="#plans"
@@ -159,16 +155,13 @@ export default async function BillingPage() {
                 </button>
               </div>
               <p className="billing-cancel-note">
-                Отмена подписки станет доступна здесь после подключения управления оплатой.
+                Отмена — после подключения оплаты.
               </p>
             </>
           ) : (
             <div className="billing-no-plan">
               <p>Сейф открыт</p>
               <h2 id="current-plan-title">Тариф пока не выбран</h2>
-              <div>
-                Текущий статус: {profile?.subscription_status ?? "free"}. Выберите подходящий вариант ниже.
-              </div>
               <Link href="#plans" className="house-primary-button">Посмотреть варианты</Link>
             </div>
           )}
@@ -177,9 +170,8 @@ export default async function BillingPage() {
 
       <section id="plans" className="house-panel billing-plans">
         <div className="billing-plans__heading">
-          <p>Папки в сейфе</p>
+          <p>Варианты</p>
           <h2>Доступные тарифы</h2>
-          <div>Сравните возможности и выберите подходящий уровень качества.</div>
         </div>
         <PricingTabs variant="billing" />
       </section>
