@@ -2869,6 +2869,11 @@ select:-webkit-autofill:focus {
   font-size: 0.72rem;
   font-weight: 650;
   line-height: 1.2;
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    background-color 0.22s ease,
+    box-shadow 0.22s ease;
 }
 
 .series-tree__label--left {
@@ -2905,6 +2910,23 @@ select:-webkit-autofill:focus {
 .series-tree__label:hover {
   border-color: rgba(156, 190, 139, 0.55);
   background: rgba(27, 43, 37, 0.98);
+  box-shadow: 0 9px 20px rgba(102, 142, 86, 0.2);
+}
+
+.series-tree__label--left:hover {
+  transform: translate(calc(-100% - 1.5rem), calc(-50% - 3px));
+}
+
+.series-tree__label--right:hover {
+  transform: translate(1.5rem, calc(-50% - 3px));
+}
+
+.series-tree__label--left:active {
+  transform: translate(calc(-100% - 1.5rem), calc(-50% - 1px));
+}
+
+.series-tree__label--right:active {
+  transform: translate(1.5rem, calc(-50% - 1px));
 }
 
 .series-tree--complete::before {
@@ -3135,6 +3157,22 @@ select:-webkit-autofill:focus {
 
   .series-tree__label--right {
     transform: translate(0.45rem, -50%);
+  }
+
+  .series-tree__label--left:hover {
+    transform: translate(calc(-100% - 0.45rem), calc(-50% - 3px));
+  }
+
+  .series-tree__label--right:hover {
+    transform: translate(0.45rem, calc(-50% - 3px));
+  }
+
+  .series-tree__label--left:active {
+    transform: translate(calc(-100% - 0.45rem), calc(-50% - 1px));
+  }
+
+  .series-tree__label--right:active {
+    transform: translate(0.45rem, calc(-50% - 1px));
   }
 
   .series-tree__label span {
