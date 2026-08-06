@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 import { requireUser } from "@/lib/supabase/auth";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +13,7 @@ export default async function DashboardPage() {
         <p>Личный кабинет</p>
         <h1>Ваша комната MagicStory</h1>
         <span>Выберите раздел, к которому хотите перейти</span>
+        <SignOutButton className="dashboard-signout" />
       </header>
 
       <section className="dashboard-room" aria-label="Разделы личного кабинета">
