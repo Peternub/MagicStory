@@ -20,14 +20,6 @@ export function HouseSection({
 }: HouseSectionProps) {
   return (
     <main className={`house-section house-section--${room}`}>
-      <div className="house-section__scene" aria-hidden="true">
-        <div className="house-section__scene-object">
-          <span />
-          <span />
-          <span />
-        </div>
-      </div>
-
       <div className="house-section__workspace">
         <header className="house-section__header">
           <div className="house-section__heading">

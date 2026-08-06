@@ -919,7 +919,7 @@ a[class*="bg-[var(--button-dark)]"]::after {
   position: relative;
   z-index: 2;
   width: min(100%, 88rem);
-  margin: -4rem auto 0;
+  margin: 0 auto;
   overflow: hidden;
   border: 1px solid rgba(226, 194, 131, 0.18);
   border-radius: 1.5rem;
@@ -2117,7 +2117,7 @@ a[class*="bg-[var(--button-dark)]"]::after {
   }
 
   .house-section__workspace {
-    margin-top: -1.15rem;
+    margin-top: 0;
     border-radius: 1.1rem;
   }
 
