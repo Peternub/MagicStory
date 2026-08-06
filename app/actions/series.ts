@@ -14,6 +14,7 @@ const seriesSchema = z.object({
   childId: z.string().uuid("Выберите ребенка"),
   title: z.string().trim().min(2, "Напишите название сериала").max(120),
   premise: z.string().trim().min(5, "Коротко опишите героев и основную идею").max(600),
+  plannedEpisodes: z.coerce.number().int().min(8).max(16),
   setting: z.string().trim().max(220).optional(),
   mainCharacters: z.string().trim().max(400).optional(),
   additionalWishes: z.string().trim().max(400).optional()
@@ -46,6 +47,7 @@ export async function createSeries(
     childId: formData.get("childId"),
     title: formData.get("title"),
     premise: formData.get("premise"),
+    plannedEpisodes: formData.get("plannedEpisodes"),
     setting: cleanOptional(formData.get("setting")),
     mainCharacters: cleanOptional(formData.get("mainCharacters")),
     additionalWishes: cleanOptional(formData.get("additionalWishes"))
@@ -73,7 +75,8 @@ export async function createSeries(
       user_id: user.id,
       child_id: child.id,
       title: parsed.data.title,
-      premise: buildSeriesPremise(parsed.data)
+      premise: buildSeriesPremise(parsed.data),
+      planned_episodes: parsed.data.plannedEpisodes
     })
     .select("id")
     .single();

@@ -13,6 +13,7 @@ type SeriesFormProps = {
 const initialState: SeriesActionState = {};
 const fieldClassName =
   "w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-4 py-3 text-base text-[var(--text-main)] placeholder:text-[var(--text-muted)] outline-none transition focus:border-[var(--border-strong)] focus:ring-4 focus:ring-[var(--accent-gold-soft)]";
+const episodeOptions = Array.from({ length: 9 }, (_, index) => index + 8);
 
 export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
@@ -33,6 +34,17 @@ export function SeriesForm({ action, childrenItems }: SeriesFormProps) {
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Название сериала</span>
         <input name="title" autoComplete="off" required maxLength={120} className={fieldClassName} />
+      </label>
+
+      <label className="block">
+        <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Количество серий</span>
+        <select name="plannedEpisodes" defaultValue="8" className={fieldClassName}>
+          {episodeOptions.map((count) => (
+            <option key={count} value={count}>
+              {count} серий
+            </option>
+          ))}
+        </select>
       </label>
 
       <label className="block">

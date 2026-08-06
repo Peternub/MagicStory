@@ -145,7 +145,7 @@ export async function createStory(
     const [{ data: series }, { data: previousEpisode }] = await Promise.all([
       supabase
         .from("story_series")
-        .select("id, child_id, title, premise")
+        .select("id, child_id, title, premise, planned_episodes")
         .eq("id", seriesId)
         .eq("user_id", user.id)
         .maybeSingle(),
@@ -163,7 +163,12 @@ export async function createStory(
       return { error: "Сериал не найден" };
     }
 
-    episodeNumber = (previousEpisode?.episode_number ?? 0) + 1;
+    const nextEpisodeNumber = (previousEpisode?.episode_number ?? 0) + 1;
+    if (nextEpisodeNumber > series.planned_episodes) {
+      return { error: "Все запланированные серии уже созданы" };
+    }
+    episodeNumber = nextEpisodeNumber;
+
     const rawAddition = formData.get("situation");
     const addition = typeof rawAddition === "string" ? rawAddition.trim() : "";
     const continuity = previousEpisode?.text_content

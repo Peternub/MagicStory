@@ -16,7 +16,7 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
   const [{ data: series }, { data: episodes }] = await Promise.all([
     supabase
       .from("story_series")
-      .select("id, child_id, title, premise, children(name)")
+      .select("id, child_id, title, premise, planned_episodes, children(name)")
       .eq("id", id)
       .eq("user_id", user.id)
       .single(),
@@ -29,6 +29,9 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
   ]);
 
   if (!series) notFound();
+
+  const episodesCount = episodes?.length ?? 0;
+  const isComplete = episodesCount >= series.planned_episodes;
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-6 sm:px-10 sm:py-10">
@@ -54,11 +57,21 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
         </section>
 
         <aside className="h-fit rounded-lg border border-[var(--border-soft)] bg-[var(--surface-primary)] p-6">
-          <h2 className="text-xl font-semibold text-[var(--text-main)]">Серия на сегодня</h2>
-          <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">Можно ничего не писать: система сама продолжит сериал по памяти.</p>
-          <div className="mt-5">
-            <SeriesEpisodeForm action={createStory} childId={series.child_id} seriesId={series.id} hasEpisodes={(episodes?.length ?? 0) > 0} />
-          </div>
+          {isComplete ? (
+            <>
+              <h2 className="text-xl font-semibold text-[var(--text-main)]">Сериал завершён</h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">Все {series.planned_episodes} серий готовы.</p>
+              <Link href="/series?view=completed" className="house-primary-button mt-5">Открыть коллекцию</Link>
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-semibold text-[var(--text-main)]">Серия {episodesCount + 1} из {series.planned_episodes}</h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">Можно ничего не писать: система сама продолжит сериал по памяти.</p>
+              <div className="mt-5">
+                <SeriesEpisodeForm action={createStory} childId={series.child_id} seriesId={series.id} hasEpisodes={episodesCount > 0} />
+              </div>
+            </>
+          )}
         </aside>
       </div>
     </main>
