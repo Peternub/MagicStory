@@ -2830,6 +2830,48 @@ select:-webkit-autofill:focus {
   transition: stroke 0.35s ease, filter 0.35s ease;
 }
 
+.series-tree__episode {
+  cursor: pointer;
+  outline: none;
+}
+
+.series-tree__episode:hover,
+.series-tree__episode:active {
+  transform: none;
+}
+
+.series-tree__episode-motion {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.22s ease;
+}
+
+.series-tree__branch-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-linecap: round;
+  stroke-width: 9;
+  pointer-events: stroke;
+}
+
+.series-tree__episode:hover .series-tree__episode-motion,
+.series-tree__episode:focus-visible .series-tree__episode-motion {
+  transform: translateY(-3px);
+}
+
+.series-tree__episode:hover .series-tree__branch-line,
+.series-tree__episode:hover .series-tree__twig,
+.series-tree__episode:focus-visible .series-tree__branch-line,
+.series-tree__episode:focus-visible .series-tree__twig {
+  stroke: #91815b;
+  filter: drop-shadow(0 0 2px rgba(151, 190, 132, 0.34));
+}
+
+.series-tree__episode:hover .series-tree__leaves,
+.series-tree__episode:focus-visible .series-tree__leaves {
+  filter: drop-shadow(0 0 3px rgba(157, 202, 136, 0.46));
+}
+
 .series-tree__branch-shadow {
   stroke: rgba(2, 8, 6, 0.3);
   stroke-width: 2.45;

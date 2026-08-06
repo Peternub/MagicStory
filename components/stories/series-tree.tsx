@@ -97,25 +97,35 @@ export function SeriesTree({ compact = false, episodes, plannedEpisodes, title }
           const branchPath = `M${startX} ${startY} C${controlX1} ${startY - 1}, ${controlX2} ${endY + 5}, ${endX} ${endY}`;
 
           return (
-            <g key={number} className={episode ? "series-tree__branch is-grown" : "series-tree__branch"}>
-              <path className="series-tree__branch-shadow" d={branchPath} />
-              <path className="series-tree__branch-line" d={branchPath} />
-              <path
-                className="series-tree__twig"
-                d={`M${endX - side * 5} ${endY + 3} C${endX - side * 3} ${endY}, ${endX - side * 1.5} ${endY - 2}, ${endX + side * 1.2} ${endY - 4}`}
-              />
+            <a
+              key={number}
+              href={episode ? `/stories/${episode.id}` : undefined}
+              className={episode ? "series-tree__episode" : undefined}
+              aria-label={episode ? `Открыть серию ${number}: ${episode.title ?? `Серия ${number}`}` : undefined}
+            >
+              <g className={episode ? "series-tree__branch is-grown" : "series-tree__branch"}>
+                <g className="series-tree__episode-motion">
+                  {episode ? <path className="series-tree__branch-hit" d={branchPath} /> : null}
+                  <path className="series-tree__branch-shadow" d={branchPath} />
+                  <path className="series-tree__branch-line" d={branchPath} />
+                  <path
+                    className="series-tree__twig"
+                    d={`M${endX - side * 5} ${endY + 3} C${endX - side * 3} ${endY}, ${endX - side * 1.5} ${endY - 2}, ${endX + side * 1.2} ${endY - 4}`}
+                  />
 
-              {episode ? (
-                <g className="series-tree__leaves" transform={`translate(${endX} ${endY})`}>
-                  <ellipse cx="0" cy="-4.8" rx="5.7" ry="3.6" transform="rotate(-8)" />
-                  <ellipse cx={side * 4.8} cy="-1.6" rx="6" ry="3.7" transform={`rotate(${side * 24})`} />
-                  <ellipse cx={side * -4.7} cy="-1" rx="5.8" ry="3.5" transform={`rotate(${side * -25})`} />
-                  <ellipse cx={side * 3.2} cy="3.2" rx="5.4" ry="3.2" transform={`rotate(${side * -13})`} />
-                  <ellipse cx={side * -3.4} cy="3.6" rx="5.3" ry="3.1" transform={`rotate(${side * 15})`} />
-                  <ellipse cx="0" cy="0" rx="5.8" ry="4.3" />
+                  {episode ? (
+                    <g className="series-tree__leaves" transform={`translate(${endX} ${endY})`}>
+                      <ellipse cx="0" cy="-4.8" rx="5.7" ry="3.6" transform="rotate(-8)" />
+                      <ellipse cx={side * 4.8} cy="-1.6" rx="6" ry="3.7" transform={`rotate(${side * 24})`} />
+                      <ellipse cx={side * -4.7} cy="-1" rx="5.8" ry="3.5" transform={`rotate(${side * -25})`} />
+                      <ellipse cx={side * 3.2} cy="3.2" rx="5.4" ry="3.2" transform={`rotate(${side * -13})`} />
+                      <ellipse cx={side * -3.4} cy="3.6" rx="5.3" ry="3.1" transform={`rotate(${side * 15})`} />
+                      <ellipse cx="0" cy="0" rx="5.8" ry="4.3" />
+                    </g>
+                  ) : null}
                 </g>
-              ) : null}
-            </g>
+              </g>
+            </a>
           );
         })}
 
