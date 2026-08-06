@@ -2771,42 +2771,78 @@ select:-webkit-autofill:focus {
 }
 
 .series-tree__trunk-shadow {
-  fill: none;
-  stroke: rgba(2, 8, 6, 0.34);
-  stroke-linecap: round;
-  stroke-width: 7;
+  fill: rgba(2, 8, 6, 0.34);
+  transform: translate(0.9px, 0.8px);
 }
 
 .series-tree__trunk {
-  fill: none;
-  stroke-linecap: round;
-  stroke-width: 5.1;
+  stroke: rgba(224, 194, 143, 0.11);
+  stroke-width: 0.35;
 }
 
-.series-tree__branch path {
+.series-tree__trunk-light {
   fill: none;
-  stroke: #755e49;
+  stroke: rgba(233, 205, 158, 0.2);
   stroke-linecap: round;
-  stroke-width: 1.35;
+  stroke-width: 0.7;
+}
+
+.series-tree__root {
+  fill: none;
+  stroke: #6e543d;
+  stroke-linecap: round;
+  stroke-width: 1.8;
+}
+
+.series-tree__branch-shadow,
+.series-tree__branch-line,
+.series-tree__twig {
+  fill: none;
+  stroke-linecap: round;
   transition: stroke 0.35s ease, filter 0.35s ease;
 }
 
-.series-tree__branch.is-grown path {
-  stroke: #7b7450;
+.series-tree__branch-shadow {
+  stroke: rgba(2, 8, 6, 0.3);
+  stroke-width: 2.45;
+  transform: translate(0.45px, 0.55px);
+}
+
+.series-tree__branch-line {
+  stroke: #755b43;
+  stroke-width: 1.85;
+}
+
+.series-tree__twig {
+  stroke: #745a42;
+  stroke-width: 1.05;
+}
+
+.series-tree__branch.is-grown .series-tree__branch-line,
+.series-tree__branch.is-grown .series-tree__twig {
+  stroke: #756246;
   filter: drop-shadow(0 0 1.4px rgba(134, 166, 113, 0.25));
 }
 
-.series-tree__dry-tip {
-  fill: #8b6f51;
-}
-
 .series-tree__leaves {
-  fill: #6f9065;
-  filter: drop-shadow(0 1px 1px rgba(1, 8, 5, 0.34));
+  fill: #66865e;
+  filter: drop-shadow(0 1.4px 1.2px rgba(1, 8, 5, 0.38));
 }
 
-.series-tree__leaves ellipse:nth-child(2) { fill: #86a576; }
-.series-tree__leaves ellipse:nth-child(3) { fill: #5f8159; }
+.series-tree__leaves ellipse:nth-child(2),
+.series-tree__leaves ellipse:nth-child(5) { fill: #7f9f70; }
+.series-tree__leaves ellipse:nth-child(3),
+.series-tree__leaves ellipse:nth-child(6) { fill: #587953; }
+.series-tree__leaves ellipse:nth-child(4) { fill: #75946a; }
+
+.series-tree__full-crown {
+  fill: rgba(90, 128, 77, 0.16);
+  filter: blur(2.2px) drop-shadow(0 0 8px rgba(125, 172, 105, 0.16));
+}
+
+.series-tree__full-crown ellipse:nth-child(2) { fill: rgba(107, 145, 91, 0.15); }
+.series-tree__full-crown ellipse:nth-child(3) { fill: rgba(120, 157, 99, 0.13); }
+.series-tree__full-crown ellipse:nth-child(4) { fill: rgba(84, 122, 74, 0.14); }
 
 .series-tree__ground {
   fill: none;
@@ -2856,6 +2892,14 @@ select:-webkit-autofill:focus {
   background: rgba(122, 157, 107, 0.2);
   color: #b9d0ae;
   font-size: 0.65rem;
+}
+
+.series-tree__label strong {
+  display: -webkit-box;
+  overflow: hidden;
+  font: inherit;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .series-tree__label:hover {
