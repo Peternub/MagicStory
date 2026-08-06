@@ -1,165 +1,157 @@
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import { HouseSection } from "@/components/dashboard/house-section";
+import { SeriesTree, type TreeEpisode } from "@/components/stories/series-tree";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-type EpisodePreview = {
-  created_at: string;
-  episode_number: number | null;
-  id: string;
-  status: string;
-  title: string | null;
-};
-
 type SeriesPreview = {
   children?: Array<{ name: string }>;
-  created_at: string;
   id: string;
-  premise: string;
-  stories?: EpisodePreview[];
+  planned_episodes: number;
+  stories?: TreeEpisode[];
   title: string;
   updated_at: string;
 };
 
 type SeriesPageProps = {
-  searchParams: Promise<{ series?: string }>;
+  searchParams: Promise<{ series?: string; view?: string }>;
 };
 
-const episodeStatusLabels: Record<string, string> = {
-  completed: "Готова",
-  failed: "Нужна проверка",
-  pending: "В очереди",
-  text_generating: "Создаётся"
-};
+function getPlannedEpisodes(series: SeriesPreview) {
+  return Math.min(16, Math.max(8, series.planned_episodes ?? 8));
+}
 
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("ru-RU", {
-    day: "numeric",
-    month: "short",
-    year: "numeric"
-  }).format(new Date(value));
+function isComplete(series: SeriesPreview) {
+  return (series.stories?.length ?? 0) >= getPlannedEpisodes(series);
 }
 
 export default async function SeriesPage({ searchParams }: SeriesPageProps) {
   const user = await requireUser();
-  const { series: requestedSeriesId } = await searchParams;
+  const params = await searchParams;
+  const showCompleted = params.view === "completed";
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("story_series")
-    .select(
-      "id, title, premise, created_at, updated_at, children(name), stories(id, title, status, episode_number, created_at)"
-    )
+    .select("id, title, planned_episodes, updated_at, children(name), stories(id, title, episode_number)")
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
 
   const seriesItems = (data ?? []) as SeriesPreview[];
-  const selectedSeries =
-    seriesItems.find((series) => series.id === requestedSeriesId) ?? seriesItems[0] ?? null;
-  const selectedEpisodes = [...(selectedSeries?.stories ?? [])].sort(
-    (first, second) => (first.episode_number ?? 0) - (second.episode_number ?? 0)
-  );
+  const activeSeries = seriesItems.filter((series) => !isComplete(series));
+  const completedSeries = seriesItems.filter(isComplete);
+  const currentSeries =
+    activeSeries.find((series) => series.id === params.series) ?? activeSeries[0] ?? null;
 
   return (
     <HouseSection
       room="cinema"
-      eyebrow="Домашний кинотеатр"
+      eyebrow="Живая библиотека"
       title="Библиотека сериалов и серий"
       actions={
         <>
-          <Link href="/stories" className="house-secondary-button">Все серии</Link>
+          <Link
+            href={showCompleted ? "/series" : "/series?view=completed"}
+            className="house-secondary-button"
+          >
+            {showCompleted ? "Текущий сериал" : `Коллекция · ${completedSeries.length}`}
+          </Link>
           <Link href="/series/new" className="house-primary-button">Создать сериал</Link>
         </>
       }
     >
-      {selectedSeries ? (
-        <>
-          <section className="media-library-layout" aria-label="Выбранный сериал и коллекция">
-            <article className="house-panel media-featured">
-              <div
-                className="media-cover media-cover--featured"
-                style={{ "--cover-seed": selectedSeries.title.length % 4 } as CSSProperties}
-                aria-hidden="true"
-              >
-                <span>MS</span>
-              </div>
-              <div className="media-featured__content">
-                <div className="media-featured__meta">
-                  <span>{selectedSeries.children?.[0]?.name ?? "Персональный сериал"}</span>
-                  <span>{selectedEpisodes.length} серий</span>
-                </div>
-                <h2>{selectedSeries.title}</h2>
-                <p>{selectedSeries.premise}</p>
-                <div className="media-featured__footer">
-                  <span>Обновлён {formatDate(selectedSeries.updated_at)}</span>
-                  <Link href={`/series/${selectedSeries.id}`} className="house-primary-button">Открыть сериал</Link>
-                </div>
-              </div>
-            </article>
-
-            <aside className="house-panel media-collection">
-              <div className="media-section-heading">
-                <div><h2>Все сериалы</h2></div>
-                <span>{seriesItems.length}</span>
-              </div>
-              <div className="media-collection__grid">
-                {seriesItems.map((series, index) => {
-                  const episodesCount = series.stories?.length ?? 0;
-                  const isSelected = series.id === selectedSeries.id;
-
-                  return (
-                    <Link
-                      key={series.id}
-                      href={`/series?series=${series.id}`}
-                      aria-current={isSelected ? "page" : undefined}
-                      className={`media-series-card ${isSelected ? "is-selected" : ""}`}
-                    >
-                      <span className={`media-cover media-cover--${index % 4}`} aria-hidden="true"><b>{index + 1}</b></span>
-                      <span className="media-series-card__copy">
-                        <strong>{series.title}</strong>
-                        <small>{episodesCount} серий · {episodesCount > 0 ? "Активный" : "Новый"}</small>
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
-            </aside>
-          </section>
-
-          <section className="house-panel media-episodes" aria-labelledby="episodes-title">
-            <div className="media-section-heading">
-              <div><h2 id="episodes-title">Серии</h2></div>
-              <Link href={`/series/${selectedSeries.id}`} className="house-secondary-button">Новая серия</Link>
+      {showCompleted ? (
+        <section className="tree-collection" aria-labelledby="tree-collection-title">
+          <div className="tree-section-heading">
+            <div>
+              <p>Коллекция</p>
+              <h2 id="tree-collection-title">Завершённые сериалы</h2>
             </div>
+            <span>{completedSeries.length}</span>
+          </div>
 
-            {selectedEpisodes.length > 0 ? (
-              <div className="media-episodes__track">
-                {selectedEpisodes.map((episode, index) => (
-                  <Link key={episode.id} href={`/stories/${episode.id}`} className="media-episode-card">
-                    <span className={`media-episode-card__still media-cover--${index % 4}`} aria-hidden="true"><b>{episode.episode_number ?? index + 1}</b></span>
-                    <span className="media-episode-card__copy">
-                      <small>Серия {episode.episode_number ?? index + 1} · {formatDate(episode.created_at)}</small>
-                      <strong>{episode.title ?? "Новая серия"}</strong>
-                      <em>{episodeStatusLabels[episode.status] ?? episode.status}</em>
-                    </span>
-                  </Link>
-                ))}
+          {completedSeries.length > 0 ? (
+            <div className="tree-collection__grid">
+              {completedSeries.map((series) => (
+                <article key={series.id} className="tree-collection-card">
+                  <SeriesTree
+                    compact
+                    title={series.title}
+                    plannedEpisodes={getPlannedEpisodes(series)}
+                    episodes={series.stories ?? []}
+                  />
+                  <div className="tree-collection-card__copy">
+                    <span>Завершён</span>
+                    <h3>{series.title}</h3>
+                    <p>{getPlannedEpisodes(series)} серий</p>
+                    <Link href={`/series/${series.id}`}>Открыть сериал</Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="tree-library-empty">
+              <h2>Коллекция пока пуста</h2>
+              <p>Завершённые деревья появятся здесь.</p>
+              <Link href="/series" className="house-primary-button">К текущему сериалу</Link>
+            </div>
+          )}
+        </section>
+      ) : currentSeries ? (
+        <>
+          {activeSeries.length > 1 ? (
+            <nav className="tree-active-list" aria-label="Сериалы в работе">
+              <span>В работе</span>
+              {activeSeries.map((series) => (
+                <Link
+                  key={series.id}
+                  href={`/series?series=${series.id}`}
+                  aria-current={series.id === currentSeries.id ? "page" : undefined}
+                >
+                  {series.title}
+                </Link>
+              ))}
+            </nav>
+          ) : null}
+
+          <section className="tree-current" aria-labelledby="current-series-title">
+            <header className="tree-current__header">
+              <div>
+                <p>Текущий сериал · {currentSeries.children?.[0]?.name ?? "Личная история"}</p>
+                <h2 id="current-series-title">{currentSeries.title}</h2>
               </div>
-            ) : (
-              <div className="media-empty-inline">
-                <p>У этого сериала пока нет серий.</p>
-                <Link href={`/series/${selectedSeries.id}`}>Создать первую серию →</Link>
+              <div className="tree-progress" aria-label="Прогресс сериала">
+                <strong>{currentSeries.stories?.length ?? 0}</strong>
+                <span>из {getPlannedEpisodes(currentSeries)} серий</span>
               </div>
-            )}
+            </header>
+
+            <SeriesTree
+              title={currentSeries.title}
+              plannedEpisodes={getPlannedEpisodes(currentSeries)}
+              episodes={currentSeries.stories ?? []}
+            />
+
+            <footer className="tree-current__footer">
+              <span>{getPlannedEpisodes(currentSeries) - (currentSeries.stories?.length ?? 0)} ветвей ждут продолжения</span>
+              <Link href={`/series/${currentSeries.id}`} className="house-primary-button">
+                Новая серия
+              </Link>
+            </footer>
           </section>
         </>
       ) : (
-        <section className="house-panel media-empty-room">
-          <div className="media-empty-room__screen" aria-hidden="true"><span>MS</span></div>
-          <h2>Сериалов пока нет</h2>
-          <Link href="/series/new" className="house-primary-button">Создать первый сериал</Link>
+        <section className="tree-library-empty">
+          <div className="tree-library-empty__seed" aria-hidden="true"><span /></div>
+          <h2>{completedSeries.length > 0 ? "Все сериалы завершены" : "Посадите первое дерево"}</h2>
+          <p>{completedSeries.length > 0 ? "Создайте новый сериал или откройте коллекцию." : "Выберите 8–16 серий — столько ветвей появится у дерева."}</p>
+          <div>
+            <Link href="/series/new" className="house-primary-button">Создать сериал</Link>
+            {completedSeries.length > 0 ? (
+              <Link href="/series?view=completed" className="house-secondary-button">Открыть коллекцию</Link>
+            ) : null}
+          </div>
         </section>
       )}
     </HouseSection>
