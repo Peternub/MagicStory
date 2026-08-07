@@ -15,7 +15,10 @@ const seriesSchema = z.object({
   childId: z.string().uuid("Выберите ребенка"),
   title: z.string().trim().min(2, "Напишите название сериала").max(120),
   premise: z.string().trim().min(5, "Коротко опишите героев и основную идею").max(600),
-  plannedEpisodes: z.coerce.number().int().min(8).max(16),
+  plannedEpisodes: z.coerce.number().int().refine(
+    (value) => value === 3 || (value >= 8 && value <= 16),
+    "Выберите доступное количество серий"
+  ),
   setting: z.string().trim().max(220).optional(),
   mainCharacters: z.string().trim().max(400).optional(),
   additionalWishes: z.string().trim().max(400).optional()
@@ -70,13 +73,30 @@ export async function createSeries(
     return { error: "Профиль ребенка не найден" };
   }
 
+  const premise = addSeriesEpisodePlan(buildSeriesPremise(parsed.data), parsed.data.plannedEpisodes);
+
+  if (parsed.data.plannedEpisodes === 3) {
+    const { data: seriesId, error } = await supabase.rpc("claim_starter_offer", {
+      series_premise: premise,
+      series_title: parsed.data.title,
+      target_child_id: child.id,
+      target_user_id: user.id
+    });
+
+    if (error || !seriesId) {
+      return { error: "Разовый пакет не оплачен или уже использован." };
+    }
+
+    redirect(`/series/${seriesId}`);
+  }
+
   const { data: series, error } = await supabase
     .from("story_series")
     .insert({
       user_id: user.id,
       child_id: child.id,
       title: parsed.data.title,
-      premise: addSeriesEpisodePlan(buildSeriesPremise(parsed.data), parsed.data.plannedEpisodes)
+      premise
     })
     .select("id")
     .single();

@@ -2,6 +2,10 @@ const DEFAULT_EPISODE_PLAN = 8;
 const SERIES_PLAN_PATTERN = /\s*\[MS_EPISODES:(\d{1,2})\]\s*$/;
 
 export function normalizeSeriesEpisodePlan(value: number) {
+  if (Math.round(value) === 3) {
+    return 3;
+  }
+
   return Math.min(16, Math.max(8, Math.round(value)));
 }
 

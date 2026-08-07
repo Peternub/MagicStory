@@ -2,6 +2,7 @@ export type MagicPlanTone = "standard" | "premium";
 export type MagicPlanModel = "plus" | "premium";
 
 export type MagicPlan = {
+  billingPeriod: "month" | "once";
   code: string;
   name: string;
   priceMonthly: number;
@@ -15,6 +16,22 @@ export type MagicPlan = {
 
 export const magicPlans: MagicPlan[] = [
   {
+    billingPeriod: "once",
+    code: "starter-series-3",
+    name: "Пробный сериал",
+    priceMonthly: 39,
+    model: "plus",
+    subtitle: "Один раз",
+    description: "Один персональный сериал из трёх связанных серий.",
+    features: [
+      "3 связанные серии",
+      "Один профиль ребёнка",
+      "Без подписки и продления"
+    ],
+    tone: "standard"
+  },
+  {
+    billingPeriod: "month",
     code: "unlimited-plus",
     name: "Обычные серии",
     priceMonthly: 555,
@@ -29,6 +46,7 @@ export const magicPlans: MagicPlan[] = [
     tone: "standard"
   },
   {
+    billingPeriod: "month",
     code: "unlimited-premium",
     name: "Премиум-серии",
     priceMonthly: 888,

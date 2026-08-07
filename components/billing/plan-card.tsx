@@ -1,4 +1,5 @@
 import type { MagicPlan } from "@/lib/config/pricing";
+import Link from "next/link";
 
 type PlanCardProps = {
   plan: MagicPlan;
@@ -57,7 +58,9 @@ export function PlanCard({ plan }: PlanCardProps) {
 
       <div className="mt-7 flex items-end gap-2 text-[var(--text-main)]">
         <p className="text-4xl font-semibold">{plan.priceMonthly}</p>
-        <p className="pb-1 text-sm text-[var(--text-soft)]">₽/месяц</p>
+        <p className="pb-1 text-sm text-[var(--text-soft)]">
+          {plan.billingPeriod === "once" ? "₽ один раз" : "₽/месяц"}
+        </p>
       </div>
 
       <ul className="mt-6 space-y-3 text-sm text-[var(--text-soft)]">
@@ -71,13 +74,22 @@ export function PlanCard({ plan }: PlanCardProps) {
         ))}
       </ul>
 
-      <button
-        type="button"
-        disabled
-        className={`mt-8 w-full rounded-xl border px-4 py-3 text-sm font-medium ${styles.button}`}
-      >
-        Выбор тарифа скоро
-      </button>
+      {plan.billingPeriod === "once" ? (
+        <Link
+          href="/series/new"
+          className={`mt-8 w-full rounded-xl border px-4 py-3 text-center text-sm font-medium ${styles.button}`}
+        >
+          Оформить
+        </Link>
+      ) : (
+        <button
+          type="button"
+          disabled
+          className={`mt-8 w-full rounded-xl border px-4 py-3 text-sm font-medium ${styles.button}`}
+        >
+          Выбор тарифа скоро
+        </button>
+      )}
     </article>
   );
 }

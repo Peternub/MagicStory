@@ -59,7 +59,9 @@ export function MarketingPlanCard({ plan }: MarketingPlanCardProps) {
 
       <div className="mt-7 flex items-end gap-2 text-[var(--text-main)]">
         <p className="text-4xl font-semibold">{plan.priceMonthly}</p>
-        <p className="pb-1 text-sm text-[var(--text-soft)]">₽/месяц</p>
+        <p className="pb-1 text-sm text-[var(--text-soft)]">
+          {plan.billingPeriod === "once" ? "₽ один раз" : "₽/месяц"}
+        </p>
       </div>
 
       <ul className="mt-6 space-y-3 text-sm text-[var(--text-soft)]">
@@ -74,10 +76,10 @@ export function MarketingPlanCard({ plan }: MarketingPlanCardProps) {
       </ul>
 
       <Link
-        href="/auth/sign-up"
+        href={plan.billingPeriod === "once" ? "/auth/sign-up?next=/series/new" : "/auth/sign-up"}
         className={`mt-8 inline-flex items-center justify-center rounded-lg px-5 py-3 text-sm font-medium transition ${styles.button}`}
       >
-        Выбрать тариф
+        {plan.billingPeriod === "once" ? "Попробовать" : "Выбрать тариф"}
       </Link>
     </article>
   );

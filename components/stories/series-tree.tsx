@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
+import { normalizeSeriesEpisodePlan } from "@/lib/stories/series-plan";
 
 export type TreeEpisode = {
   episode_number: number | null;
@@ -46,7 +47,7 @@ function getBranchGeometry(index: number, count: number) {
 }
 
 export function SeriesTree({ compact = false, episodes, plannedEpisodes, title }: SeriesTreeProps) {
-  const normalizedCount = Math.min(16, Math.max(8, plannedEpisodes));
+  const normalizedCount = normalizeSeriesEpisodePlan(plannedEpisodes);
   const episodeByNumber = new Map(
     episodes.map((episode, index) => [episode.episode_number ?? index + 1, episode])
   );
