@@ -96,7 +96,8 @@ export async function createSeries(
       user_id: user.id,
       child_id: child.id,
       title: parsed.data.title,
-      premise
+      premise,
+      planned_episodes: parsed.data.plannedEpisodes
     })
     .select("id")
     .single();

@@ -39,8 +39,7 @@ export const storySchema = z
     durationMinutes: z.coerce
       .number()
       .int()
-      .min(3, "Минимальная длительность - 3 минуты")
-      .max(10, "Максимальная длительность - 10 минут")
+      .refine((value) => value === 5, "Серия рассчитана на 5 минут")
       .default(5),
     situation: optionalText(500, "Описание дня слишком длинное"),
     setting: optionalText(120, "Место действия описано слишком подробно"),

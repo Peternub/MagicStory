@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
-import { generateStory } from "@/lib/ai/generate-story";
-import { getSeriesEpisodePlan, stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
+import { createSafetyIdentifier, generateStory } from "@/lib/ai/generate-story";
+import { parsePrivateAliases } from "@/lib/ai/pseudonymization";
+import { parseSeriesMemory } from "@/lib/ai/story-memory";
+import { stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isMissingColumnError } from "@/lib/supabase/errors";
@@ -66,18 +68,27 @@ export async function createStory(
 
   let episodeNumber: number | null = null;
   let storyRequest = parsed.data;
+  let seriesContext: {
+    id: string;
+    title: string;
+    premise: string;
+    planned_episodes: number;
+    model_code: string;
+    series_memory: unknown;
+    private_aliases: unknown;
+  } | null = null;
 
   if (seriesId) {
     const [{ data: series }, { data: previousEpisode }] = await Promise.all([
       supabase
         .from("story_series")
-        .select("id, child_id, title, premise")
+        .select("id, child_id, title, premise, planned_episodes, model_code, series_memory, private_aliases")
         .eq("id", seriesId)
         .eq("user_id", user.id)
         .maybeSingle(),
       supabase
         .from("stories")
-        .select("title, text_content, episode_number")
+        .select("episode_number")
         .eq("series_id", seriesId)
         .eq("user_id", user.id)
         .order("episode_number", { ascending: false })
@@ -90,22 +101,21 @@ export async function createStory(
     }
 
     const nextEpisodeNumber = (previousEpisode?.episode_number ?? 0) + 1;
-    if (nextEpisodeNumber > getSeriesEpisodePlan(series.premise)) {
+    if (nextEpisodeNumber > series.planned_episodes) {
       return { error: "Все запланированные серии уже созданы" };
     }
     episodeNumber = nextEpisodeNumber;
+    seriesContext = series;
 
     const rawAddition = formData.get("situation");
     const addition = typeof rawAddition === "string" ? rawAddition.trim() : "";
-    const continuity = previousEpisode?.text_content
+    const continuity = previousEpisode
       ? [
           `Это серия ${episodeNumber} сериала «${series.title}».`,
-          "Продолжи сюжет напрямую, сохрани характеры героев, тон сериала и не пересказывай предыдущую серию.",
+          "Продолжи сюжет по структурированной памяти сериала, не пересказывая прошлые серии.",
           addition
             ? `Сегодня родитель добавил событие для серии: ${addition}.`
-            : "Родитель ничего не добавил сегодня. Сам придумай спокойное естественное продолжение из паспорта сериала и прошлой серии.",
-          `Предыдущая серия «${previousEpisode.title ?? "Без названия"}»:`,
-          previousEpisode.text_content.slice(-7000)
+            : "Родитель ничего не добавил сегодня. Сам придумай спокойное естественное продолжение из паспорта и памяти сериала."
         ].join("\n\n")
       : [
           `Это первая серия сериала «${series.title}».`,
@@ -122,6 +132,10 @@ export async function createStory(
       goal: "завершить сегодняшнюю серию спокойно и оставить небольшой повод для следующей серии",
       extraWishes: [`ПАСПОРТ СЕРИАЛА «${series.title}»:`, stripSeriesEpisodePlan(series.premise), continuity].join("\n\n")
     };
+  }
+
+  if (!seriesContext || episodeNumber === null) {
+    return { error: "Сериал не найден" };
   }
 
   const storySummary = `Серия ${episodeNumber}: ${storyRequest.situation}`;
@@ -158,23 +172,42 @@ export async function createStory(
   try {
     const generated = await generateStory({
       child,
-      request: storyRequest
+      request: storyRequest,
+      episodeNumber,
+      plannedEpisodes: seriesContext.planned_episodes,
+      seriesMemory: parseSeriesMemory(seriesContext.series_memory),
+      privateAliases: parsePrivateAliases(seriesContext.private_aliases),
+      safetyIdentifier: createSafetyIdentifier(user.id),
+      modelCode: seriesContext.model_code
     });
 
-    const { error: storyUpdateError } = await supabase
-      .from("stories")
-      .update({
-        title: generated.title,
-        text_content: generated.text,
-        provider_llm: generated.provider,
-        status: "completed",
-        error_message: null
-      })
-      .eq("id", storyRecord.id)
-      .eq("user_id", user.id);
+    const [{ error: storyUpdateError }, { error: seriesUpdateError }] = await Promise.all([
+      supabase
+        .from("stories")
+        .update({
+          title: generated.title,
+          text_content: generated.text,
+          summary: generated.summary,
+          provider_llm: generated.provider,
+          status: "completed",
+          error_message: null
+        })
+        .eq("id", storyRecord.id)
+        .eq("user_id", user.id),
+      supabase
+        .from("story_series")
+        .update({
+          series_memory: generated.memory,
+          private_aliases: generated.privateAliases,
+          status: episodeNumber >= seriesContext.planned_episodes ? "completed" : "active",
+          last_error: null
+        })
+        .eq("id", seriesId)
+        .eq("user_id", user.id)
+    ]);
 
-    if (storyUpdateError) {
-      throw storyUpdateError;
+    if (storyUpdateError || seriesUpdateError) {
+      throw storyUpdateError ?? seriesUpdateError;
     }
 
     await supabase.from("usage_events").insert({

@@ -26,6 +26,7 @@ export type StorySeriesRecord = {
     open_threads: string[];
     episode_summaries: string[];
   };
+  private_aliases: Record<string, string>;
   creation_key: string | null;
   last_error: string | null;
   generation_started_at: string | null;
