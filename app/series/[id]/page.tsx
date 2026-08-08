@@ -1,8 +1,13 @@
 import Link from "next/link";
+import { randomUUID } from "node:crypto";
 import { notFound } from "next/navigation";
-import { createStory } from "@/app/actions/stories";
+import {
+  createSeriesEpisode,
+  resumeStoryGeneration
+} from "@/app/actions/episode-generation";
+import { GenerationRecovery } from "@/components/stories/generation-recovery";
 import { SeriesEpisodeForm } from "@/components/stories/series-episode-form";
-import { getSeriesEpisodePlan, stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
+import { stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -17,13 +22,13 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
   const [{ data: series }, { data: episodes }] = await Promise.all([
     supabase
       .from("story_series")
-      .select("id, child_id, title, premise, children(name)")
+      .select("id, child_id, title, premise, planned_episodes, status, children(name)")
       .eq("id", id)
       .eq("user_id", user.id)
       .single(),
     supabase
       .from("stories")
-      .select("id, title, status, episode_number, created_at")
+      .select("id, title, status, episode_number, error_message, generation_started_at, created_at")
       .eq("series_id", id)
       .eq("user_id", user.id)
       .order("episode_number", { ascending: true })
@@ -31,9 +36,14 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
 
   if (!series) notFound();
 
-  const episodesCount = episodes?.length ?? 0;
-  const plannedEpisodes = getSeriesEpisodePlan(series.premise);
-  const isComplete = episodesCount >= plannedEpisodes;
+  const completedEpisodes = (episodes ?? []).filter((episode) => episode.status === "completed");
+  const unfinishedEpisode = (episodes ?? []).find((episode) => episode.status !== "completed");
+  const episodesCount = completedEpisodes.length;
+  const plannedEpisodes = series.planned_episodes;
+  const isComplete = series.status === "completed" || episodesCount >= plannedEpisodes;
+  const generationIsStale = unfinishedEpisode?.status === "generating" &&
+    unfinishedEpisode.generation_started_at !== null &&
+    new Date(unfinishedEpisode.generation_started_at).getTime() < Date.now() - 10 * 60 * 1000;
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-6 sm:px-10 sm:py-10">
@@ -48,12 +58,33 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
         <section>
           <h2 className="text-2xl font-semibold text-[var(--text-main)]">Все серии</h2>
           <div className="mt-4 grid gap-3">
-            {(episodes ?? []).map((episode) => (
-              <Link key={episode.id} href={`/stories/${episode.id}`} className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 hover:border-[var(--border-strong)]">
-                <p className="text-xs text-[var(--logo-text)]">Серия {episode.episode_number}</p>
-                <p className="mt-1 font-semibold text-[var(--text-main)]">{episode.title ?? "Новая серия"}</p>
-              </Link>
-            ))}
+            {(episodes ?? []).map((episode) => {
+              const content = (
+                <>
+                  <p className="text-xs text-[var(--logo-text)]">Серия {episode.episode_number}</p>
+                  <p className="mt-1 font-semibold text-[var(--text-main)]">
+                    {episode.title ?? (episode.status === "failed" ? "Не удалось создать" : "Создаётся...")}
+                  </p>
+                </>
+              );
+
+              return episode.status === "completed" ? (
+                <Link
+                  key={episode.id}
+                  href={`/stories/${episode.id}`}
+                  className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 hover:border-[var(--border-strong)]"
+                >
+                  {content}
+                </Link>
+              ) : (
+                <article
+                  key={episode.id}
+                  className="rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5"
+                >
+                  {content}
+                </article>
+              );
+            })}
             {episodes?.length === 0 ? <p className="text-sm text-[var(--text-soft)]">Первая серия еще не создана.</p> : null}
           </div>
         </section>
@@ -65,12 +96,37 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
               <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">Все {plannedEpisodes} серий готовы.</p>
               <Link href="/series?view=completed" className="house-primary-button mt-5">Открыть коллекцию</Link>
             </>
+          ) : unfinishedEpisode ? (
+            <>
+              <h2 className="text-xl font-semibold text-[var(--text-main)]">
+                Серия {unfinishedEpisode.episode_number} из {plannedEpisodes}
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
+                {unfinishedEpisode.status === "failed"
+                  ? unfinishedEpisode.error_message ?? "Генерация прервалась."
+                  : "Серия сохранена и продолжит создаваться после перезагрузки."}
+              </p>
+              <div className="mt-5">
+                <GenerationRecovery
+                  action={resumeStoryGeneration}
+                  autoStart={unfinishedEpisode.status === "pending" || generationIsStale}
+                  status={unfinishedEpisode.status}
+                  storyId={unfinishedEpisode.id}
+                />
+              </div>
+            </>
           ) : (
             <>
               <h2 className="text-xl font-semibold text-[var(--text-main)]">Серия {episodesCount + 1} из {plannedEpisodes}</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">Можно ничего не писать: система сама продолжит сериал по памяти.</p>
               <div className="mt-5">
-                <SeriesEpisodeForm action={createStory} childId={series.child_id} seriesId={series.id} hasEpisodes={episodesCount > 0} />
+                <SeriesEpisodeForm
+                  action={createSeriesEpisode}
+                  childId={series.child_id}
+                  generationKey={randomUUID()}
+                  seriesId={series.id}
+                  hasEpisodes={episodesCount > 0}
+                />
               </div>
             </>
           )}

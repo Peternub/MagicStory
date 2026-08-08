@@ -8,6 +8,8 @@ type SeriesActionState = { error?: string };
 type SeriesFormProps = {
   action: (state: SeriesActionState, formData: FormData) => Promise<SeriesActionState>;
   childrenItems: ChildRecord[];
+  creationKey: string;
+  generationKey: string;
   starterOfferReady?: boolean;
 };
 
@@ -16,11 +18,19 @@ const fieldClassName =
   "w-full rounded-lg border border-[var(--border-soft)] bg-[var(--surface-secondary)] px-4 py-3 text-base text-[var(--text-main)] placeholder:text-[var(--text-muted)] outline-none transition focus:border-[var(--border-strong)] focus:ring-4 focus:ring-[var(--accent-gold-soft)]";
 const episodeOptions = Array.from({ length: 9 }, (_, index) => index + 8);
 
-export function SeriesForm({ action, childrenItems, starterOfferReady = false }: SeriesFormProps) {
+export function SeriesForm({
+  action,
+  childrenItems,
+  creationKey,
+  generationKey,
+  starterOfferReady = false
+}: SeriesFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
   return (
     <form action={formAction} autoComplete="off" className="space-y-5">
+      <input type="hidden" name="creationKey" value={creationKey} />
+      <input type="hidden" name="generationKey" value={generationKey} />
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-[var(--text-main)]">Для кого сериал</span>
         <select name="childId" defaultValue={childrenItems[0]?.id} className={fieldClassName}>

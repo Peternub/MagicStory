@@ -9,6 +9,7 @@ type SeriesEpisodeFormProps = {
   childId: string;
   seriesId: string;
   hasEpisodes: boolean;
+  generationKey: string;
 };
 
 const initialState: StoryActionState = {};
@@ -17,7 +18,8 @@ export function SeriesEpisodeForm({
   action,
   childId,
   seriesId,
-  hasEpisodes
+  hasEpisodes,
+  generationKey
 }: SeriesEpisodeFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
 
@@ -25,6 +27,7 @@ export function SeriesEpisodeForm({
     <form action={formAction} autoComplete="off" className="space-y-4">
       <input type="hidden" name="childId" value={childId} />
       <input type="hidden" name="seriesId" value={seriesId} />
+      <input type="hidden" name="generationKey" value={generationKey} />
       <input type="hidden" name="storyMode" value="adventure" />
       <input type="hidden" name="durationMinutes" value="5" />
 

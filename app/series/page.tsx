@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { HouseSection } from "@/components/dashboard/house-section";
 import { SeriesTree, type TreeEpisode } from "@/components/stories/series-tree";
-import { getSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -11,6 +10,8 @@ type SeriesPreview = {
   children?: Array<{ name: string }>;
   id: string;
   premise: string;
+  planned_episodes: number;
+  status: string;
   stories?: TreeEpisode[];
   title: string;
   updated_at: string;
@@ -21,11 +22,15 @@ type SeriesPageProps = {
 };
 
 function getPlannedEpisodes(series: SeriesPreview) {
-  return getSeriesEpisodePlan(series.premise);
+  return series.planned_episodes;
 }
 
 function isComplete(series: SeriesPreview) {
-  return (series.stories?.length ?? 0) >= getPlannedEpisodes(series);
+  return series.status === "completed" || getCompletedEpisodes(series).length >= getPlannedEpisodes(series);
+}
+
+function getCompletedEpisodes(series: SeriesPreview) {
+  return (series.stories ?? []).filter((episode) => episode.status === "completed");
 }
 
 export default async function SeriesPage({ searchParams }: SeriesPageProps) {
@@ -35,7 +40,7 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("story_series")
-    .select("id, title, premise, updated_at, children(name), stories(id, title, episode_number)")
+    .select("id, title, premise, planned_episodes, status, updated_at, children(name), stories(id, title, status, episode_number)")
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
 
@@ -80,7 +85,7 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
                     compact
                     title={series.title}
                     plannedEpisodes={getPlannedEpisodes(series)}
-                    episodes={series.stories ?? []}
+                    episodes={getCompletedEpisodes(series)}
                   />
                   <div className="tree-collection-card__copy">
                     <span>Завершён</span>
@@ -123,7 +128,7 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
                 <h2 id="current-series-title">{currentSeries.title}</h2>
               </div>
               <div className="tree-progress" aria-label="Прогресс сериала">
-                <strong>{currentSeries.stories?.length ?? 0}</strong>
+                <strong>{getCompletedEpisodes(currentSeries).length}</strong>
                 <span>из {getPlannedEpisodes(currentSeries)} серий</span>
               </div>
             </header>
@@ -131,11 +136,11 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
             <SeriesTree
               title={currentSeries.title}
               plannedEpisodes={getPlannedEpisodes(currentSeries)}
-              episodes={currentSeries.stories ?? []}
+              episodes={getCompletedEpisodes(currentSeries)}
             />
 
             <footer className="tree-current__footer">
-              <span>{getPlannedEpisodes(currentSeries) - (currentSeries.stories?.length ?? 0)} ветвей ждут продолжения</span>
+              <span>{getPlannedEpisodes(currentSeries) - getCompletedEpisodes(currentSeries).length} ветвей ждут продолжения</span>
               <Link href={`/series/${currentSeries.id}`} className="house-primary-button">
                 Новая серия
               </Link>

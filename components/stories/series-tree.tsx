@@ -5,6 +5,7 @@ import { normalizeSeriesEpisodePlan } from "@/lib/stories/series-plan";
 export type TreeEpisode = {
   episode_number: number | null;
   id: string;
+  status: string;
   title: string | null;
 };
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { randomUUID } from "node:crypto";
 import { createSeries } from "@/app/actions/series";
 import { StarterOfferButton } from "@/components/billing/starter-offer-button";
 import { SeriesForm } from "@/components/stories/series-form";
@@ -55,6 +56,8 @@ export default async function NewSeriesPage() {
             <SeriesForm
               action={createSeries}
               childrenItems={childrenItems}
+              creationKey={randomUUID()}
+              generationKey={randomUUID()}
               starterOfferReady={starterOfferStatus === "ready"}
             />
           ) : (

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { addSeriesEpisodePlan } from "@/lib/stories/series-plan";
+import { getGenerationActionError, processStoryGeneration } from "@/lib/stories/generation";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -21,7 +22,9 @@ const seriesSchema = z.object({
   ),
   setting: z.string().trim().max(220).optional(),
   mainCharacters: z.string().trim().max(400).optional(),
-  additionalWishes: z.string().trim().max(400).optional()
+  additionalWishes: z.string().trim().max(400).optional(),
+  creationKey: z.string().uuid("Обновите страницу и попробуйте снова"),
+  generationKey: z.string().uuid("Обновите страницу и попробуйте снова")
 });
 
 function cleanOptional(value: FormDataEntryValue | null) {
@@ -54,7 +57,9 @@ export async function createSeries(
     plannedEpisodes: formData.get("plannedEpisodes"),
     setting: cleanOptional(formData.get("setting")),
     mainCharacters: cleanOptional(formData.get("mainCharacters")),
-    additionalWishes: cleanOptional(formData.get("additionalWishes"))
+    additionalWishes: cleanOptional(formData.get("additionalWishes")),
+    creationKey: formData.get("creationKey"),
+    generationKey: formData.get("generationKey")
   });
 
   if (!parsed.success) {
@@ -75,45 +80,37 @@ export async function createSeries(
 
   const premise = addSeriesEpisodePlan(buildSeriesPremise(parsed.data), parsed.data.plannedEpisodes);
 
-  if (parsed.data.plannedEpisodes === 3) {
-    const { data: seriesId, error } = await supabase.rpc("claim_starter_offer", {
+  const { data: reservation, error } = await supabase.rpc(
+    "create_series_with_first_episode",
+    {
+      episode_count: parsed.data.plannedEpisodes,
       series_premise: premise,
       series_title: parsed.data.title,
       target_child_id: child.id,
-      target_user_id: user.id
-    });
+      target_creation_key: parsed.data.creationKey,
+      target_generation_input: {},
+      target_generation_key: parsed.data.generationKey,
+      target_user_id: user.id,
+      use_starter_offer: parsed.data.plannedEpisodes === 3
+    }
+  );
+  const reserved = z
+    .object({ series_id: z.string().uuid(), story_id: z.string().uuid() })
+    .safeParse(reservation);
 
-    if (error || !seriesId) {
+  if (error || !reserved.success) {
+    if (error?.message.includes("STARTER_OFFER")) {
       return { error: "Разовый пакет не оплачен или уже использован." };
     }
 
-    redirect(`/series/${seriesId}`);
+    return { error: getGenerationActionError(error) };
   }
 
-  const { data: series, error } = await supabase
-    .from("story_series")
-    .insert({
-      user_id: user.id,
-      child_id: child.id,
-      title: parsed.data.title,
-      premise,
-      planned_episodes: parsed.data.plannedEpisodes
-    })
-    .select("id")
-    .single();
-
-  if (error || !series) {
-    console.warn("Не удалось создать сериал", {
-      code: error?.code,
-      message: error?.message
-    });
-
-    if (error?.code === "42P01" || error?.code === "42703") {
-      return { error: "База сериалов ещё не подключена." };
-    }
-
-    return { error: "Не удалось создать сериал. Попробуйте ещё раз." };
+  try {
+    await processStoryGeneration(user.id, reserved.data.story_id);
+  } catch {
+    // Сериал и первая серия сохранены; повтор доступен на странице сериала.
   }
 
-  redirect(`/series/${series.id}`);
+  redirect(`/series/${reserved.data.series_id}`);
 }
