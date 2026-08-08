@@ -17,6 +17,18 @@ export type StorySeriesRecord = {
   child_id: string;
   title: string;
   premise: string;
+  planned_episodes: number;
+  status: "draft" | "pending" | "generating" | "active" | "completed" | "failed";
+  model_code: string;
+  series_memory: {
+    characters: string[];
+    facts: string[];
+    open_threads: string[];
+    episode_summaries: string[];
+  };
+  creation_key: string | null;
+  last_error: string | null;
+  generation_started_at: string | null;
   created_at: string;
   updated_at: string;
 };

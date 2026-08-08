@@ -6,6 +6,9 @@ export type SubscriptionPlan = {
   price_rub: number;
   stories_limit: number;
   is_active: boolean;
+  billing_period: "month" | "once";
+  is_unlimited: boolean;
+  model_code: string;
 };
 
 export type SubscriptionRecord = {

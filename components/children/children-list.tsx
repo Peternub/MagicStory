@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { deleteChild } from "@/app/actions/children";
+import { MAX_CHILD_PROFILES } from "@/lib/config/children";
 import type { ChildRecord } from "@/lib/types/database";
 
 type ChildrenListProps = {
@@ -117,10 +118,12 @@ export function ChildrenList({ childrenItems }: ChildrenListProps) {
         </article>
       ))}
 
-      <Link href="/children/new" className="family-add-frame">
-        <span aria-hidden="true">+</span>
-        <strong>Добавить ребёнка</strong>
-      </Link>
+      {childrenItems.length < MAX_CHILD_PROFILES ? (
+        <Link href="/children/new" className="family-add-frame">
+          <span aria-hidden="true">+</span>
+          <strong>Добавить ребёнка</strong>
+        </Link>
+      ) : null}
     </div>
   );
 }

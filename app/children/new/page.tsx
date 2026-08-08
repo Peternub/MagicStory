@@ -1,12 +1,24 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createChild } from "@/app/actions/children";
 import { ChildForm } from "@/components/children/child-form";
+import { MAX_CHILD_PROFILES } from "@/lib/config/children";
 import { requireUser } from "@/lib/supabase/auth";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewChildPage() {
-  await requireUser();
+  const user = await requireUser();
+  const supabase = await createSupabaseServerClient();
+  const { count } = await supabase
+    .from("children")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  if ((count ?? 0) >= MAX_CHILD_PROFILES) {
+    redirect("/children");
+  }
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-4 py-6 sm:px-10 sm:py-10">

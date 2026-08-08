@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
+import { MAX_CHILD_PROFILES } from "@/lib/config/children";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -35,6 +36,19 @@ export async function createChild(
   }
 
   const supabase = createSupabaseAdminClient();
+  const { count: childrenCount, error: countError } = await supabase
+    .from("children")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  if (countError) {
+    return { error: "Не удалось проверить количество профилей" };
+  }
+
+  if ((childrenCount ?? 0) >= MAX_CHILD_PROFILES) {
+    return { error: `Можно создать не больше ${MAX_CHILD_PROFILES} профилей детей` };
+  }
+
   const childPayload = {
     ...parsed.data,
     user_id: user.id
@@ -42,6 +56,10 @@ export async function createChild(
   const { error } = await supabase.from("children").insert(childPayload);
 
   if (error) {
+    if (error.message.includes("CHILDREN_LIMIT_REACHED")) {
+      return { error: `Можно создать не больше ${MAX_CHILD_PROFILES} профилей детей` };
+    }
+
     if (isMissingColumnError(error, "gender")) {
       return {
         error: "В базе не применена миграция пола ребенка. Примените 20260420_006_add_child_gender.sql."
