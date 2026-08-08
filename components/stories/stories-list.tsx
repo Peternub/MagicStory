@@ -14,7 +14,7 @@ type StoriesListProps = {
 
 const statusLabels: Record<string, string> = {
   pending: "В очереди",
-  text_generating: "Генерация текста",
+  generating: "Генерация текста",
   completed: "Серия готова",
   failed: "Ошибка"
 };
@@ -22,7 +22,7 @@ const statusLabels: Record<string, string> = {
 const statusClasses: Record<string, string> = {
   pending:
     "border border-[var(--border-strong)] bg-[var(--accent-gold-soft)] text-[var(--text-main)]",
-  text_generating: "border border-amber-400/30 bg-amber-500/10 text-amber-200",
+  generating: "border border-amber-400/30 bg-amber-500/10 text-amber-200",
   completed: "border border-emerald-400/30 bg-emerald-500/10 text-emerald-200",
   failed: "border border-red-400/30 bg-red-500/10 text-red-200"
 };

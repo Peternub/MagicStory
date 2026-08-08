@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { DeleteStoryButton } from "@/components/stories/delete-story-button";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -8,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 const statusLabels: Record<string, string> = {
   pending: "В очереди",
-  text_generating: "Генерация текста",
+  generating: "Генерация текста",
   completed: "Серия готова",
   failed: "Ошибка"
 };
@@ -16,7 +15,7 @@ const statusLabels: Record<string, string> = {
 const statusClasses: Record<string, string> = {
   pending:
     "border border-[var(--border-strong)] bg-[var(--accent-gold-soft)] text-[var(--text-main)]",
-  text_generating: "border border-amber-400/30 bg-amber-500/10 text-amber-200",
+  generating: "border border-amber-400/30 bg-amber-500/10 text-amber-200",
   completed: "border border-emerald-400/30 bg-emerald-500/10 text-emerald-200",
   failed: "border border-red-400/30 bg-red-500/10 text-red-200"
 };
@@ -33,9 +32,10 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
   const supabase = await createSupabaseServerClient();
   const { data: story } = await supabase
     .from("stories")
-    .select("id, title, theme, text_content, status, error_message, created_at")
+    .select("id, series_id, title, theme, text_content, status, error_message, created_at")
     .eq("id", id)
     .eq("user_id", user.id)
+    .not("series_id", "is", null)
     .single();
 
   if (!story) {
@@ -45,7 +45,7 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-10 sm:py-10">
       <Link
-        href="/stories"
+        href={`/series/${story.series_id}`}
         className="text-sm font-medium text-[var(--logo-text)] transition hover:text-[var(--text-main)]"
       >
         Назад к библиотеке
@@ -73,7 +73,6 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
             </div>
           </div>
 
-          <DeleteStoryButton storyId={story.id} />
         </div>
 
         <div className="mt-8 rounded-lg border border-[var(--border-soft)] bg-[var(--surface-card)] p-5 text-sm text-[var(--text-main)]">
@@ -87,7 +86,7 @@ export default async function StoryDetailsPage({ params }: StoryPageProps) {
           </div>
         ) : null}
 
-        {story.status === "text_generating" ? (
+        {story.status === "generating" ? (
           <div className="mt-6 rounded-lg border border-amber-400/20 bg-amber-500/10 px-5 py-4 text-sm text-amber-200">
             Создаем текст серии. Обновите страницу чуть позже.
           </div>

@@ -7,92 +7,12 @@ import { generateStory } from "@/lib/ai/generate-story";
 import { getSeriesEpisodePlan, stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isMissingColumnError } from "@/lib/supabase/errors";
-import {
-  downloadSaluteSpeechResult,
-  getSaluteSpeechTaskStatus,
-  startSaluteSpeechSynthesis
-} from "@/lib/tts/salutespeech";
 import { parseStoryFormData } from "@/lib/validators/stories";
 
 type StoryActionState = {
   error?: string;
 };
-
-type SupabaseAdminClient = ReturnType<typeof createSupabaseAdminClient>;
-
-function buildStorySummary(input: {
-  situation?: string;
-  goal: string;
-  setting: string;
-  durationMinutes: number;
-  additionalCharacters?: string;
-}) {
-  const characters = input.additionalCharacters
-    ? `, персонажи: ${input.additionalCharacters}`
-    : "";
-  return `${input.situation}. ${input.durationMinutes} мин, изменение к финалу: ${input.goal}, место: ${input.setting}${characters}`;
-}
-
-async function saveReadyStoryAudio(input: {
-  supabase: SupabaseAdminClient;
-  userId: string;
-  storyId: string;
-  taskId: string;
-}) {
-  const status = await getSaluteSpeechTaskStatus(input.taskId);
-
-  if (status.status === "DONE" && status.responseFileId) {
-    const audio = await downloadSaluteSpeechResult(status.responseFileId);
-    const audioPath = `${input.userId}/${input.storyId}.ogg`;
-    const { error: uploadError } = await input.supabase.storage
-      .from("story-audio")
-      .upload(audioPath, audio, {
-        contentType: "audio/ogg",
-        upsert: true
-      });
-
-    if (uploadError) {
-      throw uploadError;
-    }
-
-    await input.supabase
-      .from("stories")
-      .update({
-        audio_path: audioPath,
-        tts_response_file_id: status.responseFileId,
-        tts_status: "completed",
-        tts_error_message: null
-      })
-      .eq("id", input.storyId)
-      .eq("user_id", input.userId);
-
-    return;
-  }
-
-  if (status.status === "ERROR" || status.status === "CANCELED") {
-    await input.supabase
-      .from("stories")
-      .update({
-        tts_status: "failed",
-        tts_error_message: status.errorMessage ?? "SaluteSpeech не смог озвучить серию."
-      })
-      .eq("id", input.storyId)
-      .eq("user_id", input.userId);
-
-    return;
-  }
-
-  await input.supabase
-    .from("stories")
-    .update({
-      tts_status: "audio_generating",
-      tts_error_message: null
-    })
-    .eq("id", input.storyId)
-    .eq("user_id", input.userId);
-}
 
 export async function createStory(
   _prevState: StoryActionState,
@@ -138,7 +58,12 @@ export async function createStory(
   }
 
   const rawSeriesId = formData.get("seriesId");
-  const seriesId = typeof rawSeriesId === "string" && rawSeriesId ? rawSeriesId : null;
+  const seriesId = typeof rawSeriesId === "string" ? rawSeriesId.trim() : "";
+
+  if (!seriesId) {
+    return { error: "Серию можно создать только внутри сериала" };
+  }
+
   let episodeNumber: number | null = null;
   let storyRequest = parsed.data;
 
@@ -199,20 +124,14 @@ export async function createStory(
     };
   }
 
-  const storySummary = seriesId
-    ? `Серия ${episodeNumber}: ${storyRequest.situation}`
-    : buildStorySummary(storyRequest);
+  const storySummary = `Серия ${episodeNumber}: ${storyRequest.situation}`;
   const storyInsert = {
     user_id: user.id,
     child_id: child.id,
     theme: storySummary,
-    status: "text_generating",
-    ...(seriesId
-      ? {
-          series_id: seriesId,
-          episode_number: episodeNumber
-        }
-      : {})
+    status: "generating",
+    series_id: seriesId,
+    episode_number: episodeNumber
   };
 
   const { data: storyRecord, error: insertError } = await supabase
@@ -261,7 +180,7 @@ export async function createStory(
     await supabase.from("usage_events").insert({
       user_id: user.id,
       story_id: storyRecord.id,
-      event_type: seriesId ? "series_episode_created" : "story_created",
+      event_type: "series_episode_created",
       amount: 1
     });
   } catch (storyError) {
@@ -285,188 +204,7 @@ export async function createStory(
   revalidatePath("/dashboard");
   revalidatePath("/stories");
   revalidatePath("/series");
-  if (seriesId) {
-    revalidatePath(`/series/${seriesId}`);
-  }
+  revalidatePath(`/series/${seriesId}`);
   revalidatePath("/children");
-  redirect(seriesId ? `/series/${seriesId}` : `/stories/${storyRecord.id}`);
-}
-
-export async function deleteStory(formData: FormData) {
-  const user = await requireUser();
-  const storyId = formData.get("storyId");
-
-  if (typeof storyId !== "string" || !storyId) {
-    return;
-  }
-
-  const supabase = await createSupabaseServerClient();
-
-  await supabase
-    .from("stories")
-    .delete()
-    .eq("id", storyId)
-    .eq("user_id", user.id);
-
-  revalidatePath("/stories");
-  revalidatePath("/dashboard");
-  redirect("/stories");
-}
-
-export async function startStoryAudio(formData: FormData) {
-  const user = await requireUser();
-  const storyId = formData.get("storyId");
-
-  if (typeof storyId !== "string" || !storyId) {
-    return;
-  }
-
-  const supabase = createSupabaseAdminClient();
-  const { data: story } = await supabase
-    .from("stories")
-    .select("id, text_content, tts_task_id")
-    .eq("id", storyId)
-    .eq("user_id", user.id)
-    .single();
-
-  if (!story?.text_content) {
-    redirect(`/stories/${storyId}`);
-  }
-
-  if (story.tts_task_id) {
-    try {
-      await saveReadyStoryAudio({
-        supabase,
-        userId: user.id,
-        storyId,
-        taskId: story.tts_task_id
-      });
-    } catch (error) {
-      console.error("SaluteSpeech resume failed", error);
-
-      await supabase
-        .from("stories")
-        .update({
-          tts_status: "failed",
-          tts_error_message: "Не удалось получить готовую озвучку. Попробуйте ещё раз."
-        })
-        .eq("id", storyId)
-        .eq("user_id", user.id);
-    }
-
-    revalidatePath(`/stories/${storyId}`);
-    redirect(`/stories/${storyId}`);
-  }
-
-  try {
-    const synthesis = await startSaluteSpeechSynthesis(story.text_content);
-
-    await supabase
-      .from("stories")
-      .update({
-        provider_tts: synthesis.provider,
-        tts_task_id: synthesis.taskId,
-        tts_status: "audio_generating",
-        tts_error_message: null
-      })
-      .eq("id", storyId)
-      .eq("user_id", user.id);
-  } catch (error) {
-    console.error("SaluteSpeech start failed", error);
-
-    await supabase
-      .from("stories")
-      .update({
-        tts_status: "failed",
-        tts_error_message: "Не удалось запустить озвучку. Проверьте настройки SaluteSpeech."
-      })
-      .eq("id", storyId)
-      .eq("user_id", user.id);
-  }
-
-  revalidatePath(`/stories/${storyId}`);
-  redirect(`/stories/${storyId}`);
-}
-
-export async function refreshStoryAudio(formData: FormData) {
-  const user = await requireUser();
-  const storyId = formData.get("storyId");
-
-  if (typeof storyId !== "string" || !storyId) {
-    return;
-  }
-
-  const supabase = createSupabaseAdminClient();
-  const { data: story } = await supabase
-    .from("stories")
-    .select("id, tts_task_id, provider_tts")
-    .eq("id", storyId)
-    .eq("user_id", user.id)
-    .single();
-
-  if (!story?.tts_task_id) {
-    redirect(`/stories/${storyId}`);
-  }
-
-  try {
-    const status = await getSaluteSpeechTaskStatus(story.tts_task_id);
-
-    if (status.status === "DONE" && status.responseFileId) {
-      const audio = await downloadSaluteSpeechResult(status.responseFileId);
-      const audioPath = `${user.id}/${storyId}.ogg`;
-      const { error: uploadError } = await supabase.storage
-        .from("story-audio")
-        .upload(audioPath, audio, {
-          contentType: "audio/ogg",
-          upsert: true
-        });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      await supabase
-        .from("stories")
-        .update({
-          audio_path: audioPath,
-          tts_response_file_id: status.responseFileId,
-          tts_status: "completed",
-          tts_error_message: null
-        })
-        .eq("id", storyId)
-        .eq("user_id", user.id);
-    } else if (status.status === "ERROR" || status.status === "CANCELED") {
-      await supabase
-        .from("stories")
-        .update({
-          tts_status: "failed",
-          tts_error_message: status.errorMessage ?? "SaluteSpeech не смог озвучить серию."
-        })
-        .eq("id", storyId)
-        .eq("user_id", user.id);
-    } else {
-      await supabase
-        .from("stories")
-        .update({
-          tts_status: "audio_generating",
-          tts_error_message: null
-        })
-        .eq("id", storyId)
-        .eq("user_id", user.id);
-    }
-  } catch (error) {
-    console.error("SaluteSpeech refresh failed", error);
-
-    await supabase
-      .from("stories")
-      .update({
-        tts_status: "failed",
-        tts_error_message: "Не удалось проверить озвучку. Попробуйте позже."
-      })
-      .eq("id", storyId)
-      .eq("user_id", user.id);
-  }
-
-  revalidatePath(`/stories/${storyId}`);
-  redirect(`/stories/${storyId}`);
+  redirect(`/series/${seriesId}`);
 }

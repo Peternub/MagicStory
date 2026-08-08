@@ -12,6 +12,7 @@ export default async function StoriesPage() {
     .from("stories")
     .select("id, title, theme, status, created_at")
     .eq("user_id", user.id)
+    .not("series_id", "is", null)
     .order("created_at", { ascending: false });
 
   return (
