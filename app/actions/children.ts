@@ -4,10 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { MAX_CHILD_PROFILES } from "@/lib/config/children";
+import {
+  countChildrenByUser,
+  createChildRecord,
+  deleteChildRecord,
+  updateChildRecord
+} from "@/lib/data/children";
 import { requireUser } from "@/lib/supabase/auth";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isMissingColumnError } from "@/lib/supabase/errors";
 import { childSchema } from "@/lib/validators/children";
 
 type ChildActionState = {
@@ -35,44 +38,31 @@ export async function createChild(
     };
   }
 
-  const supabase = createSupabaseAdminClient();
-  const { count: childrenCount, error: countError } = await supabase
-    .from("children")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", user.id);
-
-  if (countError) {
+  let childrenCount: number;
+  try {
+    childrenCount = await countChildrenByUser(user.id);
+  } catch {
     return { error: "Не удалось проверить количество профилей" };
   }
 
-  if ((childrenCount ?? 0) >= MAX_CHILD_PROFILES) {
+  if (childrenCount >= MAX_CHILD_PROFILES) {
     return { error: `Можно создать не больше ${MAX_CHILD_PROFILES} профилей детей` };
   }
 
-  const childPayload = {
-    ...parsed.data,
-    user_id: user.id
-  };
-  const { error } = await supabase.from("children").insert(childPayload);
+  const result = await createChildRecord(user.id, parsed.data);
 
-  if (error) {
-    if (error.message.includes("CHILDREN_LIMIT_REACHED")) {
+  if (!result.ok) {
+    if (result.reason === "limit") {
       return { error: `Можно создать не больше ${MAX_CHILD_PROFILES} профилей детей` };
     }
 
-    if (isMissingColumnError(error, "gender")) {
+    if (result.reason === "missing_gender") {
       return {
         error: "В базе не применена миграция пола ребенка. Примените 20260420_006_add_child_gender.sql."
       };
     }
 
-    console.error("createChild insert error", {
-      userId: user.id,
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint
-    });
+    console.error("createChild insert error");
 
     return {
       error: "Не удалось сохранить профиль ребенка"
@@ -112,28 +102,16 @@ export async function updateChild(
     };
   }
 
-  const supabase = createSupabaseAdminClient();
-  const { error } = await supabase
-    .from("children")
-    .update(parsed.data)
-    .eq("id", childId)
-    .eq("user_id", user.id);
+  const result = await updateChildRecord(user.id, childId, parsed.data);
 
-  if (error) {
-    if (isMissingColumnError(error, "gender")) {
+  if (!result.ok) {
+    if (result.reason === "missing_gender") {
       return {
         error: "В базе не применена миграция пола ребенка. Примените 20260420_006_add_child_gender.sql."
       };
     }
 
-    console.error("updateChild error", {
-      userId: user.id,
-      childId,
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint
-    });
+    console.error("updateChild error");
 
     return {
       error: "Не удалось обновить профиль ребенка"
@@ -153,13 +131,7 @@ export async function deleteChild(formData: FormData) {
     return;
   }
 
-  const supabase = await createSupabaseServerClient();
-
-  await supabase
-    .from("children")
-    .delete()
-    .eq("id", childId)
-    .eq("user_id", user.id);
+  await deleteChildRecord(user.id, childId);
 
   revalidatePath("/children");
   revalidatePath("/series/new");

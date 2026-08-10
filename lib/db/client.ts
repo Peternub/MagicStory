@@ -1,8 +1,11 @@
 import "server-only";
 
-import { Pool, type QueryResult, type QueryResultRow } from "pg";
+import { Pool, types, type QueryResult, type QueryResultRow } from "pg";
 
 import { getDatabaseConfig } from "@/lib/db/config";
+
+types.setTypeParser(1114, (value) => value);
+types.setTypeParser(1184, (value) => value);
 
 const globalDatabase = globalThis as typeof globalThis & {
   magicStoryDatabasePool?: Pool;

@@ -2,10 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { updateChild } from "@/app/actions/children";
 import { ChildForm } from "@/components/children/child-form";
+import { findChildByUser } from "@/lib/data/children";
 import { requireUser } from "@/lib/supabase/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isMissingColumnError } from "@/lib/supabase/errors";
-import type { ChildRecord } from "@/lib/types/database";
 
 export const dynamic = "force-dynamic";
 
@@ -15,50 +13,12 @@ type EditChildPageProps = {
   }>;
 };
 
-type EditableChild = Omit<ChildRecord, "gender"> & {
-  gender?: ChildRecord["gender"];
-};
-
-const childSelectWithGender =
-  "id, user_id, name, age, gender, interests, fears, additional_context, created_at, updated_at";
-
-const childSelectWithoutGender =
-  "id, user_id, name, age, interests, fears, additional_context, created_at, updated_at";
-
 export default async function EditChildPage({ params }: EditChildPageProps) {
   const user = await requireUser();
   const { id } = await params;
-  const supabase = await createSupabaseServerClient();
+  const { child, hasMissingGenderColumn } = await findChildByUser(user.id, id);
 
-  const childResult = await supabase
-    .from("children")
-    .select(childSelectWithGender)
-    .eq("id", id)
-    .eq("user_id", user.id)
-    .single();
-
-  let child = childResult.data as EditableChild | null;
-  let hasMissingGenderColumn = false;
-
-  if (isMissingColumnError(childResult.error, "gender")) {
-    hasMissingGenderColumn = true;
-
-    const fallbackResult = await supabase
-      .from("children")
-      .select(childSelectWithoutGender)
-      .eq("id", id)
-      .eq("user_id", user.id)
-      .single();
-
-    if (fallbackResult.error || !fallbackResult.data) {
-      notFound();
-    }
-
-    child = {
-      ...(fallbackResult.data as Omit<ChildRecord, "gender">),
-      gender: undefined
-    };
-  } else if (childResult.error || !child) {
+  if (!child) {
     notFound();
   }
 
