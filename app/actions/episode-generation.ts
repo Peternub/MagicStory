@@ -8,7 +8,7 @@ import {
   getGenerationActionError,
   processStoryGeneration
 } from "@/lib/stories/generation";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 import { parseStoryFormData } from "@/lib/validators/stories";
 
 type StoryActionState = {

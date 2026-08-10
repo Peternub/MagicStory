@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { updateChild } from "@/app/actions/children";
 import { ChildForm } from "@/components/children/child-form";
 import { findChildByUser } from "@/lib/data/children";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
 

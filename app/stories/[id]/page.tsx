@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { findStoryDetailsByUser } from "@/lib/data/stories";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
 

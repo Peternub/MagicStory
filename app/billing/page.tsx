@@ -5,7 +5,7 @@ import {
   getBillingOverview,
   type SubscriptionPlanPreview
 } from "@/lib/data/billing";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
 

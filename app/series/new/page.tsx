@@ -6,7 +6,7 @@ import { SeriesForm } from "@/components/stories/series-form";
 import { STARTER_OFFER } from "@/lib/config/starter-offer";
 import { listChildrenForSelection } from "@/lib/data/children";
 import { getStarterOfferStatus } from "@/lib/payments/starter-offer";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
 

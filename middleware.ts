@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { usesLocalAuth } from "@/lib/auth/config";
 import { updateSession } from "@/lib/supabase/middleware";
 
 const legacyDevChunkPaths = new Set([
@@ -35,6 +36,10 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith("/_next/")) {
+    return NextResponse.next();
+  }
+
+  if (usesLocalAuth()) {
     return NextResponse.next();
   }
 

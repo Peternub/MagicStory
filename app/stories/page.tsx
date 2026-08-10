@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { StoriesList } from "@/components/stories/stories-list";
 import { listStoriesByUser } from "@/lib/data/stories";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
 

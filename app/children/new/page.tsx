@@ -4,7 +4,7 @@ import { createChild } from "@/app/actions/children";
 import { ChildForm } from "@/components/children/child-form";
 import { MAX_CHILD_PROFILES } from "@/lib/config/children";
 import { countChildrenByUser } from "@/lib/data/children";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
 

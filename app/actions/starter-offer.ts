@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { requestStarterOfferRecord } from "@/lib/data/billing";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 
 export type StarterOfferActionState = { error?: string; message?: string };
 

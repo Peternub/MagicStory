@@ -10,7 +10,7 @@ import {
   deleteChildRecord,
   updateChildRecord
 } from "@/lib/data/children";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 import { childSchema } from "@/lib/validators/children";
 
 type ChildActionState = {

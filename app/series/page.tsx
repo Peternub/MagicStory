@@ -2,7 +2,7 @@ import Link from "next/link";
 import { HouseSection } from "@/components/dashboard/house-section";
 import { SeriesTree, type TreeEpisode } from "@/components/stories/series-tree";
 import { listSeriesByUser, type SeriesPreview } from "@/lib/data/series";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
 

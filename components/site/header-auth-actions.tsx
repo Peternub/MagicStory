@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 type AccountSummary =
   | {
@@ -27,29 +26,9 @@ export function HeaderAuthActions() {
 
   useEffect(() => {
     let mounted = true;
-    const supabase = createSupabaseBrowserClient();
 
     async function loadSummary() {
-      let hasLocalSession = false;
-
       try {
-        const {
-          data: { session }
-        } = await supabase.auth.getSession();
-
-        hasLocalSession = Boolean(session?.user);
-
-        if (mounted && session?.user) {
-          setSummary(createFallbackSummary(session.user.email, session.user.user_metadata));
-        }
-
-        if (!session?.user && !isProtected) {
-          if (mounted) {
-            setSummary({ user: null });
-          }
-          return;
-        }
-
         const response = await fetch("/api/account/summary", {
           cache: "no-store",
           signal: AbortSignal.timeout(5000)
@@ -65,8 +44,8 @@ export function HeaderAuthActions() {
           setSummary(data);
         }
       } catch {
-        if (mounted && !hasLocalSession) {
-          setSummary({ user: null });
+        if (mounted) {
+          setSummary(isProtected ? createFallbackSummary() : { user: null });
         }
       }
     }
@@ -74,23 +53,8 @@ export function HeaderAuthActions() {
     setSummary(isProtected ? createFallbackSummary() : null);
     void loadSummary();
 
-    const {
-      data: { subscription }
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!mounted) {
-        return;
-      }
-
-      setSummary(
-        session?.user
-          ? createFallbackSummary(session.user.email, session.user.user_metadata)
-          : { user: null }
-      );
-    });
-
     return () => {
       mounted = false;
-      subscription.unsubscribe();
     };
   }, [isProtected, pathname]);
 

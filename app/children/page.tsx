@@ -1,7 +1,7 @@
 import { ChildrenList } from "@/components/children/children-list";
 import { HouseSection } from "@/components/dashboard/house-section";
 import { listChildrenByUser } from "@/lib/data/children";
-import { requireUser } from "@/lib/supabase/auth";
+import { requireUser } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
 

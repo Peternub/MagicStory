@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUserSummary } from "@/lib/account/user-summary";
-import { getCurrentUser } from "@/lib/supabase/auth";
+import { getCurrentUser } from "@/lib/auth/server";
 import { getUserDisplayName, getUserInitials } from "@/lib/user/display-name";
 
 export const dynamic = "force-dynamic";
