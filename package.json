@@ -10,7 +10,8 @@
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "db:migrate-data": "bun scripts/migrate-supabase-data.ts",
-    "auth:migrate-users": "bun scripts/migrate-supabase-auth-users.ts"
+    "auth:migrate-users": "bun scripts/migrate-supabase-auth-users.ts",
+    "db:clear-user-data": "bun scripts/clear-all-user-data.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.0",
