@@ -1,38 +1,30 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { STARTER_OFFER } from "@/lib/config/starter-offer";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { ensureUserProfile } from "@/lib/account/ensure-profile";
+import { requestStarterOfferRecord } from "@/lib/data/billing";
 import { requireUser } from "@/lib/supabase/auth";
 
 export type StarterOfferActionState = { error?: string; message?: string };
 
 export async function requestStarterOffer(): Promise<StarterOfferActionState> {
   const user = await requireUser();
-  const supabase = createSupabaseAdminClient();
-  const { data: existing } = await supabase
-    .from("starter_offer_orders")
-    .select("status")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  await ensureUserProfile(user.id, user.email);
 
-  if (existing) {
+  try {
+    const result = await requestStarterOfferRecord(user.id);
+
+    if (!result.created) {
+      return {
+        message: result.status === "paid"
+          ? "Пакет уже оплачен и доступен."
+          : "Заявка уже создана. Оплата появится после подключения кассы."
+      };
+    }
+  } catch {
     return {
-      message: existing.status === "paid"
-        ? "Пакет уже оплачен и доступен."
-        : "Заявка уже создана. Оплата появится после подключения кассы."
+      error: "Не удалось создать заявку. Проверьте подключение базы данных."
     };
-  }
-
-  const { error } = await supabase.from("starter_offer_orders").insert({
-    price_rub: STARTER_OFFER.priceRub,
-    status: "pending",
-    user_id: user.id
-  });
-
-  if (error) {
-    console.warn("Не удалось создать заявку на разовый пакет", error.message);
-    return { error: "Не удалось создать заявку. Проверьте подключение базы данных." };
   }
 
   revalidatePath("/series/new");

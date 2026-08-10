@@ -1,26 +1,13 @@
 import Link from "next/link";
 import { HouseSection } from "@/components/dashboard/house-section";
 import { PricingTabs } from "@/components/site/pricing-tabs";
+import {
+  getBillingOverview,
+  type SubscriptionPlanPreview
+} from "@/lib/data/billing";
 import { requireUser } from "@/lib/supabase/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
-
-type SubscriptionPlanPreview = {
-  code: string;
-  description: string | null;
-  name: string;
-  price_rub: number;
-  stories_limit: number;
-};
-
-type SubscriptionPreview = {
-  current_period_end: string | null;
-  external_subscription_id: string | null;
-  started_at: string | null;
-  status: string;
-  subscription_plans?: unknown;
-};
 
 const statusLabels: Record<string, string> = {
   active: "Активен",
@@ -54,27 +41,9 @@ function formatDate(value: string | null) {
 
 export default async function BillingPage() {
   const user = await requireUser();
-  const supabase = await createSupabaseServerClient();
-  const { data: subscriptionData } = await supabase
-    .from("subscriptions")
-    .select(
-      "status, started_at, current_period_end, external_subscription_id, subscription_plans(code, name, description, price_rub, stories_limit)"
-    )
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const subscription = (subscriptionData ?? null) as SubscriptionPreview | null;
+  const { subscription, storiesUsed } = await getBillingOverview(user.id);
   const plan = getPlan(subscription?.subscription_plans);
-  const { count: storiesUsed } = subscription?.started_at
-    ? await supabase
-        .from("stories")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .gte("created_at", subscription.started_at)
-    : { count: 0 };
-  const usedCount = storiesUsed ?? 0;
+  const usedCount = storiesUsed;
   const storiesLimit = plan?.stories_limit ?? 0;
   const usagePercent = storiesLimit > 0 ? Math.min((usedCount / storiesLimit) * 100, 100) : 0;
 
