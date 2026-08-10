@@ -4,22 +4,15 @@ import { createSeries } from "@/app/actions/series";
 import { StarterOfferButton } from "@/components/billing/starter-offer-button";
 import { SeriesForm } from "@/components/stories/series-form";
 import { STARTER_OFFER } from "@/lib/config/starter-offer";
+import { listChildrenForSelection } from "@/lib/data/children";
 import { getStarterOfferStatus } from "@/lib/payments/starter-offer";
 import { requireUser } from "@/lib/supabase/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { ChildRecord } from "@/lib/types/database";
 
 export const dynamic = "force-dynamic";
 
 export default async function NewSeriesPage() {
   const user = await requireUser();
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from("children")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("name");
-  const childrenItems = (data ?? []) as ChildRecord[];
+  const childrenItems = await listChildrenForSelection(user.id);
   const starterOfferStatus = await getStarterOfferStatus(user.id);
 
   return (

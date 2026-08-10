@@ -7,9 +7,9 @@ import {
 } from "@/app/actions/episode-generation";
 import { GenerationRecovery } from "@/components/stories/generation-recovery";
 import { SeriesEpisodeForm } from "@/components/stories/series-episode-form";
+import { findSeriesDetailsByUser } from "@/lib/data/series";
 import { stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import { requireUser } from "@/lib/supabase/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -18,26 +18,12 @@ type SeriesDetailsPageProps = { params: Promise<{ id: string }> };
 export default async function SeriesDetailsPage({ params }: SeriesDetailsPageProps) {
   const user = await requireUser();
   const { id } = await params;
-  const supabase = await createSupabaseServerClient();
-  const [{ data: series }, { data: episodes }] = await Promise.all([
-    supabase
-      .from("story_series")
-      .select("id, child_id, title, premise, planned_episodes, status, children(name)")
-      .eq("id", id)
-      .eq("user_id", user.id)
-      .single(),
-    supabase
-      .from("stories")
-      .select("id, title, status, episode_number, error_message, generation_started_at, created_at")
-      .eq("series_id", id)
-      .eq("user_id", user.id)
-      .order("episode_number", { ascending: true })
-  ]);
+  const { series, episodes } = await findSeriesDetailsByUser(user.id, id);
 
   if (!series) notFound();
 
-  const completedEpisodes = (episodes ?? []).filter((episode) => episode.status === "completed");
-  const unfinishedEpisode = (episodes ?? []).find((episode) => episode.status !== "completed");
+  const completedEpisodes = episodes.filter((episode) => episode.status === "completed");
+  const unfinishedEpisode = episodes.find((episode) => episode.status !== "completed");
   const episodesCount = completedEpisodes.length;
   const plannedEpisodes = series.planned_episodes;
   const isComplete = series.status === "completed" || episodesCount >= plannedEpisodes;
@@ -58,7 +44,7 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
         <section>
           <h2 className="text-2xl font-semibold text-[var(--text-main)]">Все серии</h2>
           <div className="mt-4 grid gap-3">
-            {(episodes ?? []).map((episode) => {
+            {episodes.map((episode) => {
               const content = (
                 <>
                   <p className="text-xs text-[var(--logo-text)]">Серия {episode.episode_number}</p>
@@ -85,7 +71,7 @@ export default async function SeriesDetailsPage({ params }: SeriesDetailsPagePro
                 </article>
               );
             })}
-            {episodes?.length === 0 ? <p className="text-sm text-[var(--text-soft)]">Первая серия еще не создана.</p> : null}
+            {episodes.length === 0 ? <p className="text-sm text-[var(--text-soft)]">Первая серия еще не создана.</p> : null}
           </div>
         </section>
 

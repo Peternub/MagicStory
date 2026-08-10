@@ -84,6 +84,11 @@ export async function listChildrenByUser(userId: string) {
   return (data ?? []) as ChildRecord[];
 }
 
+export async function listChildrenForSelection(userId: string) {
+  const children = await listChildrenByUser(userId);
+  return [...children].sort((left, right) => left.name.localeCompare(right.name, "ru"));
+}
+
 export async function findChildByUser(userId: string, childId: string) {
   if (usesPostgresDataBackend()) {
     const result = await queryDatabase<ChildRecord>(

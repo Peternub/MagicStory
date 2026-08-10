@@ -1,21 +1,10 @@
 import Link from "next/link";
 import { HouseSection } from "@/components/dashboard/house-section";
 import { SeriesTree, type TreeEpisode } from "@/components/stories/series-tree";
+import { listSeriesByUser, type SeriesPreview } from "@/lib/data/series";
 import { requireUser } from "@/lib/supabase/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
-
-type SeriesPreview = {
-  children?: Array<{ name: string }>;
-  id: string;
-  premise: string;
-  planned_episodes: number;
-  status: string;
-  stories?: TreeEpisode[];
-  title: string;
-  updated_at: string;
-};
 
 type SeriesPageProps = {
   searchParams: Promise<{ series?: string; view?: string }>;
@@ -37,14 +26,7 @@ export default async function SeriesPage({ searchParams }: SeriesPageProps) {
   const user = await requireUser();
   const params = await searchParams;
   const showCompleted = params.view === "completed";
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from("story_series")
-    .select("id, title, premise, planned_episodes, status, updated_at, children(name), stories(id, title, status, episode_number)")
-    .eq("user_id", user.id)
-    .order("updated_at", { ascending: false });
-
-  const seriesItems = (data ?? []) as SeriesPreview[];
+  const seriesItems = await listSeriesByUser(user.id);
   const activeSeries = seriesItems.filter((series) => !isComplete(series));
   const completedSeries = seriesItems.filter(isComplete);
   const currentSeries =
