@@ -1,19 +1,13 @@
 import Link from "next/link";
 import { StoriesList } from "@/components/stories/stories-list";
+import { listStoriesByUser } from "@/lib/data/stories";
 import { requireUser } from "@/lib/supabase/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function StoriesPage() {
   const user = await requireUser();
-  const supabase = await createSupabaseServerClient();
-  const { data: stories } = await supabase
-    .from("stories")
-    .select("id, title, theme, status, created_at")
-    .eq("user_id", user.id)
-    .not("series_id", "is", null)
-    .order("created_at", { ascending: false });
+  const stories = await listStoriesByUser(user.id);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 py-6 sm:px-10 sm:py-10">
@@ -49,7 +43,7 @@ export default async function StoriesPage() {
       </header>
 
       <section className="mt-10">
-        <StoriesList stories={stories ?? []} />
+        <StoriesList stories={stories} />
       </section>
     </main>
   );

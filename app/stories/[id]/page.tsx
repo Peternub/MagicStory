@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { findStoryDetailsByUser } from "@/lib/data/stories";
 import { requireUser } from "@/lib/supabase/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -29,14 +29,7 @@ type StoryPageProps = {
 export default async function StoryDetailsPage({ params }: StoryPageProps) {
   const user = await requireUser();
   const { id } = await params;
-  const supabase = await createSupabaseServerClient();
-  const { data: story } = await supabase
-    .from("stories")
-    .select("id, series_id, title, theme, text_content, status, error_message, created_at")
-    .eq("id", id)
-    .eq("user_id", user.id)
-    .not("series_id", "is", null)
-    .single();
+  const story = await findStoryDetailsByUser(user.id, id);
 
   if (!story) {
     notFound();
