@@ -17,6 +17,15 @@ export type LegacyStory = {
   status: string;
 };
 
+export type LegacyAudioStory = {
+  audio_path: string | null;
+  audio_url: string | null;
+};
+
+export function shouldMigrateLegacyStory(story: LegacyAudioStory) {
+  return !story.audio_path?.trim() && !story.audio_url?.trim();
+}
+
 export function mapLegacyStoryStatus(status: string) {
   if (status === "text_generating") {
     return "generating" as const;

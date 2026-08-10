@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:migrate-data": "bun scripts/migrate-supabase-data.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.0",

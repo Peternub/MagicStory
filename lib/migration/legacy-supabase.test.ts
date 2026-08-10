@@ -4,7 +4,8 @@ import {
   buildPlanMigrationFields,
   buildSeriesMigrationFields,
   buildStoryMigrationFields,
-  mapLegacyStoryStatus
+  mapLegacyStoryStatus,
+  shouldMigrateLegacyStory
 } from "@/lib/migration/legacy-supabase";
 
 describe("преобразование старых данных Supabase", () => {
@@ -50,6 +51,21 @@ describe("преобразование старых данных Supabase", () =
       generation_key: null,
       generation_started_at: null
     });
+  });
+
+  test("исключает старые истории с озвучкой", () => {
+    expect(
+      shouldMigrateLegacyStory({
+        audio_path: "user/story/audio.mp3",
+        audio_url: null
+      })
+    ).toBe(false);
+    expect(
+      shouldMigrateLegacyStory({
+        audio_path: null,
+        audio_url: null
+      })
+    ).toBe(true);
   });
 
   test("назначает модель по коду тарифа", () => {
