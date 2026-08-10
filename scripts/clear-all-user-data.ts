@@ -141,7 +141,7 @@ async function assertSupabaseIsEmpty(supabase: SupabaseClient) {
       continue;
     }
 
-    if (error || count !== 0) {
+    if (error || (count ?? 0) !== 0) {
       throw new Error(`SUPABASE_NOT_EMPTY_${table.toUpperCase()}`);
     }
   }
