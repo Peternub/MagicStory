@@ -38,6 +38,10 @@ const targetTables = [
   "verification"
 ] as const;
 
+function isMissingSourceTable(error: { code?: string } | null) {
+  return error?.code === "PGRST205" || error?.code === "42P01";
+}
+
 async function listAllAuthUsers(supabase: SupabaseClient) {
   const users: User[] = [];
 
@@ -65,6 +69,10 @@ async function clearSupabaseData(supabase: SupabaseClient) {
   for (const table of sourceTables) {
     const { error } = await supabase.from(table).delete().not("id", "is", null);
 
+    if (isMissingSourceTable(error)) {
+      continue;
+    }
+
     if (error) {
       throw new Error(`SUPABASE_DELETE_${table.toUpperCase()}_${error.code}`);
     }
@@ -87,6 +95,11 @@ async function printDeletionCounts(supabase: SupabaseClient, client: PoolClient)
     const { count, error } = await supabase
       .from(table)
       .select("id", { count: "exact", head: true });
+
+    if (isMissingSourceTable(error)) {
+      console.log(`Supabase ${table}: таблица отсутствует.`);
+      continue;
+    }
 
     if (error) {
       throw new Error(`SUPABASE_COUNT_${table.toUpperCase()}_${error.code}`);
@@ -123,6 +136,10 @@ async function assertSupabaseIsEmpty(supabase: SupabaseClient) {
     const { count, error } = await supabase
       .from(table)
       .select("id", { count: "exact", head: true });
+
+    if (isMissingSourceTable(error)) {
+      continue;
+    }
 
     if (error || count !== 0) {
       throw new Error(`SUPABASE_NOT_EMPTY_${table.toUpperCase()}`);
