@@ -3,7 +3,8 @@ import { z } from "zod";
 const emailSchema = z.string().email("Введите корректный email");
 const passwordSchema = z
   .string()
-  .min(8, "Пароль должен содержать минимум 8 символов");
+  .min(8, "Пароль должен содержать минимум 8 символов")
+  .max(128, "Пароль не должен быть длиннее 128 символов");
 const nameSchema = z
   .string()
   .trim()
