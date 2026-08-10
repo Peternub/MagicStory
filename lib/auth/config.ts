@@ -36,6 +36,10 @@ export function usesLocalAuth() {
   return parseAuthBackend(process.env.AUTH_BACKEND) === "better-auth";
 }
 
+export function usesLegacyAuthBridge() {
+  return process.env.LEGACY_AUTH_BRIDGE_ENABLED === "true";
+}
+
 export function parseLocalAuthEnv(source: Record<string, string | undefined>) {
   const result = localAuthEnvSchema.safeParse(source);
 

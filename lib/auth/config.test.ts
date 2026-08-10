@@ -1,7 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import {
   parseAuthBackend,
-  parseLocalAuthEnv
+  parseLocalAuthEnv,
+  usesLegacyAuthBridge
 } from "@/lib/auth/config";
 
 const validEnv = {
@@ -42,5 +43,21 @@ describe("конфигурация авторизации", () => {
         GOOGLE_CLIENT_SECRET: "client-secret"
       }).DATABASE_POOL_MAX
     ).toBe(4);
+  });
+
+  test("включает мост старых паролей только явным значением true", () => {
+    const previousValue = process.env.LEGACY_AUTH_BRIDGE_ENABLED;
+
+    process.env.LEGACY_AUTH_BRIDGE_ENABLED = "false";
+    expect(usesLegacyAuthBridge()).toBe(false);
+
+    process.env.LEGACY_AUTH_BRIDGE_ENABLED = "true";
+    expect(usesLegacyAuthBridge()).toBe(true);
+
+    if (previousValue === undefined) {
+      delete process.env.LEGACY_AUTH_BRIDGE_ENABLED;
+    } else {
+      process.env.LEGACY_AUTH_BRIDGE_ENABLED = previousValue;
+    }
   });
 });

@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
+import { usesLegacyAuthBridge, usesLocalAuth } from "@/lib/auth/config";
+import { migrateLegacyCredential } from "@/lib/auth/legacy-credential-bridge";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
@@ -93,6 +95,37 @@ export async function signIn(
     };
   }
 
+  if (usesLocalAuth()) {
+    const { localAuth } = await import("@/lib/auth/local");
+    const requestHeaders = await headers();
+
+    try {
+      await localAuth.api.signInEmail({
+        body: parsed.data,
+        headers: requestHeaders
+      });
+    } catch {
+      const credentialMigrated =
+        usesLegacyAuthBridge() &&
+        (await migrateLegacyCredential(parsed.data.email, parsed.data.password));
+
+      if (!credentialMigrated) {
+        return { error: "Неверный email или пароль." };
+      }
+
+      try {
+        await localAuth.api.signInEmail({
+          body: parsed.data,
+          headers: requestHeaders
+        });
+      } catch {
+        return { error: "Не удалось завершить перенос пароля. Попробуйте ещё раз." };
+      }
+    }
+
+    redirect("/dashboard");
+  }
+
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
 
@@ -134,6 +167,12 @@ export async function requestPasswordReset(
     return { error: "Не удалось определить адрес сайта" };
   }
 
+  if (usesLocalAuth()) {
+    return {
+      error: "Восстановление локального пароля будет включено после подключения почты."
+    };
+  }
+
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: `${siteOrigin}/auth/callback?next=/auth/update-password`
@@ -166,6 +205,12 @@ export async function updatePassword(
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Проверьте новый пароль" };
+  }
+
+  if (usesLocalAuth()) {
+    return {
+      error: "Ссылка Supabase не подходит для смены локального пароля. Запросите новую ссылку."
+    };
   }
 
   const supabase = await createSupabaseServerClient();
@@ -206,6 +251,27 @@ export async function signUp(
     last_name: parsed.data.lastName,
     full_name: `${parsed.data.firstName} ${parsed.data.lastName}`
   };
+
+  if (usesLocalAuth()) {
+    const { localAuth } = await import("@/lib/auth/local");
+
+    try {
+      await localAuth.api.signUpEmail({
+        body: {
+          name: userMetadata.full_name,
+          email: parsed.data.email,
+          password: parsed.data.password
+        },
+        headers: await headers()
+      });
+    } catch {
+      return {
+        error: "Не удалось зарегистрироваться. Возможно, этот email уже используется."
+      };
+    }
+
+    redirect("/dashboard");
+  }
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signUp({
@@ -264,6 +330,12 @@ export async function signUp(
 }
 
 export async function signOut() {
+  if (usesLocalAuth()) {
+    const { localAuth } = await import("@/lib/auth/local");
+    await localAuth.api.signOut({ headers: await headers() });
+    redirect("/auth/login");
+  }
+
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
   redirect("/auth/login");
