@@ -3,10 +3,11 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { ensureUserProfile } from "@/lib/account/ensure-profile";
+import { findChildByUser } from "@/lib/data/children";
+import { createSeriesWithFirstEpisode } from "@/lib/data/generation";
 import { addSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import { getGenerationActionError, processStoryGeneration } from "@/lib/stories/generation";
 import { requireUser } from "@/lib/supabase/auth";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 type SeriesActionState = {
   error?: string;
@@ -66,13 +67,7 @@ export async function createSeries(
     return { error: parsed.error.issues[0]?.message ?? "Проверьте данные сериала" };
   }
 
-  const supabase = createSupabaseAdminClient();
-  const { data: child } = await supabase
-    .from("children")
-    .select("id")
-    .eq("id", parsed.data.childId)
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const { child } = await findChildByUser(user.id, parsed.data.childId);
 
   if (!child) {
     return { error: "Профиль ребенка не найден" };
@@ -80,26 +75,21 @@ export async function createSeries(
 
   const premise = addSeriesEpisodePlan(buildSeriesPremise(parsed.data), parsed.data.plannedEpisodes);
 
-  const { data: reservation, error } = await supabase.rpc(
-    "create_series_with_first_episode",
-    {
-      episode_count: parsed.data.plannedEpisodes,
-      series_premise: premise,
-      series_title: parsed.data.title,
-      target_child_id: child.id,
-      target_creation_key: parsed.data.creationKey,
-      target_generation_input: {},
-      target_generation_key: parsed.data.generationKey,
-      target_user_id: user.id,
-      use_starter_offer: parsed.data.plannedEpisodes === 3
-    }
-  );
-  const reserved = z
-    .object({ series_id: z.string().uuid(), story_id: z.string().uuid() })
-    .safeParse(reservation);
-
-  if (error || !reserved.success) {
-    if (error?.message.includes("STARTER_OFFER")) {
+  let reservation;
+  try {
+    reservation = await createSeriesWithFirstEpisode({
+      episodeCount: parsed.data.plannedEpisodes,
+      premise,
+      title: parsed.data.title,
+      childId: child.id,
+      creationKey: parsed.data.creationKey,
+      generationInput: {},
+      generationKey: parsed.data.generationKey,
+      userId: user.id,
+      useStarterOffer: parsed.data.plannedEpisodes === 3
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("STARTER_OFFER")) {
       return { error: "Разовый пакет не оплачен или уже использован." };
     }
 
@@ -107,10 +97,10 @@ export async function createSeries(
   }
 
   try {
-    await processStoryGeneration(user.id, reserved.data.story_id);
+    await processStoryGeneration(user.id, reservation.story_id);
   } catch {
     // Сериал и первая серия сохранены; повтор доступен на странице сериала.
   }
 
-  redirect(`/series/${reserved.data.series_id}`);
+  redirect(`/series/${reservation.series_id}`);
 }

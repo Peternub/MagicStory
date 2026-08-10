@@ -3,12 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { reserveSeriesEpisode } from "@/lib/data/generation";
 import {
   getGenerationActionError,
   processStoryGeneration
 } from "@/lib/stories/generation";
 import { requireUser } from "@/lib/supabase/auth";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { parseStoryFormData } from "@/lib/validators/stories";
 
 type StoryActionState = {
@@ -34,23 +34,20 @@ export async function createSeriesEpisode(
     return { error: "Не удалось определить сериал" };
   }
 
-  const supabase = createSupabaseAdminClient();
-  const { data: storyId, error: reservationError } = await supabase.rpc(
-    "reserve_series_episode",
-    {
-      target_generation_input: { situation: parsed.data.situation },
-      target_generation_key: generationKey.data,
-      target_series_id: seriesId,
-      target_user_id: user.id
-    }
-  );
-
-  if (reservationError || !storyId) {
-    return { error: getGenerationActionError(reservationError) };
+  let storyId: string;
+  try {
+    storyId = await reserveSeriesEpisode({
+      generationInput: { situation: parsed.data.situation },
+      generationKey: generationKey.data,
+      seriesId,
+      userId: user.id
+    });
+  } catch (error) {
+    return { error: getGenerationActionError(error) };
   }
 
   try {
-    await processStoryGeneration(user.id, storyId as string);
+    await processStoryGeneration(user.id, storyId);
   } catch {
     // Ошибка уже сохранена в серии и будет показана после перехода.
   }

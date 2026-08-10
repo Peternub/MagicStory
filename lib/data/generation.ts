@@ -1,0 +1,414 @@
+import "server-only";
+
+import { z } from "zod";
+
+import { queryDatabase } from "@/lib/db/client";
+import { usesPostgresDataBackend } from "@/lib/data/config";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+
+const seriesReservationSchema = z.object({
+  series_id: z.string().uuid(),
+  story_id: z.string().uuid()
+});
+
+export type SeriesReservationInput = {
+  userId: string;
+  childId: string;
+  title: string;
+  premise: string;
+  episodeCount: number;
+  creationKey: string;
+  generationKey: string;
+  generationInput: Record<string, unknown>;
+  useStarterOffer: boolean;
+};
+
+export type EpisodeReservationInput = {
+  userId: string;
+  seriesId: string;
+  generationKey: string;
+  generationInput: Record<string, unknown>;
+};
+
+export type StoryGenerationState = {
+  id: string;
+  series_id: string | null;
+  status: string;
+};
+
+export type GenerationContext = {
+  story: {
+    id: string;
+    child_id: string;
+    series_id: string;
+    episode_number: number;
+    generation_input: unknown;
+  };
+  child: {
+    id: string;
+    name: string;
+    age: number;
+    gender: "boy" | "girl";
+    interests: string | null;
+    fears: string | null;
+    additional_context: string | null;
+  };
+  series: {
+    id: string;
+    title: string;
+    premise: string;
+    planned_episodes: number;
+    model_code: string;
+    series_memory: unknown;
+    private_aliases: unknown;
+  };
+};
+
+export async function createSeriesWithFirstEpisode(input: SeriesReservationInput) {
+  if (usesPostgresDataBackend()) {
+    const result = await queryDatabase<{ reservation: unknown }>(
+      `
+        select public.create_series_with_first_episode(
+          $1::uuid,
+          $2::uuid,
+          $3::text,
+          $4::text,
+          $5::integer,
+          $6::uuid,
+          $7::uuid,
+          $8::jsonb,
+          $9::boolean
+        ) as reservation
+      `,
+      [
+        input.userId,
+        input.childId,
+        input.title,
+        input.premise,
+        input.episodeCount,
+        input.creationKey,
+        input.generationKey,
+        input.generationInput,
+        input.useStarterOffer
+      ]
+    );
+    return seriesReservationSchema.parse(result.rows[0]?.reservation);
+  }
+
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase.rpc("create_series_with_first_episode", {
+    episode_count: input.episodeCount,
+    series_premise: input.premise,
+    series_title: input.title,
+    target_child_id: input.childId,
+    target_creation_key: input.creationKey,
+    target_generation_input: input.generationInput,
+    target_generation_key: input.generationKey,
+    target_user_id: input.userId,
+    use_starter_offer: input.useStarterOffer
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return seriesReservationSchema.parse(data);
+}
+
+export async function reserveSeriesEpisode(input: EpisodeReservationInput) {
+  if (usesPostgresDataBackend()) {
+    const result = await queryDatabase<{ story_id: string | null }>(
+      `
+        select public.reserve_series_episode(
+          $1::uuid,
+          $2::uuid,
+          $3::uuid,
+          $4::jsonb
+        ) as story_id
+      `,
+      [input.userId, input.seriesId, input.generationKey, input.generationInput]
+    );
+    const storyId = result.rows[0]?.story_id;
+
+    if (!storyId) {
+      throw new Error("STORY_RESERVATION_FAILED");
+    }
+
+    return storyId;
+  }
+
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase.rpc("reserve_series_episode", {
+    target_generation_input: input.generationInput,
+    target_generation_key: input.generationKey,
+    target_series_id: input.seriesId,
+    target_user_id: input.userId
+  });
+
+  if (error || !data) {
+    throw new Error(error?.message ?? "STORY_RESERVATION_FAILED");
+  }
+
+  return data as string;
+}
+
+export async function findStoryGenerationState(userId: string, storyId: string) {
+  if (usesPostgresDataBackend()) {
+    const result = await queryDatabase<StoryGenerationState>(
+      `
+        select id, series_id, status
+        from public.stories
+        where id = $2 and user_id = $1
+        limit 1
+      `,
+      [userId, storyId]
+    );
+    return result.rows[0] ?? null;
+  }
+
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase
+    .from("stories")
+    .select("id, series_id, status")
+    .eq("id", storyId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data as StoryGenerationState | null;
+}
+
+export async function claimStoryGeneration(userId: string, storyId: string) {
+  if (usesPostgresDataBackend()) {
+    const result = await queryDatabase<{ claimed: boolean }>(
+      "select public.claim_story_generation($1::uuid, $2::uuid) as claimed",
+      [userId, storyId]
+    );
+    return result.rows[0]?.claimed ?? false;
+  }
+
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase.rpc("claim_story_generation", {
+    target_story_id: storyId,
+    target_user_id: userId
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return Boolean(data);
+}
+
+export async function getGenerationContext(userId: string, storyId: string) {
+  if (usesPostgresDataBackend()) {
+    const result = await queryDatabase<{
+      story_id: string;
+      child_id: string;
+      series_id: string;
+      episode_number: number;
+      generation_input: unknown;
+      child_name: string;
+      child_age: number;
+      child_gender: "boy" | "girl";
+      child_interests: string | null;
+      child_fears: string | null;
+      child_additional_context: string | null;
+      series_title: string;
+      series_premise: string;
+      planned_episodes: number;
+      model_code: string;
+      series_memory: unknown;
+      private_aliases: unknown;
+    }>(
+      `
+        select
+          story.id as story_id,
+          story.child_id,
+          story.series_id,
+          story.episode_number,
+          story.generation_input,
+          child.name as child_name,
+          child.age as child_age,
+          child.gender as child_gender,
+          child.interests as child_interests,
+          child.fears as child_fears,
+          child.additional_context as child_additional_context,
+          series.title as series_title,
+          series.premise as series_premise,
+          series.planned_episodes,
+          series.model_code,
+          series.series_memory,
+          series.private_aliases
+        from public.stories story
+        join public.children child
+          on child.id = story.child_id and child.user_id = $1
+        join public.story_series series
+          on series.id = story.series_id and series.user_id = $1
+        where story.id = $2 and story.user_id = $1
+        limit 1
+      `,
+      [userId, storyId]
+    );
+    const row = result.rows[0];
+
+    if (!row) {
+      return null;
+    }
+
+    return {
+      story: {
+        id: row.story_id,
+        child_id: row.child_id,
+        series_id: row.series_id,
+        episode_number: row.episode_number,
+        generation_input: row.generation_input
+      },
+      child: {
+        id: row.child_id,
+        name: row.child_name,
+        age: row.child_age,
+        gender: row.child_gender,
+        interests: row.child_interests,
+        fears: row.child_fears,
+        additional_context: row.child_additional_context
+      },
+      series: {
+        id: row.series_id,
+        title: row.series_title,
+        premise: row.series_premise,
+        planned_episodes: row.planned_episodes,
+        model_code: row.model_code,
+        series_memory: row.series_memory,
+        private_aliases: row.private_aliases
+      }
+    } satisfies GenerationContext;
+  }
+
+  const supabase = createSupabaseAdminClient();
+  const { data: story, error: storyError } = await supabase
+    .from("stories")
+    .select("id, child_id, series_id, episode_number, generation_input")
+    .eq("id", storyId)
+    .eq("user_id", userId)
+    .single();
+
+  if (storyError || !story?.child_id || !story.series_id || !story.episode_number) {
+    return null;
+  }
+
+  const [{ data: child, error: childError }, { data: series, error: seriesError }] =
+    await Promise.all([
+      supabase
+        .from("children")
+        .select("id, name, age, gender, interests, fears, additional_context")
+        .eq("id", story.child_id)
+        .eq("user_id", userId)
+        .single(),
+      supabase
+        .from("story_series")
+        .select(
+          "id, title, premise, planned_episodes, model_code, series_memory, private_aliases"
+        )
+        .eq("id", story.series_id)
+        .eq("user_id", userId)
+        .single()
+    ]);
+
+  if (childError || seriesError || !child || !series) {
+    return null;
+  }
+
+  return { story, child, series } as GenerationContext;
+}
+
+export async function completeStoryGeneration(input: {
+  userId: string;
+  storyId: string;
+  title: string;
+  text: string;
+  summary: string;
+  provider: string;
+  memory: unknown;
+  privateAliases: unknown;
+}) {
+  if (usesPostgresDataBackend()) {
+    const result = await queryDatabase<{ series_id: string | null }>(
+      `
+        select public.complete_story_generation(
+          $1::uuid,
+          $2::uuid,
+          $3::text,
+          $4::text,
+          $5::text,
+          $6::text,
+          $7::jsonb,
+          $8::jsonb
+        ) as series_id
+      `,
+      [
+        input.userId,
+        input.storyId,
+        input.title,
+        input.text,
+        input.summary,
+        input.provider,
+        input.memory,
+        input.privateAliases
+      ]
+    );
+    const seriesId = result.rows[0]?.series_id;
+
+    if (!seriesId) {
+      throw new Error("STORY_COMPLETION_FAILED");
+    }
+
+    return seriesId;
+  }
+
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase.rpc("complete_story_generation", {
+    generated_provider: input.provider,
+    generated_summary: input.summary,
+    generated_text: input.text,
+    generated_title: input.title,
+    target_story_id: input.storyId,
+    target_user_id: input.userId,
+    updated_aliases: input.privateAliases,
+    updated_memory: input.memory
+  });
+
+  if (error || !data) {
+    throw new Error(error?.message ?? "STORY_COMPLETION_FAILED");
+  }
+
+  return data as string;
+}
+
+export async function failStoryGeneration(
+  userId: string,
+  storyId: string,
+  failureMessage: string
+) {
+  if (usesPostgresDataBackend()) {
+    await queryDatabase(
+      "select public.fail_story_generation($1::uuid, $2::uuid, $3::text)",
+      [userId, storyId, failureMessage]
+    );
+    return;
+  }
+
+  const supabase = createSupabaseAdminClient();
+  const { error } = await supabase.rpc("fail_story_generation", {
+    failure_message: failureMessage,
+    target_story_id: storyId,
+    target_user_id: userId
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}

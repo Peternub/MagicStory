@@ -3,8 +3,14 @@ import { z } from "zod";
 import { createSafetyIdentifier, generateStory } from "@/lib/ai/generate-story";
 import { parsePrivateAliases } from "@/lib/ai/pseudonymization";
 import { parseSeriesMemory } from "@/lib/ai/story-memory";
+import {
+  claimStoryGeneration,
+  completeStoryGeneration,
+  failStoryGeneration,
+  findStoryGenerationState,
+  getGenerationContext
+} from "@/lib/data/generation";
 import { stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { StoryInput } from "@/lib/validators/stories";
 
 const generationInputSchema = z.object({
@@ -45,13 +51,7 @@ function buildStoryRequest(input: {
 }
 
 export async function processStoryGeneration(userId: string, storyId: string) {
-  const supabase = createSupabaseAdminClient();
-  const { data: existingStory } = await supabase
-    .from("stories")
-    .select("id, series_id, status")
-    .eq("id", storyId)
-    .eq("user_id", userId)
-    .maybeSingle();
+  const existingStory = await findStoryGenerationState(userId, storyId);
 
   if (!existingStory?.series_id) {
     throw new Error("STORY_NOT_FOUND");
@@ -61,22 +61,10 @@ export async function processStoryGeneration(userId: string, storyId: string) {
     return existingStory.series_id;
   }
 
-  const { data: claimed, error: claimError } = await supabase.rpc("claim_story_generation", {
-    target_story_id: storyId,
-    target_user_id: userId
-  });
-
-  if (claimError) {
-    throw new Error(claimError.message);
-  }
+  const claimed = await claimStoryGeneration(userId, storyId);
 
   if (!claimed) {
-    const { data: currentStory } = await supabase
-      .from("stories")
-      .select("series_id, status")
-      .eq("id", storyId)
-      .eq("user_id", userId)
-      .maybeSingle();
+    const currentStory = await findStoryGenerationState(userId, storyId);
 
     if (currentStory?.status === "completed" && currentStory.series_id) {
       return currentStory.series_id;
@@ -86,35 +74,13 @@ export async function processStoryGeneration(userId: string, storyId: string) {
   }
 
   try {
-    const { data: story } = await supabase
-      .from("stories")
-      .select("id, child_id, series_id, episode_number, generation_input")
-      .eq("id", storyId)
-      .eq("user_id", userId)
-      .single();
+    const context = await getGenerationContext(userId, storyId);
 
-    if (!story?.series_id || !story.episode_number) {
-      throw new Error("STORY_NOT_FOUND");
-    }
-
-    const [{ data: child }, { data: series }] = await Promise.all([
-      supabase
-        .from("children")
-        .select("id, name, age, gender, interests, fears, additional_context")
-        .eq("id", story.child_id)
-        .eq("user_id", userId)
-        .single(),
-      supabase
-        .from("story_series")
-        .select("id, title, premise, planned_episodes, model_code, series_memory, private_aliases")
-        .eq("id", story.series_id)
-        .eq("user_id", userId)
-        .single()
-    ]);
-
-    if (!child || !series) {
+    if (!context) {
       throw new Error("GENERATION_CONTEXT_NOT_FOUND");
     }
+
+    const { child, series, story } = context;
 
     const generationInput = generationInputSchema.parse(story.generation_input ?? {});
     const request = buildStoryRequest({
@@ -135,33 +101,24 @@ export async function processStoryGeneration(userId: string, storyId: string) {
       modelCode: series.model_code
     });
 
-    const { data: seriesId, error: completeError } = await supabase.rpc(
-      "complete_story_generation",
-      {
-        generated_provider: generated.provider,
-        generated_summary: generated.summary,
-        generated_text: generated.text,
-        generated_title: generated.title,
-        target_story_id: storyId,
-        target_user_id: userId,
-        updated_aliases: generated.privateAliases,
-        updated_memory: generated.memory
-      }
-    );
-
-    if (completeError || !seriesId) {
-      throw new Error(completeError?.message ?? "STORY_COMPLETION_FAILED");
-    }
-
-    return seriesId as string;
+    return await completeStoryGeneration({
+      memory: generated.memory,
+      privateAliases: generated.privateAliases,
+      provider: generated.provider,
+      storyId,
+      summary: generated.summary,
+      text: generated.text,
+      title: generated.title,
+      userId
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "GENERATION_FAILED";
-    await supabase.rpc("fail_story_generation", {
-      failure_message: "Не удалось создать серию. Нажмите «Повторить».",
-      target_story_id: storyId,
-      target_user_id: userId
-    });
-    console.error("processStoryGeneration failed", { storyId, userId, message });
+    await failStoryGeneration(
+      userId,
+      storyId,
+      "Не удалось создать серию. Нажмите «Повторить»."
+    );
+    console.error("processStoryGeneration failed", { message });
     throw error;
   }
 }
