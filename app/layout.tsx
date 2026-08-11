@@ -8,7 +8,7 @@ import darkThemeImage from "../image 21.png";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MagicStory",
+  title: "SkazKIDS",
   description: "Персональные вечерние сериалы для детей, которые продолжаются одной кнопкой.",
   icons: {
     icon: "/favicon.svg"

@@ -22,7 +22,7 @@ export function SiteFooter() {
       <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-10 sm:gap-10 sm:px-10 sm:py-14 lg:grid-cols-[1.15fr_0.85fr_0.85fr_1fr]">
         <div>
           <p className="font-display text-lg tracking-[0.18em] text-[var(--logo-text)]">
-            MagicStory
+            SkazKIDS
           </p>
           <p className="mt-4 max-w-sm text-sm leading-7 text-[var(--text-soft)]">
             Персональные вечерние сериалы, которые продолжаются одной кнопкой.

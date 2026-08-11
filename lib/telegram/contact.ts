@@ -28,7 +28,7 @@ export async function sendContactMessageToTelegram(data: ContactMessage) {
         `Контакт - ${data.contact}`,
         `Сообщение - "${data.message}"`,
         "",
-        "С уважением MagicStory"
+        "С уважением SkazKIDS"
       ].join("\n"),
       disable_web_page_preview: true
     }),

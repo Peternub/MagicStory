@@ -16,7 +16,7 @@ const authDatabase = new Pool({
 });
 
 export const auth = betterAuth({
-  appName: "MagicStory",
+  appName: "SkazKIDS",
   basePath: "/api/auth",
   baseURL: authEnv.BETTER_AUTH_URL,
   database: authDatabase,

@@ -11,7 +11,7 @@ export default async function DashboardPage() {
     <main className="dashboard-room-page">
       <header className="dashboard-room-intro">
         <p>Личный кабинет</p>
-        <h1>Ваша комната MagicStory</h1>
+        <h1>Ваша комната SkazKIDS</h1>
         <span>Выберите раздел, к которому хотите перейти</span>
         <SignOutButton className="dashboard-signout" />
       </header>

@@ -4,7 +4,7 @@ import { PricingTabs } from "@/components/site/pricing-tabs";
 const storyScenes = [
   "Вы пришли с работы, а ребенка уже надо укладывать спать.",
   "Ребенок хочет знакомую историю, где он сам главный герой.",
-  "Но вы вспоминаете про MagicStory...",
+  "Но вы вспоминаете про SkazKIDS...",
   "И одной кнопкой создаете новую серию его личного вечернего сериала."
 ];
 
@@ -52,9 +52,12 @@ export default function HomePage() {
     <main>
       <section className="relative flex min-h-[calc(100svh-4rem)] items-center justify-center overflow-hidden px-4 py-12 sm:min-h-screen sm:px-6 sm:py-16">
         <div className="hero-copy relative z-10 flex max-w-4xl flex-col items-center text-center">
-          <p className="hero-copy__title max-w-full font-display text-[clamp(2.15rem,11vw,3rem)] tracking-[0.12em] text-[var(--logo-text)] sm:text-[clamp(3.2rem,9vw,6.4rem)] sm:tracking-[0.28em]">
-            MagicStory
-          </p>
+          <h1 className="hero-wordmark" aria-label="SkazKIDS">
+            <span className="hero-wordmark__skaz">Skaz</span>
+            <span className="hero-wordmark__kids">
+              K<span className="hero-wordmark__star-letter">I</span>DS
+            </span>
+          </h1>
           <p className="hero-copy__subtitle mt-5 max-w-2xl text-base leading-7 text-[var(--logo-text)] sm:mt-6 sm:text-xl sm:leading-8">
             Вечерние сериалы, которые продолжаются одной кнопкой.
           </p>
@@ -177,7 +180,7 @@ export default function HomePage() {
             </h2>
             <p className="mt-6 text-base leading-8 text-[var(--text-soft)]">
               Напишите нам, если хотите обсудить сервис, тарифы или любые детали
-              работы MagicStory.
+              работы SkazKIDS.
             </p>
           </div>
 
