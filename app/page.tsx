@@ -1,5 +1,6 @@
 import { ContactForm } from "@/components/site/contact-form";
 import { PricingTabs } from "@/components/site/pricing-tabs";
+import { BrandWordmark } from "@/components/site/brand-wordmark";
 
 const storyScenes = [
   "Вы пришли с работы, а ребенка уже надо укладывать спать.",
@@ -52,11 +53,8 @@ export default function HomePage() {
     <main>
       <section className="relative flex min-h-[calc(100svh-4rem)] items-center justify-center overflow-hidden px-4 py-12 sm:min-h-screen sm:px-6 sm:py-16">
         <div className="hero-copy relative z-10 flex max-w-4xl flex-col items-center text-center">
-          <h1 className="hero-wordmark" aria-label="SkazKIDS">
-            <span className="hero-wordmark__skaz">Skaz</span>
-            <span className="hero-wordmark__kids">
-              K<span className="hero-wordmark__star-letter">I</span>DS
-            </span>
+          <h1 className="hero-wordmark">
+            <BrandWordmark />
           </h1>
           <p className="hero-copy__subtitle mt-5 max-w-2xl text-base leading-7 text-[var(--logo-text)] sm:mt-6 sm:text-xl sm:leading-8">
             Вечерние сериалы, которые продолжаются одной кнопкой.
@@ -65,10 +63,18 @@ export default function HomePage() {
       </section>
 
       <section className="story-sequence">
-        {storyScenes.map((scene) => (
+        {storyScenes.map((scene, index) => (
           <section key={scene} className="story-sequence__panel">
             <div className="story-sequence__content">
-              <p className="story-sequence__line is-active">{scene}</p>
+              <p className="story-sequence__line is-active">
+                {index === 2 ? (
+                  <>
+                    Но вы вспоминаете про <BrandWordmark className="story-brand-wordmark" />...
+                  </>
+                ) : (
+                  scene
+                )}
+              </p>
             </div>
           </section>
         ))}
