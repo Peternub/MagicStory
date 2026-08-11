@@ -8,16 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "test": "bun test",
-    "typecheck": "tsc --noEmit",
-    "db:migrate-data": "bun scripts/migrate-supabase-data.ts",
-    "auth:migrate-users": "bun scripts/migrate-supabase-auth-users.ts",
-    "db:clear-user-data": "bun scripts/clear-all-user-data.ts"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@supabase/ssr": "0.12.0",
-    "@supabase/supabase-js": "^2.108.0",
     "argon2": "0.45.1",
-    "bcrypt": "6.0.0",
     "better-auth": "1.6.0",
     "clsx": "^2.1.1",
     "next": "15.2.8",
@@ -27,7 +21,6 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/bcrypt": "6.0.0",
     "@types/node": "^22.13.10",
     "@types/pg": "^8.21.0",
     "@types/react": "^19.0.10",

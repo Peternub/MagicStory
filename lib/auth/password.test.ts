@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test";
-import bcrypt from "bcrypt";
 import {
   hashLocalPassword,
   localPasswordNeedsRehash,
@@ -15,15 +14,6 @@ describe("локальное хранение паролей", () => {
     expect(await verifyLocalPassword({ hash, password })).toBe(true);
     expect(await verifyLocalPassword({ hash, password: "другой-пароль" })).toBe(false);
     expect(localPasswordNeedsRehash(hash)).toBe(false);
-  });
-
-  test("проверяет старый bcrypt-хеш Supabase", async () => {
-    const password = "Старый-пароль-2026";
-    const hash = await bcrypt.hash(password, 10);
-
-    expect(await verifyLocalPassword({ hash, password })).toBe(true);
-    expect(await verifyLocalPassword({ hash, password: "другой-пароль" })).toBe(false);
-    expect(localPasswordNeedsRehash(hash)).toBe(true);
   });
 
   test("отклоняет неизвестный формат хеша", async () => {

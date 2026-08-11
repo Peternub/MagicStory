@@ -1,5 +1,4 @@
 import argon2 from "argon2";
-import bcrypt from "bcrypt";
 
 const ARGON2_OPTIONS = {
   memoryCost: 19_456,
@@ -10,10 +9,6 @@ const ARGON2_OPTIONS = {
 
 function isArgon2Hash(hash: string) {
   return hash.startsWith("$argon2id$");
-}
-
-function isLegacyBcryptHash(hash: string) {
-  return /^\$2[aby]\$/.test(hash);
 }
 
 export async function hashLocalPassword(password: string) {
@@ -27,10 +22,6 @@ export async function verifyLocalPassword(params: {
   try {
     if (isArgon2Hash(params.hash)) {
       return await argon2.verify(params.hash, params.password);
-    }
-
-    if (isLegacyBcryptHash(params.hash)) {
-      return await bcrypt.compare(params.password, params.hash);
     }
 
     return false;
