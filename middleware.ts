@@ -1,7 +1,5 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { usesLocalAuth } from "@/lib/auth/config";
-import { updateSession } from "@/lib/supabase/middleware";
 
 const legacyDevChunkPaths = new Set([
   "/_next/static/chunks/react-refresh.js",
@@ -39,11 +37,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (usesLocalAuth()) {
-    return NextResponse.next();
-  }
-
-  return updateSession(request);
+  return NextResponse.next();
 }
 
 export const config = {

@@ -15,15 +15,6 @@ const authDatabase = new Pool({
   idleTimeoutMillis: 30_000
 });
 
-const socialProviders = authEnv.GOOGLE_CLIENT_ID && authEnv.GOOGLE_CLIENT_SECRET
-  ? {
-      google: {
-        clientId: authEnv.GOOGLE_CLIENT_ID,
-        clientSecret: authEnv.GOOGLE_CLIENT_SECRET
-      }
-    }
-  : undefined;
-
 export const auth = betterAuth({
   appName: "MagicStory",
   basePath: "/api/auth",
@@ -45,7 +36,6 @@ export const auth = betterAuth({
       verify: verifyLocalPassword
     }
   },
-  socialProviders,
   databaseHooks: {
     user: {
       create: {

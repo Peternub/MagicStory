@@ -1,12 +1,8 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { ensureUserProfile } from "@/lib/account/ensure-profile";
-import { usesLegacyAuthBridge, usesLocalAuth } from "@/lib/auth/config";
-import { migrateLegacyCredential } from "@/lib/auth/legacy-credential-bridge";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { isAuthEnabled } from "@/lib/auth/config";
 import {
   passwordResetRequestSchema,
   signInSchema,
@@ -19,66 +15,8 @@ type AuthActionState = {
   success?: string;
 };
 
-async function getRequestOrigin() {
-  const requestHeaders = await headers();
-  const origin = requestHeaders.get("origin");
-  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
-  const protocol = requestHeaders.get("x-forwarded-proto") ?? "http";
-
-  return origin ?? (host ? `${protocol}://${host}` : null);
-}
-
-function mapAuthErrorMessage(message?: string, status?: number) {
-  const normalized = (message ?? "").toLowerCase();
-
-  if (status === 429 || normalized.includes("rate limit")) {
-    return "Слишком много попыток за короткое время. Попробуйте еще раз чуть позже.";
-  }
-
-  if (
-    normalized.includes("already registered") ||
-    normalized.includes("user already registered")
-  ) {
-    return "Пользователь с таким email уже зарегистрирован.";
-  }
-
-  if (normalized.includes("email signups are disabled")) {
-    return "В Supabase выключена регистрация по email/password. Включите Email provider в Authentication → Providers → Email.";
-  }
-
-  if (normalized.includes("email logins are disabled")) {
-    return "В Supabase выключен вход по email/password. Включите Email provider в Authentication → Providers → Email.";
-  }
-
-  if (normalized.includes("invalid login credentials")) {
-    return "Неверный email или пароль.";
-  }
-
-  if (normalized.includes("email not confirmed")) {
-    return "Email не подтвержден. Попробуйте войти еще раз или обратитесь в поддержку.";
-  }
-
-  if (normalized.includes("password")) {
-    return "Пароль не соответствует требованиям Supabase.";
-  }
-
-  return null;
-}
-
-async function confirmUserEmail(userId: string) {
-  const adminClient = createSupabaseAdminClient();
-  const { error } = await adminClient.auth.admin.updateUserById(userId, {
-    email_confirm: true
-  });
-
-  if (error) {
-    console.error("confirmUserEmail error", {
-      userId,
-      status: error.status,
-      message: error.message
-    });
-  }
-}
+const AUTH_DISABLED_MESSAGE =
+  "Регистрация и вход временно закрыты до подключения защищённого HTTPS-соединения.";
 
 export async function signIn(
   _prevState: AuthActionState,
@@ -91,59 +29,23 @@ export async function signIn(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.issues[0]?.message ?? "Проверьте введенные данные."
+      error: parsed.error.issues[0]?.message ?? "Проверьте введённые данные."
     };
   }
 
-  if (usesLocalAuth()) {
-    const { localAuth } = await import("@/lib/auth/local");
-    const requestHeaders = await headers();
-
-    try {
-      await localAuth.api.signInEmail({
-        body: parsed.data,
-        headers: requestHeaders
-      });
-    } catch {
-      const credentialMigrated =
-        usesLegacyAuthBridge() &&
-        (await migrateLegacyCredential(parsed.data.email, parsed.data.password));
-
-      if (!credentialMigrated) {
-        return { error: "Неверный email или пароль." };
-      }
-
-      try {
-        await localAuth.api.signInEmail({
-          body: parsed.data,
-          headers: requestHeaders
-        });
-      } catch {
-        return { error: "Не удалось завершить перенос пароля. Попробуйте ещё раз." };
-      }
-    }
-
-    redirect("/dashboard");
+  if (!isAuthEnabled()) {
+    return { error: AUTH_DISABLED_MESSAGE };
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { localAuth } = await import("@/lib/auth/local");
 
-  if (error) {
-    console.error("signIn error", {
-      status: error.status,
-      message: error.message
+  try {
+    await localAuth.api.signInEmail({
+      body: parsed.data,
+      headers: await headers()
     });
-
-    return {
-      error:
-        mapAuthErrorMessage(error.message, error.status) ??
-        "Не удалось войти. Проверьте email и пароль."
-    };
-  }
-
-  if (data.user) {
-    await ensureUserProfile(data.user.id, data.user.email);
+  } catch {
+    return { error: "Неверный email или пароль." };
   }
 
   redirect("/dashboard");
@@ -161,36 +63,12 @@ export async function requestPasswordReset(
     return { error: parsed.error.issues[0]?.message ?? "Проверьте email" };
   }
 
-  const siteOrigin = await getRequestOrigin();
-
-  if (!siteOrigin) {
-    return { error: "Не удалось определить адрес сайта" };
-  }
-
-  if (usesLocalAuth()) {
-    return {
-      error: "Восстановление локального пароля будет включено после подключения почты."
-    };
-  }
-
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${siteOrigin}/auth/callback?next=/auth/update-password`
-  });
-
-  if (error) {
-    console.error("requestPasswordReset error", {
-      status: error.status,
-      message: error.message
-    });
-
-    if (error.status === 429) {
-      return { error: "Слишком много запросов. Попробуйте немного позже." };
-    }
+  if (!isAuthEnabled()) {
+    return { error: AUTH_DISABLED_MESSAGE };
   }
 
   return {
-    success: "Если аккаунт с таким email существует, ссылка для смены пароля отправлена."
+    error: "Восстановление пароля будет доступно после подключения почтовой отправки."
   };
 }
 
@@ -207,26 +85,11 @@ export async function updatePassword(
     return { error: parsed.error.issues[0]?.message ?? "Проверьте новый пароль" };
   }
 
-  if (usesLocalAuth()) {
-    return {
-      error: "Ссылка Supabase не подходит для смены локального пароля. Запросите новую ссылку."
-    };
-  }
-
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.updateUser({
-    password: parsed.data.password
-  });
-
-  if (error) {
-    console.error("updatePassword error", {
-      status: error.status,
-      message: error.message
-    });
-    return { error: "Ссылка устарела или сессия восстановления недействительна." };
-  }
-
-  redirect("/dashboard");
+  return {
+    error: isAuthEnabled()
+      ? "Ссылка для смены пароля недействительна. Запросите новую ссылку."
+      : AUTH_DISABLED_MESSAGE
+  };
 }
 
 export async function signUp(
@@ -242,101 +105,39 @@ export async function signUp(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.issues[0]?.message ?? "Проверьте введенные данные."
+      error: parsed.error.issues[0]?.message ?? "Проверьте введённые данные."
     };
   }
 
-  const userMetadata = {
-    first_name: parsed.data.firstName,
-    last_name: parsed.data.lastName,
-    full_name: `${parsed.data.firstName} ${parsed.data.lastName}`
-  };
-
-  if (usesLocalAuth()) {
-    const { localAuth } = await import("@/lib/auth/local");
-
-    try {
-      await localAuth.api.signUpEmail({
-        body: {
-          name: userMetadata.full_name,
-          email: parsed.data.email,
-          password: parsed.data.password
-        },
-        headers: await headers()
-      });
-    } catch {
-      return {
-        error: "Не удалось зарегистрироваться. Возможно, этот email уже используется."
-      };
-    }
-
-    redirect("/dashboard");
+  if (!isAuthEnabled()) {
+    return { error: AUTH_DISABLED_MESSAGE };
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signUp({
-    email: parsed.data.email,
-    password: parsed.data.password,
-    options: {
-      data: userMetadata
-    }
-  });
+  const { localAuth } = await import("@/lib/auth/local");
 
-  if (error) {
-    console.error("signUp error", {
-      status: error.status,
-      message: error.message
+  try {
+    await localAuth.api.signUpEmail({
+      body: {
+        name: `${parsed.data.firstName} ${parsed.data.lastName}`,
+        email: parsed.data.email,
+        password: parsed.data.password
+      },
+      headers: await headers()
     });
-
+  } catch {
     return {
-      error:
-        mapAuthErrorMessage(error.message, error.status) ??
-        "Не удалось зарегистрироваться. Проверьте email и пароль."
+      error: "Не удалось зарегистрироваться. Возможно, этот email уже используется."
     };
-  }
-
-  if (!data.user) {
-    return {
-      error: "Не удалось зарегистрироваться. Попробуйте еще раз."
-    };
-  }
-
-  if (data.user.identities?.length === 0) {
-    return {
-      error: "Пользователь с таким email уже зарегистрирован. Войдите через форму входа."
-    };
-  }
-
-  await ensureUserProfile(data.user.id, data.user.email ?? parsed.data.email);
-
-  if (!data.session) {
-    await confirmUserEmail(data.user.id);
-
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: parsed.data.email,
-      password: parsed.data.password
-    });
-
-    if (signInError) {
-      return {
-        error:
-          mapAuthErrorMessage(signInError.message, signInError.status) ??
-          "Аккаунт создан, но не удалось сразу выполнить вход."
-      };
-    }
   }
 
   redirect("/dashboard");
 }
 
 export async function signOut() {
-  if (usesLocalAuth()) {
+  if (isAuthEnabled()) {
     const { localAuth } = await import("@/lib/auth/local");
     await localAuth.api.signOut({ headers: await headers() });
-    redirect("/auth/login");
   }
 
-  const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
   redirect("/auth/login");
 }

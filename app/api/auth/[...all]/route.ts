@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { usesLocalAuth } from "@/lib/auth/config";
+import { isAuthEnabled } from "@/lib/auth/config";
 
 async function handleAuthRequest(request: Request) {
-  if (!usesLocalAuth()) {
+  if (!isAuthEnabled()) {
     return NextResponse.json({ error: "Маршрут не найден" }, { status: 404 });
   }
 
