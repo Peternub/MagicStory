@@ -2450,12 +2450,13 @@ select:-webkit-autofill:focus {
   display: inline-flex;
   align-items: baseline;
   justify-content: center;
+  gap: 0.035em;
   max-width: 100%;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(3.5rem, 15vw, 10rem);
-  font-weight: 700;
-  line-height: 0.86;
-  letter-spacing: -0.075em;
+  font-family: "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: clamp(3.25rem, 13vw, 8.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.018em;
   white-space: nowrap;
   animation: magic-breathe 5.8s ease-in-out infinite;
 }
@@ -2465,28 +2466,25 @@ select:-webkit-autofill:focus {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  -webkit-text-stroke: clamp(1px, 0.1vw, 2px) #d5ad69;
-  filter: drop-shadow(0 5px 0 rgba(54, 35, 15, 0.72))
-    drop-shadow(0 16px 16px rgba(0, 0, 0, 0.58));
+  -webkit-text-stroke: 1px rgba(213, 173, 105, 0.82);
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.42));
 }
 
 .hero-wordmark__skaz {
   background-image: linear-gradient(
     180deg,
-    #fff1c7 0%,
-    #dcb879 34%,
-    #f1d49c 56%,
-    #9a6d31 100%
+    #f4dfb2 0%,
+    #d9b878 52%,
+    #b88a4a 100%
   );
 }
 
 .hero-wordmark__kids {
   background-image: linear-gradient(
     180deg,
-    #355248 0%,
-    #172f2a 45%,
-    #29473e 72%,
-    #10201e 100%
+    #628578 0%,
+    #34584d 52%,
+    #1f3b34 100%
   );
 }
 
@@ -2498,7 +2496,7 @@ select:-webkit-autofill:focus {
 .hero-wordmark__star-letter::before {
   position: absolute;
   left: 50%;
-  top: -0.28em;
+  top: -0.19em;
   content: "★";
   transform: translateX(-50%);
   background: linear-gradient(180deg, #ffe8ad, #bd843c);
@@ -2506,9 +2504,9 @@ select:-webkit-autofill:focus {
   background-clip: text;
   color: transparent;
   -webkit-text-stroke: 1px #8b602b;
-  font-size: 0.27em;
+  font-size: 0.2em;
   line-height: 1;
-  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.62));
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.42));
 }
 
 .hero-copy__subtitle {
