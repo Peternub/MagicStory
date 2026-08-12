@@ -1,0 +1,33 @@
+[Unit]
+Description=AI Gateway SkazKIDS
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=skazgateway
+Group=skazgateway
+WorkingDirectory=/opt/skazkids-ai-gateway
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/skazkids-ai-gateway/gateway.env
+EnvironmentFile=/etc/skazkids-ai-gateway/secrets.env
+ExecStart=/usr/local/bin/bun run /opt/skazkids-ai-gateway/server.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+UMask=0077
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+LockPersonality=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_INET AF_INET6
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target
