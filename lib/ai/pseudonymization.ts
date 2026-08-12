@@ -1,22 +1,58 @@
+import type { SeriesMemory } from "@/lib/ai/story-memory";
+
 export type PrivateAliases = Record<string, string>;
+export type PersonGender = "male" | "female";
+export type RussianCase = "NOM" | "GEN" | "DAT" | "ACC" | "INS" | "PREP";
 
-export function parsePrivateAliases(value: unknown): PrivateAliases {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return {};
+export type NameForms = Record<RussianCase, string>;
+
+const CASES: RussianCase[] = ["NOM", "GEN", "DAT", "ACC", "INS", "PREP"];
+const PLACEHOLDER_PATTERN = /^\{\{(?:CHILD|PERSON_[0-9]+)_(?:NOM|GEN|DAT|ACC|INS|PREP)\}\}$/;
+const LEGACY_PLACEHOLDER_PATTERN = /^\{\{(?:CHILD_NAME|PERSON_[0-9]+)\}\}$/;
+
+const IRREGULAR_NAMES: Record<string, NameForms> = {
+  лев: {
+    NOM: "Лев",
+    GEN: "Льва",
+    DAT: "Льву",
+    ACC: "Льва",
+    INS: "Львом",
+    PREP: "Льве"
+  },
+  павел: {
+    NOM: "Павел",
+    GEN: "Павла",
+    DAT: "Павлу",
+    ACC: "Павла",
+    INS: "Павлом",
+    PREP: "Павле"
+  },
+  илья: {
+    NOM: "Илья",
+    GEN: "Ильи",
+    DAT: "Илье",
+    ACC: "Илью",
+    INS: "Ильёй",
+    PREP: "Илье"
   }
+};
 
-  return Object.fromEntries(
-    Object.entries(value)
-      .filter(
-        ([placeholder, original]) =>
-          /^\{\{(?:CHILD_NAME|PERSON_[0-9]+)\}\}$/.test(placeholder) &&
-          typeof original === "string" &&
-          original.length > 0 &&
-          original.length <= 100
-      )
-      .slice(0, 50)
-  );
-}
+const MALE_NAMES_ENDING_WITH_A = new Set([
+  "данила",
+  "добрыня",
+  "илья",
+  "кузьма",
+  "лука",
+  "микита",
+  "никита",
+  "фома"
+]);
+
+const FEMALE_SOFT_SIGN_NAMES = new Set([
+  "любовь",
+  "нинэль",
+  "рахиль"
+]);
 
 const SAFE_CAPITALIZED_WORDS = new Set([
   "Автопродолжение",
@@ -49,8 +85,87 @@ const SAFE_CAPITALIZED_WORDS = new Set([
 ]);
 
 const RELATION_NAME_PATTERN =
-  /(?:мама|папа|бабушка|дедушка|брат|сестра|друг|подруга|няня|кот|кошка|пёс|собака|питомец)\s+([а-яёa-z][а-яёa-z-]{1,30})/giu;
+  /(мама|папа|бабушка|дедушка|брат|сестра|друг|подруга|няня|кот|кошка|пёс|собака|питомец)\s+([а-яёa-z][а-яёa-z-]{1,30})/giu;
 const CAPITALIZED_WORD_PATTERN = /(?<![\p{L}\p{N}_])[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?(?![\p{L}\p{N}_])/gu;
+const EMAIL_PATTERN = /[\w.+-]+@[\w.-]+\.[A-Za-zА-Яа-яЁё]{2,}/u;
+const UUID_PATTERN = /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/iu;
+const LONG_NUMBER_PATTERN = /(?<!\d)\+?\d(?:[\s()-]*\d){6,}(?!\d)/u;
+
+function preserveCase(source: string, generated: string) {
+  if (source === source.toLocaleUpperCase("ru-RU")) {
+    return generated.toLocaleUpperCase("ru-RU");
+  }
+  if (source[0] === source[0]?.toLocaleLowerCase("ru-RU")) {
+    return generated[0]?.toLocaleLowerCase("ru-RU") + generated.slice(1);
+  }
+  return generated;
+}
+
+function forms(nom: string, gen: string, dat: string, acc: string, ins: string, prep: string): NameForms {
+  return { NOM: nom, GEN: gen, DAT: dat, ACC: acc, INS: ins, PREP: prep };
+}
+
+export function inferRussianNameGender(name: string): PersonGender {
+  const normalized = name.trim().toLocaleLowerCase("ru-RU");
+  if (MALE_NAMES_ENDING_WITH_A.has(normalized)) return "male";
+  if (FEMALE_SOFT_SIGN_NAMES.has(normalized)) return "female";
+  if (/[ая]$/u.test(normalized)) return "female";
+  return "male";
+}
+
+export function declineRussianName(name: string, gender: PersonGender): NameForms {
+  const original = name.trim();
+  const lower = original.toLocaleLowerCase("ru-RU");
+  const irregular = IRREGULAR_NAMES[lower];
+
+  if (irregular) {
+    return Object.fromEntries(
+      CASES.map((caseName) => [caseName, preserveCase(original, irregular[caseName])])
+    ) as NameForms;
+  }
+
+  if (lower.endsWith("ия")) {
+    const stem = original.slice(0, -1);
+    return forms(original, `${stem}и`, `${stem}и`, `${stem}ю`, `${stem}ей`, `${stem}и`);
+  }
+
+  if (lower.endsWith("ья")) {
+    const stem = original.slice(0, -1);
+    return forms(original, `${stem}и`, `${stem}е`, `${stem}ю`, `${stem}ей`, `${stem}е`);
+  }
+
+  if (lower.endsWith("я")) {
+    const stem = original.slice(0, -1);
+    return forms(original, `${stem}и`, `${stem}е`, `${stem}ю`, `${stem}ей`, `${stem}е`);
+  }
+
+  if (lower.endsWith("а")) {
+    const stem = original.slice(0, -1);
+    const genEnding = /[гкхжчшщц]$/iu.test(stem) ? "и" : "ы";
+    return forms(original, `${stem}${genEnding}`, `${stem}е`, `${stem}у`, `${stem}ой`, `${stem}е`);
+  }
+
+  if (gender === "female" && lower.endsWith("ь")) {
+    const stem = original.slice(0, -1);
+    return forms(original, `${stem}и`, `${stem}и`, original, `${stem}ью`, `${stem}и`);
+  }
+
+  if (lower.endsWith("ий")) {
+    const stem = original.slice(0, -2);
+    return forms(original, `${stem}ия`, `${stem}ию`, `${stem}ия`, `${stem}ием`, `${stem}ии`);
+  }
+
+  if (lower.endsWith("й") || lower.endsWith("ь")) {
+    const stem = original.slice(0, -1);
+    return forms(original, `${stem}я`, `${stem}ю`, `${stem}я`, `${stem}ем`, `${stem}е`);
+  }
+
+  if (/[оеэиую]$/u.test(lower)) {
+    return forms(original, original, original, original, original, original);
+  }
+
+  return forms(original, `${original}а`, `${original}у`, `${original}а`, `${original}ом`, `${original}е`);
+}
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -63,6 +178,28 @@ function replaceWholeValue(text: string, value: string, replacement: string) {
   );
 }
 
+function relationGender(relation: string): PersonGender | null {
+  if (["мама", "бабушка", "сестра", "подруга", "няня", "кошка"].includes(relation)) return "female";
+  if (["папа", "дедушка", "брат", "друг", "кот", "пёс"].includes(relation)) return "male";
+  return null;
+}
+
+export function parsePrivateAliases(value: unknown): PrivateAliases {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(
+        ([placeholder, original]) =>
+          (PLACEHOLDER_PATTERN.test(placeholder) || LEGACY_PLACEHOLDER_PATTERN.test(placeholder)) &&
+          typeof original === "string" &&
+          original.length > 0 &&
+          original.length <= 100
+      )
+      .slice(0, 300)
+  );
+}
+
 export class StoryPseudonymizer {
   private readonly aliases: PrivateAliases;
 
@@ -70,40 +207,43 @@ export class StoryPseudonymizer {
     this.aliases = parsePrivateAliases(existingAliases);
   }
 
-  registerChildName(name: string) {
-    const normalized = name.trim();
-    if (normalized) {
-      this.aliases["{{CHILD_NAME}}"] = normalized;
-    }
+  registerChildName(name: string, gender: PersonGender) {
+    this.registerForms("CHILD", name, gender);
   }
 
   scan(text: string | null | undefined) {
-    if (!text) {
-      return;
-    }
+    if (!text) return;
 
     for (const match of text.matchAll(RELATION_NAME_PATTERN)) {
-      this.registerPerson(match[1]);
+      const relation = match[1];
+      const name = match[2];
+      if (name) this.registerPerson(name, relation ? relationGender(relation) : null);
     }
 
     for (const match of text.matchAll(CAPITALIZED_WORD_PATTERN)) {
-      if (!SAFE_CAPITALIZED_WORDS.has(match[0])) {
-        this.registerPerson(match[0]);
-      }
+      if (!SAFE_CAPITALIZED_WORDS.has(match[0])) this.registerPerson(match[0], null);
     }
   }
 
+  scanMemory(memory: SeriesMemory) {
+    Object.values(memory).flat().forEach((value) => this.scan(value));
+  }
+
   mask(text: string | null | undefined) {
-    if (!text) {
-      return text ?? "";
-    }
+    if (!text) return text ?? "";
 
     return Object.entries(this.aliases)
       .sort(([, left], [, right]) => right.length - left.length)
-      .reduce(
-        (result, [placeholder, original]) => replaceWholeValue(result, original, placeholder),
-        text
-      );
+      .reduce((result, [placeholder, original]) => replaceWholeValue(result, original, placeholder), text);
+  }
+
+  maskMemory(memory: SeriesMemory): SeriesMemory {
+    return {
+      characters: memory.characters.map((value) => this.mask(value)),
+      facts: memory.facts.map((value) => this.mask(value)),
+      open_threads: memory.open_threads.map((value) => this.mask(value)),
+      episode_summaries: memory.episode_summaries.map((value) => this.mask(value))
+    };
   }
 
   restore(text: string) {
@@ -113,23 +253,63 @@ export class StoryPseudonymizer {
     );
   }
 
+  restoreMemory(memory: SeriesMemory): SeriesMemory {
+    return {
+      characters: memory.characters.map((value) => this.restore(value)),
+      facts: memory.facts.map((value) => this.restore(value)),
+      open_threads: memory.open_threads.map((value) => this.restore(value)),
+      episode_summaries: memory.episode_summaries.map((value) => this.restore(value))
+    };
+  }
+
+  assertSafeOutbound(text: string) {
+    if (EMAIL_PATTERN.test(text) || UUID_PATTERN.test(text) || LONG_NUMBER_PATTERN.test(text)) {
+      throw new Error("PERSONAL_IDENTIFIER_DETECTED");
+    }
+
+    const privateValues = new Set(Object.values(this.aliases).map((value) => value.toLocaleLowerCase("ru-RU")));
+    for (const value of privateValues) {
+      if (value.length > 1 && text.toLocaleLowerCase("ru-RU").includes(value)) {
+        throw new Error("UNMASKED_PRIVATE_NAME_DETECTED");
+      }
+    }
+  }
+
+  assertKnownPlaceholders(text: string) {
+    for (const placeholder of text.match(/\{\{[A-Z0-9_]+\}\}/g) ?? []) {
+      if (!(placeholder in this.aliases)) throw new Error("UNKNOWN_PERSON_PLACEHOLDER");
+    }
+  }
+
   toJSON(): PrivateAliases {
     return { ...this.aliases };
   }
 
-  private registerPerson(value: string | undefined) {
-    const normalized = value?.trim();
-    if (!normalized) {
-      return;
-    }
+  private registerPerson(value: string, explicitGender: PersonGender | null) {
+    const normalized = value.trim();
+    if (!normalized || this.isKnownForm(normalized)) return;
 
-    const known = Object.entries(this.aliases).find(
-      ([, original]) => original.toLocaleLowerCase("ru-RU") === normalized.toLocaleLowerCase("ru-RU")
+    const personNumbers = Object.keys(this.aliases)
+      .map((key) => key.match(/^\{\{PERSON_([0-9]+)_/u)?.[1])
+      .filter(Boolean)
+      .map(Number);
+    const nextNumber = Math.max(0, ...personNumbers) + 1;
+    this.registerForms(`PERSON_${nextNumber}`, normalized, explicitGender ?? inferRussianNameGender(normalized));
+  }
+
+  private registerForms(prefix: string, name: string, gender: PersonGender) {
+    const normalized = name.trim();
+    if (!normalized) return;
+    const declined = declineRussianName(normalized, gender);
+    for (const caseName of CASES) {
+      this.aliases[`{{${prefix}_${caseName}}}`] = declined[caseName];
+    }
+  }
+
+  private isKnownForm(value: string) {
+    const normalized = value.toLocaleLowerCase("ru-RU");
+    return Object.values(this.aliases).some(
+      (known) => known.toLocaleLowerCase("ru-RU") === normalized
     );
-
-    if (!known) {
-      const personCount = Object.keys(this.aliases).filter((key) => key.startsWith("{{PERSON_")).length;
-      this.aliases[`{{PERSON_${personCount + 1}}}`] = normalized;
-    }
   }
 }

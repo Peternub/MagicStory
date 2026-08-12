@@ -1,6 +1,6 @@
 import "server-only";
 import { z } from "zod";
-import { createSafetyIdentifier, generateStory } from "@/lib/ai/generate-story";
+import { createGatewayRequestId, generateStory } from "@/lib/ai/generate-story";
 import { parsePrivateAliases } from "@/lib/ai/pseudonymization";
 import { parseSeriesMemory } from "@/lib/ai/story-memory";
 import {
@@ -97,7 +97,7 @@ export async function processStoryGeneration(userId: string, storyId: string) {
       plannedEpisodes: series.planned_episodes,
       seriesMemory: parseSeriesMemory(series.series_memory),
       privateAliases: parsePrivateAliases(series.private_aliases),
-      safetyIdentifier: createSafetyIdentifier(userId),
+      requestId: createGatewayRequestId(story.id),
       modelCode: series.model_code
     });
 

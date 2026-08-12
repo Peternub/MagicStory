@@ -1,6 +1,7 @@
 import "server-only";
 import { createHash } from "node:crypto";
 import { z } from "zod";
+import { getAiProvider } from "@/lib/ai/providers";
 import {
   StoryPseudonymizer,
   type PrivateAliases
@@ -27,7 +28,7 @@ export type GenerateStoryParams = {
   plannedEpisodes: number;
   seriesMemory: SeriesMemory;
   privateAliases?: PrivateAliases;
-  safetyIdentifier: string;
+  requestId: string;
   modelCode?: string;
 };
 
@@ -40,16 +41,7 @@ export type GeneratedStory = {
   provider: string;
 };
 
-type OpenAiResponse = {
-  choices?: Array<{
-    message?: {
-      content?: string;
-      refusal?: string | null;
-    };
-  }>;
-};
-
-const responseSchema = {
+export const responseSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
@@ -79,11 +71,11 @@ const generatedStorySchema = z.object({
 });
 
 function getGenderLabel(gender: ChildProfile["gender"]) {
-  return gender === "girl" ? "девочка" : "мальчик";
+  return gender === "girl" ? "female" : "male";
 }
 
-export function createSafetyIdentifier(userId: string) {
-  return createHash("sha256").update(`magic-story:${userId}`).digest("hex");
+export function createGatewayRequestId(storyId: string) {
+  return createHash("sha256").update(`skazkids-story:${storyId}`).digest("hex");
 }
 
 export function buildSeriesPrompt(params: {
@@ -98,14 +90,17 @@ export function buildSeriesPrompt(params: {
   return [
     "Напиши вечернюю серию детского сериала на русском языке для ребёнка 3–7 лет.",
     `Это серия ${episodeNumber} из ${plannedEpisodes}. Длительность чтения — около 5 минут, 700–950 слов.`,
-    "Все обозначения вида {{CHILD_NAME}} и {{PERSON_1}} являются именами героев: используй их без изменений.",
+    "Персональные имена заменены неизменяемыми плейсхолдерами с падежами.",
+    "NOM — именительный, GEN — родительный, DAT — дательный, ACC — винительный, INS — творительный, PREP — предложный.",
+    "Пример: {{CHILD_NOM}} открыл дверь; подарок для {{CHILD_GEN}}; бабушка улыбнулась {{CHILD_DAT}}.",
+    "Всегда возвращай плейсхолдер целиком и выбирай правильный падеж. Не придумывай реальные имена вместо плейсхолдеров.",
     "Стиль: живой, тёплый, спокойный; конкретные действия; короткие диалоги; мягкий юмор.",
     "Не используй старинный сказочный язык, прямую мораль, психологические термины и тревожный клиффхэнгер.",
     "Начни сразу со сцены. Сделай 7–12 абзацев. Финал должен успокаивать и оставлять лёгкий повод вернуться завтра.",
     "Не пересказывай прошлые серии. Используй только память ниже.",
     "",
-    "ПРОФИЛЬ:",
-    `Имя: ${child.name}`,
+    "ОБЕЗЛИЧЕННЫЙ ПРОФИЛЬ:",
+    "Главный герой: {{CHILD_NOM}}",
     `Возраст: ${child.age}`,
     `Пол: ${getGenderLabel(child.gender)}`,
     `Интересы: ${child.interests || "не указаны"}`,
@@ -128,7 +123,7 @@ export function buildSeriesPrompt(params: {
 
 function preparePseudonymizedInput(params: GenerateStoryParams) {
   const pseudonymizer = new StoryPseudonymizer(params.privateAliases);
-  pseudonymizer.registerChildName(params.child.name);
+  pseudonymizer.registerChildName(params.child.name, params.child.gender === "girl" ? "female" : "male");
 
   const values = [
     params.child.interests,
@@ -141,107 +136,64 @@ function preparePseudonymizedInput(params: GenerateStoryParams) {
     params.request.extraWishes
   ];
   values.forEach((value) => pseudonymizer.scan(value));
+  pseudonymizer.scanMemory(params.seriesMemory);
 
   return {
     pseudonymizer,
     child: {
       ...params.child,
-      name: pseudonymizer.mask(params.child.name),
+      name: "{{CHILD_NOM}}",
       interests: pseudonymizer.mask(params.child.interests),
       fears: pseudonymizer.mask(params.child.fears),
       additional_context: pseudonymizer.mask(params.child.additional_context)
     },
     request: {
       ...params.request,
+      childId: "removed",
       durationMinutes: 5 as const,
       situation: pseudonymizer.mask(params.request.situation),
       setting: pseudonymizer.mask(params.request.setting),
       additionalCharacters: pseudonymizer.mask(params.request.additionalCharacters),
       goal: pseudonymizer.mask(params.request.goal),
       extraWishes: pseudonymizer.mask(params.request.extraWishes)
-    }
+    },
+    seriesMemory: pseudonymizer.maskMemory(params.seriesMemory)
   };
 }
 
 export async function generateStory(params: GenerateStoryParams): Promise<GeneratedStory> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  const baseUrl = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
   const model = params.modelCode || process.env.OPENAI_MODEL || "gpt-5.6-terra";
-
-  if (!apiKey) {
-    throw new Error("OPENAI_NOT_CONFIGURED");
-  }
-
   const prepared = preparePseudonymizedInput(params);
-  const response = await fetch(`${baseUrl.replace(/\/$/, "")}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model,
-      safety_identifier: params.safetyIdentifier,
-      messages: [
-        {
-          role: "system",
-          content: "Ты создаёшь безопасные связанные серии для семейного чтения перед сном."
-        },
-        {
-          role: "user",
-          content: buildSeriesPrompt({
-            child: prepared.child,
-            request: prepared.request,
-            episodeNumber: params.episodeNumber,
-            plannedEpisodes: params.plannedEpisodes,
-            seriesMemory: params.seriesMemory
-          })
-        }
-      ],
-      response_format: {
-        type: "json_schema",
-        json_schema: {
-          name: "series_episode",
-          strict: true,
-          schema: responseSchema
-        }
-      }
-    }),
-    cache: "no-store"
+  const prompt = buildSeriesPrompt({
+    child: prepared.child,
+    request: prepared.request,
+    episodeNumber: params.episodeNumber,
+    plannedEpisodes: params.plannedEpisodes,
+    seriesMemory: prepared.seriesMemory
+  });
+  prepared.pseudonymizer.assertSafeOutbound(prompt);
+
+  const generated = await getAiProvider().generateEpisode({
+    requestId: params.requestId,
+    model,
+    instructions: "Создавай безопасные связанные серии для семейного чтения перед сном. Строго соблюдай плейсхолдеры и JSON-схему.",
+    input: prompt,
+    schema: responseSchema
   });
 
-  if (!response.ok) {
-    throw new Error(`OPENAI_REQUEST_FAILED_${response.status}`);
-  }
+  const parsed = generatedStorySchema.safeParse(JSON.parse(generated.output));
+  if (!parsed.success) throw new Error("AI_INVALID_STRUCTURED_RESPONSE");
+  if (!isSeriesMemory(parsed.data.memory)) throw new Error("AI_INVALID_MEMORY");
 
-  const data = (await response.json()) as OpenAiResponse;
-  const message = data.choices?.[0]?.message;
-
-  if (message?.refusal) {
-    throw new Error("OPENAI_REFUSED_STORY");
-  }
-
-  if (!message?.content) {
-    throw new Error("OPENAI_EMPTY_RESPONSE");
-  }
-
-  const parsed = JSON.parse(message.content) as unknown;
-  const result = generatedStorySchema.safeParse(parsed);
-
-  if (!result.success) {
-    throw new Error("OPENAI_INVALID_STRUCTURED_RESPONSE");
-  }
-
-  if (!isSeriesMemory(result.data.memory)) {
-    throw new Error("OPENAI_INVALID_MEMORY");
-  }
+  const serializedResult = JSON.stringify(parsed.data);
+  prepared.pseudonymizer.assertKnownPlaceholders(serializedResult);
 
   return {
-    title: prepared.pseudonymizer.restore(result.data.title),
-    text: prepared.pseudonymizer.restore(result.data.text),
-    summary: result.data.summary,
-    memory: result.data.memory,
+    title: prepared.pseudonymizer.restore(parsed.data.title),
+    text: prepared.pseudonymizer.restore(parsed.data.text),
+    summary: prepared.pseudonymizer.restore(parsed.data.summary),
+    memory: prepared.pseudonymizer.restoreMemory(parsed.data.memory),
     privateAliases: prepared.pseudonymizer.toJSON(),
-    provider: model
+    provider: generated.model
   };
 }
