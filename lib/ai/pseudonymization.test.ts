@@ -96,4 +96,12 @@ describe("StoryPseudonymizer", () => {
 
     expect(errorMessage).toBe("UNMASKED_PRIVATE_NAME_DETECTED");
   });
+
+  test("не регистрирует служебную метку события как персонажа", () => {
+    const pseudonymizer = new StoryPseudonymizer();
+
+    pseudonymizer.scan("Событие от родителя: друзья открывают обсерваторию.");
+
+    expect(Object.keys(pseudonymizer.toJSON())).toEqual([]);
+  });
 });
