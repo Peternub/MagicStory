@@ -6,7 +6,8 @@ import { ensureUserProfile } from "@/lib/account/ensure-profile";
 import { findChildByUser } from "@/lib/data/children";
 import { createSeriesWithFirstEpisode } from "@/lib/data/generation";
 import { addSeriesEpisodePlan } from "@/lib/stories/series-plan";
-import { getGenerationActionError, processStoryGeneration } from "@/lib/stories/generation";
+import { processStoryGeneration } from "@/lib/stories/generation";
+import { getGenerationActionError } from "@/lib/stories/generation-errors";
 import { requireUser } from "@/lib/auth/server";
 
 type SeriesActionState = {

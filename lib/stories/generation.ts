@@ -10,6 +10,7 @@ import {
   findStoryGenerationState,
   getGenerationContext
 } from "@/lib/data/generation";
+import { getGenerationActionError } from "@/lib/stories/generation-errors";
 import { stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
 import type { StoryInput } from "@/lib/validators/stories";
 
@@ -116,31 +117,9 @@ export async function processStoryGeneration(userId: string, storyId: string) {
     await failStoryGeneration(
       userId,
       storyId,
-      "Не удалось создать серию. Нажмите «Повторить»."
+      getGenerationActionError(error)
     );
     console.error("processStoryGeneration failed", { message });
     throw error;
   }
-}
-
-export function getGenerationActionError(error: unknown) {
-  const message = error instanceof Error
-    ? error.message
-    : error && typeof error === "object" && "message" in error && typeof error.message === "string"
-      ? error.message
-      : "";
-
-  if (message.includes("GENERATION_ALREADY_RUNNING") || message === "GENERATION_IN_PROGRESS") {
-    return "Другая серия уже создаётся. Дождитесь её завершения.";
-  }
-
-  if (message.includes("FAILED_EPISODE_REQUIRES_RETRY")) {
-    return "Сначала повторите незавершённую серию.";
-  }
-
-  if (message.includes("SERIES_COMPLETED")) {
-    return "Все серии уже созданы.";
-  }
-
-  return "Не удалось создать серию. Попробуйте ещё раз.";
 }

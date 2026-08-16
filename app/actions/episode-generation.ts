@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { reserveSeriesEpisode } from "@/lib/data/generation";
 import {
-  getGenerationActionError,
   processStoryGeneration
 } from "@/lib/stories/generation";
+import { getGenerationActionError } from "@/lib/stories/generation-errors";
 import { requireUser } from "@/lib/auth/server";
 import { parseStoryFormData } from "@/lib/validators/stories";
 
