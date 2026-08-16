@@ -1,0 +1,11 @@
+[Unit]
+Description=Расписание резервной копии PostgreSQL SkazKIDS
+
+[Timer]
+OnCalendar=*-*-* 00:30:00 UTC
+Persistent=true
+RandomizedDelaySec=10m
+Unit=skazkids-postgres-backup.service
+
+[Install]
+WantedBy=timers.target
