@@ -104,4 +104,17 @@ describe("StoryPseudonymizer", () => {
 
     expect(Object.keys(pseudonymizer.toJSON())).toEqual([]);
   });
+
+  test("удаляет ранее сохранённую группу системного слова из aliases", () => {
+    const pseudonymizer = new StoryPseudonymizer({
+      "{{PERSON_1_NOM}}": "Завтра",
+      "{{PERSON_1_GEN}}": "Завтры",
+      "{{PERSON_1_DAT}}": "Завтре",
+      "{{PERSON_1_ACC}}": "Завтру",
+      "{{PERSON_1_INS}}": "Завтрой",
+      "{{PERSON_1_PREP}}": "Завтре"
+    });
+
+    expect(pseudonymizer.toJSON()).toEqual({});
+  });
 });

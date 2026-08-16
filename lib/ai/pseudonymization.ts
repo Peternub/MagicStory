@@ -64,6 +64,7 @@ const SAFE_CAPITALIZED_WORDS = new Set([
   "Дополнительные",
   "Друзья",
   "Дедушка",
+  "Завтра",
   "Интересы",
   "Место",
   "Мама",
@@ -195,16 +196,26 @@ function relationGender(relation: string): PersonGender | null {
 export function parsePrivateAliases(value: unknown): PrivateAliases {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
 
+  const entries = Object.entries(value)
+    .filter(
+      ([placeholder, original]) =>
+        (PLACEHOLDER_PATTERN.test(placeholder) || LEGACY_PLACEHOLDER_PATTERN.test(placeholder)) &&
+        typeof original === "string" &&
+        original.length > 0 &&
+        original.length <= 100
+    )
+    .slice(0, 300) as Array<[string, string]>;
+  const blockedPersonPrefixes = new Set(
+    entries.flatMap(([placeholder, original]) => {
+      const match = placeholder.match(/^(\{\{PERSON_[0-9]+)_NOM\}\}$/u);
+      return match?.[1] && SAFE_CAPITALIZED_WORDS.has(original) ? [match[1]] : [];
+    })
+  );
+
   return Object.fromEntries(
-    Object.entries(value)
-      .filter(
-        ([placeholder, original]) =>
-          (PLACEHOLDER_PATTERN.test(placeholder) || LEGACY_PLACEHOLDER_PATTERN.test(placeholder)) &&
-          typeof original === "string" &&
-          original.length > 0 &&
-          original.length <= 100
-      )
-      .slice(0, 300)
+    entries.filter(([placeholder]) =>
+      [...blockedPersonPrefixes].every((prefix) => !placeholder.startsWith(`${prefix}_`))
+    )
   );
 }
 
