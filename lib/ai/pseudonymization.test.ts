@@ -80,4 +80,20 @@ describe("StoryPseudonymizer", () => {
     }
     expect(errorMessage).toBe("PERSONAL_IDENTIFIER_DETECTED");
   });
+
+  test("не принимает часть обычного слова за раскрытое имя", () => {
+    const pseudonymizer = new StoryPseudonymizer();
+    pseudonymizer.registerChildName("Лев", "male");
+
+    pseudonymizer.assertSafeOutbound("Слева горел левый фонарь.");
+
+    let errorMessage = "";
+    try {
+      pseudonymizer.assertSafeOutbound("Лев увидел фонарь.");
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : String(error);
+    }
+
+    expect(errorMessage).toBe("UNMASKED_PRIVATE_NAME_DETECTED");
+  });
 });

@@ -178,6 +178,13 @@ function replaceWholeValue(text: string, value: string, replacement: string) {
   );
 }
 
+function containsWholeValue(text: string, value: string) {
+  return new RegExp(
+    `(?<![\\p{L}\\p{N}_])${escapeRegExp(value)}(?![\\p{L}\\p{N}_])`,
+    "iu"
+  ).test(text);
+}
+
 function relationGender(relation: string): PersonGender | null {
   if (["мама", "бабушка", "сестра", "подруга", "няня", "кошка"].includes(relation)) return "female";
   if (["папа", "дедушка", "брат", "друг", "кот", "пёс"].includes(relation)) return "male";
@@ -267,9 +274,9 @@ export class StoryPseudonymizer {
       throw new Error("PERSONAL_IDENTIFIER_DETECTED");
     }
 
-    const privateValues = new Set(Object.values(this.aliases).map((value) => value.toLocaleLowerCase("ru-RU")));
+    const privateValues = new Set(Object.values(this.aliases));
     for (const value of privateValues) {
-      if (value.length > 1 && text.toLocaleLowerCase("ru-RU").includes(value)) {
+      if (value.length > 1 && containsWholeValue(text, value)) {
         throw new Error("UNMASKED_PRIVATE_NAME_DETECTED");
       }
     }
