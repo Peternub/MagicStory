@@ -1,6 +1,6 @@
 begin;
 
-set local role magicstory_owner;
+set local role skazkids_owner;
 
 alter table public.children
   add constraint children_age_check
@@ -500,16 +500,16 @@ revoke all on function public.fail_story_generation(uuid, uuid, text) from publi
 
 grant execute on function public.create_series_with_first_episode(
   uuid, uuid, text, text, integer, uuid, uuid, jsonb, boolean
-) to magicstory_app;
+) to skazkids_app;
 grant execute on function public.reserve_series_episode(
   uuid, uuid, uuid, jsonb
-) to magicstory_app;
+) to skazkids_app;
 grant execute on function public.claim_story_generation(uuid, uuid)
-  to magicstory_app;
+  to skazkids_app;
 grant execute on function public.complete_story_generation(
   uuid, uuid, text, text, text, text, jsonb, jsonb
-) to magicstory_app;
+) to skazkids_app;
 grant execute on function public.fail_story_generation(uuid, uuid, text)
-  to magicstory_app;
+  to skazkids_app;
 
 commit;

@@ -6,8 +6,8 @@ import {
 
 const validEnv = {
   BETTER_AUTH_SECRET: "тестовый-секрет-длиной-больше-тридцати-двух-символов",
-  BETTER_AUTH_URL: "https://magicstory.example",
-  DATABASE_URL: "postgresql://app:secret@127.0.0.1:5432/magicstory"
+  BETTER_AUTH_URL: "https://skazkids.example",
+  DATABASE_URL: "postgresql://app:secret@127.0.0.1:5432/skazkids"
 };
 
 describe("конфигурация авторизации", () => {

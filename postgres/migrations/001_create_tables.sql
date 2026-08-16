@@ -2,7 +2,7 @@ begin;
 
 create extension if not exists pgcrypto;
 
-set local role magicstory_owner;
+set local role skazkids_owner;
 
 create table public.profiles (
   id uuid primary key,
@@ -177,8 +177,8 @@ create unique index payments_idempotency_key_idx
   on public.payments (idempotency_key)
   where idempotency_key is not null;
 
-grant usage on schema public to magicstory_app;
-grant select, insert, update, delete on all tables in schema public to magicstory_app;
-grant usage, select, update on all sequences in schema public to magicstory_app;
+grant usage on schema public to skazkids_app;
+grant select, insert, update, delete on all tables in schema public to skazkids_app;
+grant usage, select, update on all sequences in schema public to skazkids_app;
 
 commit;

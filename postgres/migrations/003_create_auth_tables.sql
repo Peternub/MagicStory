@@ -1,6 +1,6 @@
 begin;
 
-set local role magicstory_owner;
+set local role skazkids_owner;
 
 create table "user" ("id" uuid default pg_catalog.gen_random_uuid() not null primary key, "name" text not null, "email" text not null unique, "emailVerified" boolean not null, "image" text, "createdAt" timestamptz default CURRENT_TIMESTAMP not null, "updatedAt" timestamptz default CURRENT_TIMESTAMP not null);
 
@@ -21,6 +21,6 @@ grant select, insert, update, delete on table
   "session",
   "account",
   "verification"
-to magicstory_app;
+to skazkids_app;
 
 commit;

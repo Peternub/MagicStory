@@ -22,7 +22,7 @@ export const auth = betterAuth({
   database: authDatabase,
   secret: authEnv.BETTER_AUTH_SECRET,
   advanced: {
-    cookiePrefix: "magicstory",
+    cookiePrefix: "skazkids",
     database: {
       generateId: "uuid"
     }

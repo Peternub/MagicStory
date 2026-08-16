@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "magic-story",
+      "name": "skazkids",
       "dependencies": {
         "argon2": "0.45.1",
         "better-auth": "1.6.0",

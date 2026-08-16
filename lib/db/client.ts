@@ -8,7 +8,7 @@ types.setTypeParser(1114, (value) => value);
 types.setTypeParser(1184, (value) => value);
 
 const globalDatabase = globalThis as typeof globalThis & {
-  magicStoryDatabasePool?: Pool;
+  skazkidsDatabasePool?: Pool;
 };
 
 function createDatabasePool() {
@@ -23,11 +23,11 @@ function createDatabasePool() {
 }
 
 export function getDatabasePool() {
-  if (!globalDatabase.magicStoryDatabasePool) {
-    globalDatabase.magicStoryDatabasePool = createDatabasePool();
+  if (!globalDatabase.skazkidsDatabasePool) {
+    globalDatabase.skazkidsDatabasePool = createDatabasePool();
   }
 
-  return globalDatabase.magicStoryDatabasePool;
+  return globalDatabase.skazkidsDatabasePool;
 }
 
 export function queryDatabase<Row extends QueryResultRow>(

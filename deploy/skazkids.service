@@ -1,17 +1,17 @@
 [Unit]
-Description=Веб-приложение MagicStory
+Description=Веб-приложение SkazKIDS
 After=network-online.target postgresql.service
 Wants=network-online.target
 
 [Service]
 Type=simple
-User=magicstory
-Group=magicstory
-WorkingDirectory=/opt/magicstory
+User=skazkids
+Group=skazkids
+WorkingDirectory=/opt/skazkids
 Environment=NODE_ENV=production
-EnvironmentFile=/etc/magicstory/app.env
-EnvironmentFile=/etc/magicstory/database.env
-EnvironmentFile=/etc/magicstory/ai-gateway.env
+EnvironmentFile=/etc/skazkids/app.env
+EnvironmentFile=/etc/skazkids/database.env
+EnvironmentFile=/etc/skazkids/ai-gateway.env
 ExecStart=/usr/local/bin/bun run start --hostname 127.0.0.1 --port 3000
 Restart=on-failure
 RestartSec=5

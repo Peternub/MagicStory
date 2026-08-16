@@ -1,4 +1,4 @@
-# MagicStory
+# SkazKIDS
 
 Сервис персональных детских сериалов на Next.js.
 

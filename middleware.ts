@@ -12,7 +12,7 @@ const legacyDevChunkPaths = new Set([
 ]);
 
 function createEmptyDevChunkResponse() {
-  return new NextResponse("self.__magicStoryLegacyChunk = true;\n", {
+  return new NextResponse("self.__skazkidsLegacyChunk = true;\n", {
     headers: {
       "cache-control": "no-store",
       "content-type": "application/javascript; charset=utf-8"
