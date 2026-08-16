@@ -84,6 +84,61 @@ describe("AI Gateway", () => {
     expect((await handler(request(validBody))).status).toBe(200);
     expect(calls).toBe(1);
   });
+
+  test("возвращает понятный timeout при превышении времени OpenAI", async () => {
+    const timeoutError = new Error("abort");
+    timeoutError.name = "TimeoutError";
+    const handler = createGatewayHandler({
+      env,
+      fetchImpl: async () => {
+        throw timeoutError;
+      }
+    });
+
+    const response = await handler(request(validBody));
+
+    expect(response.status).toBe(504);
+    expect((await response.json()).error).toBe("OPENAI_TIMEOUT");
+  });
+
+  test("передаёт ограничение частоты OpenAI как 429", async () => {
+    const handler = createGatewayHandler({
+      env,
+      fetchImpl: async () => jsonResponse({ error: { type: "rate_limit_error" } }, 429)
+    });
+
+    const response = await handler(request(validBody));
+
+    expect(response.status).toBe(429);
+    expect((await response.json()).error).toBe("OPENAI_RATE_LIMIT");
+  });
+
+  test("преобразует 5xx OpenAI в недоступность провайдера", async () => {
+    const handler = createGatewayHandler({
+      env,
+      fetchImpl: async () => jsonResponse({ error: { type: "server_error" } }, 503)
+    });
+
+    const response = await handler(request(validBody));
+
+    expect(response.status).toBe(502);
+    expect((await response.json()).error).toBe("OPENAI_UNAVAILABLE");
+  });
+
+  test("не пропускает некорректный JSON OpenAI", async () => {
+    const handler = createGatewayHandler({
+      env,
+      fetchImpl: async () => new Response("{", {
+        status: 200,
+        headers: { "Content-Type": "application/json" }
+      })
+    });
+
+    const response = await handler(request(validBody));
+
+    expect(response.status).toBe(502);
+    expect((await response.json()).error).toBe("OPENAI_INVALID_RESPONSE");
+  });
 });
 
 function jsonResponse(body, status = 200) {

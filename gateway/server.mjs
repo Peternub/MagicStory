@@ -177,9 +177,18 @@ export function createGatewayHandler(options = {}) {
       throw error;
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("OPENAI_INVALID_RESPONSE");
+    }
     const output = extractOutputText(data);
-    JSON.parse(output);
+    try {
+      JSON.parse(output);
+    } catch {
+      throw new Error("OPENAI_INVALID_RESPONSE");
+    }
 
     return {
       model: typeof data.model === "string" ? data.model : payload.model,
