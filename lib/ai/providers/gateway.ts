@@ -2,6 +2,7 @@ import "server-only";
 import { readFile } from "node:fs/promises";
 import { request as httpsRequest } from "node:https";
 import { z } from "zod";
+import { shouldRetryGatewayRequest } from "@/lib/ai/providers/gateway-retry";
 import type {
   AiProvider,
   GenerateEpisodeRequest,
@@ -27,6 +28,12 @@ type GatewayConfig = {
   timeoutMs: number;
   maxAttempts: number;
 };
+
+class GatewayHttpError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+  }
+}
 
 function positiveInteger(value: string | undefined, fallback: number) {
   const parsed = Number.parseInt(value ?? "", 10);
@@ -89,10 +96,6 @@ function postJson(config: GatewayConfig, body: string): Promise<{ status: number
   });
 }
 
-function retryableStatus(status: number) {
-  return status === 502 || status === 503 || status === 504;
-}
-
 export class GatewayAiProvider implements AiProvider {
   async generateEpisode(request: GenerateEpisodeRequest): Promise<GenerateEpisodeResult> {
     const config = await readConfig();
@@ -110,12 +113,11 @@ export class GatewayAiProvider implements AiProvider {
         const code = parsedError.success && parsedError.data.error
           ? parsedError.data.error
           : `AI_GATEWAY_HTTP_${response.status}`;
-        lastError = new Error(code);
-
-        if (!retryableStatus(response.status) || attempt === config.maxAttempts) throw lastError;
+        throw new GatewayHttpError(code, response.status);
       } catch (error) {
         lastError = error instanceof Error ? error : new Error("AI_GATEWAY_REQUEST_FAILED");
-        if (attempt === config.maxAttempts || lastError.message === "AI_GATEWAY_RATE_LIMIT") {
+        const status = error instanceof GatewayHttpError ? error.status : undefined;
+        if (!shouldRetryGatewayRequest(status, lastError.message, attempt, config.maxAttempts)) {
           throw lastError;
         }
       }
