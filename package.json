@@ -6,6 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "analytics:report": "bun analytics/cli.ts report",
+    "analytics:status": "bun analytics/cli.ts status",
+    "analytics:alerts": "bun analytics/cli.ts alerts",
+    "analytics:bot": "bun analytics/cli.ts bot",
     "lint": "next lint",
     "test": "bun test",
     "typecheck": "tsc --noEmit"
