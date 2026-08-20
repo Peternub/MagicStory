@@ -91,6 +91,10 @@ export function renderDailyReport(input: {
     `Расход: ${metrics.ai.estimatedCostUsd === null ? "н/д" : `$${metrics.ai.estimatedCostUsd.toFixed(4)}`}`
   ];
 
+  if (metrics.ai.errorCategories.length > 0) {
+    lines.push(`Категории: ${metrics.ai.errorCategories.map((item) => `${item.category} — ${item.count}`).join(", ")}`);
+  }
+
   if (health) {
     lines.push(
       "\n🖥 Система",

@@ -30,6 +30,9 @@ function fakeQuery(failMarker?: string): QueryExecutor {
     if (sql.includes("analytics:ai-models")) {
       return { rows: [{ provider: "openai", model: "gpt-test", requests: 30 } as Row] };
     }
+    if (sql.includes("analytics:ai-errors")) {
+      return { rows: [{ error_category: "timeout", count: 2 } as Row] };
+    }
     return { rows: [{
       requests_current: 30, requests_previous: 20, requests_baseline: 18,
       success_current: 28, success_previous: 19, success_baseline: 17,
@@ -50,6 +53,7 @@ describe("сбор продуктовых метрик", () => {
     expect(metrics.content.episodeContinuationRate.value).toBe(60);
     expect(metrics.ai.errorRate).toBe(6.67);
     expect(metrics.ai.estimatedCostUsd).toBe(1.25);
+    expect(metrics.ai.errorCategories).toEqual([{ category: "timeout", count: 2 }]);
     expect(JSON.stringify(metrics)).not.toContain("email");
   });
 

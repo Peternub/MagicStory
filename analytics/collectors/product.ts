@@ -57,6 +57,7 @@ type AiRow = {
 };
 
 type AiModelRow = { provider: string; model: string; requests: unknown };
+type AiErrorRow = { error_category: string; count: unknown };
 
 const USERS_SQL = `
 /* analytics:users */
@@ -176,6 +177,17 @@ group by provider, model
 order by requests desc, provider, model
 `;
 
+const AI_ERRORS_SQL = `
+/* analytics:ai-errors */
+select coalesce(error_category, 'unknown') error_category, count(*)
+from public.analytics_generation_events
+where status = 'failed'
+  and occurred_at >= $1::timestamptz and occurred_at < $2::timestamptz
+group by error_category
+order by count(*) desc, error_category
+limit 5
+`;
+
 function queryValues(periods: AnalyticsPeriods) {
   return [
     periods.current.from,
@@ -192,12 +204,13 @@ export async function collectProductMetrics(
   minimumRetentionSample = 10
 ): Promise<NormalizedMetrics> {
   const values = queryValues(periods);
-  const [usersResult, contentResult, retentionResult, aiResult, modelsResult] = await Promise.allSettled([
+  const [usersResult, contentResult, retentionResult, aiResult, modelsResult, errorsResult] = await Promise.allSettled([
     query<UsersRow>(USERS_SQL, values),
     query<ContentRow>(CONTENT_SQL, values),
     query<RetentionRow>(RETENTION_SQL, []),
     query<AiRow>(AI_SQL, values),
-    query<AiModelRow>(AI_MODELS_SQL, [periods.current.from, periods.current.to])
+    query<AiModelRow>(AI_MODELS_SQL, [periods.current.from, periods.current.to]),
+    query<AiErrorRow>(AI_ERRORS_SQL, [periods.current.from, periods.current.to])
   ]);
   const warnings: string[] = [];
 
@@ -211,6 +224,8 @@ export async function collectProductMetrics(
   if (!ai) warnings.push("ai_metrics_unavailable");
   const models = modelsResult.status === "fulfilled" ? modelsResult.value.rows : [];
   if (modelsResult.status === "rejected") warnings.push("ai_model_metrics_unavailable");
+  const errors = errorsResult.status === "fulfilled" ? errorsResult.value.rows : [];
+  if (errorsResult.status === "rejected") warnings.push("ai_error_categories_unavailable");
 
   const activeCurrent = users ? finiteNumber(users.active_current) : 0;
   const successfulCurrent = content ? finiteNumber(content.success_current) : 0;
@@ -277,6 +292,12 @@ export async function collectProductMetrics(
         model: row.model,
         requests: finiteNumber(row.requests)
       })),
+      errorCategories: errors
+        .filter((row) => typeof row.error_category === "string" && finiteNumber(row.count) > 0)
+        .map((row) => ({
+          category: row.error_category,
+          count: finiteNumber(row.count)
+        })),
       availability: ai ? "available" : "unavailable"
     },
     collectionWarnings: warnings

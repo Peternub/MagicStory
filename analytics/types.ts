@@ -53,6 +53,7 @@ export type NormalizedMetrics = {
     outputTokens: number | null;
     estimatedCostUsd: number | null;
     models: Array<{ provider: string; model: string; requests: number }>;
+    errorCategories: Array<{ category: string; count: number }>;
     availability: Availability;
   };
   collectionWarnings: string[];
