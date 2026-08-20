@@ -39,6 +39,12 @@ export type GeneratedStory = {
   memory: SeriesMemory;
   privateAliases: PrivateAliases;
   provider: string;
+  model: string;
+  usage: {
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+  };
 };
 
 export const responseSchema = {
@@ -194,6 +200,8 @@ export async function generateStory(params: GenerateStoryParams): Promise<Genera
     summary: prepared.pseudonymizer.restore(parsed.data.summary),
     memory: prepared.pseudonymizer.restoreMemory(parsed.data.memory),
     privateAliases: prepared.pseudonymizer.toJSON(),
-    provider: generated.model
+    provider: generated.provider,
+    model: generated.model,
+    usage: generated.usage
   };
 }

@@ -1,6 +1,8 @@
 import "server-only";
 import { z } from "zod";
 import { createGatewayRequestId, generateStory } from "@/lib/ai/generate-story";
+import { classifyGenerationError } from "@/lib/analytics/generation-events";
+import { estimateAiCostUsd } from "@/lib/config/ai-pricing";
 import { parsePrivateAliases } from "@/lib/ai/pseudonymization";
 import { parseSeriesMemory } from "@/lib/ai/story-memory";
 import {
@@ -8,7 +10,8 @@ import {
   completeStoryGeneration,
   failStoryGeneration,
   findStoryGenerationState,
-  getGenerationContext
+  getGenerationContext,
+  recordGenerationAnalytics
 } from "@/lib/data/generation";
 import { getGenerationActionError } from "@/lib/stories/generation-errors";
 import { stripSeriesEpisodePlan } from "@/lib/stories/series-plan";
@@ -74,6 +77,12 @@ export async function processStoryGeneration(userId: string, storyId: string) {
     throw new Error("GENERATION_IN_PROGRESS");
   }
 
+  const requestId = createGatewayRequestId(storyId);
+  let aiStartedAt: number | null = null;
+  let aiLatencyMs: number | null = null;
+  let analyticsProvider = process.env.AI_PROVIDER_CODE || "openai";
+  let analyticsModel = process.env.OPENAI_MODEL || "unknown";
+
   try {
     const context = await getGenerationContext(userId, storyId);
 
@@ -82,6 +91,7 @@ export async function processStoryGeneration(userId: string, storyId: string) {
     }
 
     const { child, series, story } = context;
+    analyticsModel = series.model_code;
 
     const generationInput = generationInputSchema.parse(story.generation_input ?? {});
     const request = buildStoryRequest({
@@ -91,6 +101,7 @@ export async function processStoryGeneration(userId: string, storyId: string) {
       seriesTitle: series.title,
       seriesPremise: series.premise
     });
+    aiStartedAt = Date.now();
     const generated = await generateStory({
       child,
       request,
@@ -98,11 +109,25 @@ export async function processStoryGeneration(userId: string, storyId: string) {
       plannedEpisodes: series.planned_episodes,
       seriesMemory: parseSeriesMemory(series.series_memory),
       privateAliases: parsePrivateAliases(series.private_aliases),
-      requestId: createGatewayRequestId(story.id),
+      requestId,
       modelCode: series.model_code
     });
-
-    return await completeStoryGeneration({
+    analyticsProvider = generated.provider;
+    analyticsModel = generated.model;
+    aiLatencyMs = Date.now() - aiStartedAt;
+    let estimatedCostUsd: number | null = null;
+    try {
+      estimatedCostUsd = estimateAiCostUsd({
+        model: generated.model,
+        inputTokens: generated.usage.inputTokens,
+        outputTokens: generated.usage.outputTokens
+      });
+    } catch (error) {
+      console.error("AI pricing config invalid", {
+        message: error instanceof Error ? error.message : "UNKNOWN"
+      });
+    }
+    const seriesId = await completeStoryGeneration({
       memory: generated.memory,
       privateAliases: generated.privateAliases,
       provider: generated.provider,
@@ -112,8 +137,47 @@ export async function processStoryGeneration(userId: string, storyId: string) {
       title: generated.title,
       userId
     });
+    try {
+      await recordGenerationAnalytics({
+        requestId,
+        storyId,
+        status: "succeeded",
+        provider: generated.provider,
+        model: generated.model,
+        latencyMs: aiLatencyMs,
+        inputTokens: generated.usage.inputTokens,
+        outputTokens: generated.usage.outputTokens,
+        estimatedCostUsd,
+        errorCategory: null
+      });
+    } catch (error) {
+      console.error("Generation analytics write failed", {
+        message: error instanceof Error ? error.message : "UNKNOWN"
+      });
+    }
+    return seriesId;
   } catch (error) {
     const message = error instanceof Error ? error.message : "GENERATION_FAILED";
+    if (aiStartedAt !== null) {
+      try {
+        await recordGenerationAnalytics({
+          requestId,
+          storyId,
+          status: "failed",
+          provider: analyticsProvider,
+          model: analyticsModel,
+          latencyMs: aiLatencyMs ?? Date.now() - aiStartedAt,
+          inputTokens: 0,
+          outputTokens: 0,
+          estimatedCostUsd: null,
+          errorCategory: classifyGenerationError(error)
+        });
+      } catch (analyticsError) {
+        console.error("Generation analytics write failed", {
+          message: analyticsError instanceof Error ? analyticsError.message : "UNKNOWN"
+        });
+      }
+    }
     await failStoryGeneration(
       userId,
       storyId,

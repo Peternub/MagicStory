@@ -11,6 +11,7 @@ import type {
 
 const gatewayResponseSchema = z.object({
   output: z.string().min(1),
+  provider: z.string().min(1).optional().default("openai"),
   model: z.string().min(1),
   usage: z.object({
     inputTokens: z.number().nonnegative(),

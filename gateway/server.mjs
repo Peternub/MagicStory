@@ -109,6 +109,7 @@ export function createGatewayHandler(options = {}) {
   const logger = options.logger ?? console.log;
   const sharedSecret = env.GATEWAY_SHARED_SECRET ?? "";
   const openAiApiKey = env.OPENAI_API_KEY ?? "";
+  const providerCode = env.AI_PROVIDER_CODE || "openai";
   const openAiBaseUrl = (env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/$/, "");
   const allowedModels = new Set(
     (env.OPENAI_MODELS || "gpt-5.6-terra")
@@ -191,6 +192,7 @@ export function createGatewayHandler(options = {}) {
     }
 
     return {
+      provider: providerCode,
       model: typeof data.model === "string" ? data.model : payload.model,
       output,
       usage: {
@@ -271,6 +273,7 @@ export function createGatewayHandler(options = {}) {
       const result = await promise;
       logTechnical(logger, {
         requestId: gatewayRequestId,
+        provider: result.provider,
         model: result.model,
         durationMs: Date.now() - requestStartedAt,
         status: 200,
@@ -284,6 +287,7 @@ export function createGatewayHandler(options = {}) {
       const code = isTimeout ? "OPENAI_TIMEOUT" : error?.message || "OPENAI_INVALID_RESPONSE";
       logTechnical(logger, {
         requestId: gatewayRequestId,
+        provider: providerCode,
         model: payload.model,
         durationMs: Date.now() - requestStartedAt,
         status,

@@ -270,3 +270,45 @@ export async function failStoryGeneration(
     [userId, storyId, failureMessage]
   );
 }
+
+export async function recordGenerationAnalytics(input: {
+  requestId: string;
+  storyId: string;
+  status: "succeeded" | "failed";
+  provider: string;
+  model: string;
+  latencyMs: number;
+  inputTokens: number;
+  outputTokens: number;
+  estimatedCostUsd: number | null;
+  errorCategory: string | null;
+}) {
+  await queryDatabase(
+    `
+      select public.record_analytics_generation_event(
+        $1::text,
+        $2::uuid,
+        $3::text,
+        $4::text,
+        $5::text,
+        $6::integer,
+        $7::integer,
+        $8::integer,
+        $9::numeric,
+        $10::text
+      )
+    `,
+    [
+      input.requestId,
+      input.storyId,
+      input.status,
+      input.provider,
+      input.model,
+      input.latencyMs,
+      input.inputTokens,
+      input.outputTokens,
+      input.estimatedCostUsd,
+      input.errorCategory
+    ]
+  );
+}

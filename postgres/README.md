@@ -6,6 +6,7 @@
 2. `002_create_functions_and_triggers.sql` — ограничения, триггеры и функции.
 3. `003_create_auth_tables.sql` — таблицы email-авторизации.
 4. `004_create_analytics_tables.sql` — обезличенные AI-события, snapshots и alert state.
+5. `005_allow_unknown_ai_cost.sql` — честное состояние неизвестной стоимости без подстановки нуля.
 
 Приложение подключается ролью `skazkids_app`. Владельцем объектов остаётся
 `skazkids_owner`. PostgreSQL слушает только `127.0.0.1:5432`.

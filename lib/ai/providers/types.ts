@@ -8,6 +8,7 @@ export type GenerateEpisodeRequest = {
 
 export type GenerateEpisodeResult = {
   output: string;
+  provider: string;
   model: string;
   usage: {
     inputTokens: number;
