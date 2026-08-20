@@ -1,0 +1,11 @@
+[Unit]
+Description=Расписание ежедневного отчёта SkazKIDS Analytics
+
+[Timer]
+OnCalendar=*-*-* 10:00:00 Europe/Moscow
+Persistent=true
+AccuracySec=1m
+Unit=skazkids-analytics-report.service
+
+[Install]
+WantedBy=timers.target

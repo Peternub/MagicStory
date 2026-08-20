@@ -1,0 +1,12 @@
+[Unit]
+Description=Расписание alerts SkazKIDS Analytics
+
+[Timer]
+OnBootSec=2m
+OnUnitActiveSec=5m
+Persistent=true
+AccuracySec=30s
+Unit=skazkids-analytics-alerts.service
+
+[Install]
+WantedBy=timers.target

@@ -28,3 +28,9 @@
 ## PostgreSQL
 
 Миграции находятся в каталоге `postgres/migrations`. Порт `5432` наружу не публикуется.
+
+## Analytics Bot
+
+Внутренний read-only Telegram-бот, ежедневные отчёты и alerts находятся в каталоге
+`analytics`. Архитектура, метрики, systemd units и порядок deployment описаны в
+[`docs/analytics-mvp.md`](docs/analytics-mvp.md).
