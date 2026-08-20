@@ -57,3 +57,55 @@ export type NormalizedMetrics = {
   };
   collectionWarnings: string[];
 };
+
+export type HealthState = "ok" | "warning" | "critical" | "unavailable";
+
+export type HealthComponent = {
+  state: HealthState;
+  value?: number;
+  unit?: string;
+  message?: string;
+};
+
+export type SystemHealth = {
+  backend: HealthComponent;
+  database: HealthComponent;
+  backup: HealthComponent;
+  disk: HealthComponent;
+  memory: HealthComponent;
+  load: HealthComponent;
+  productionService: HealthComponent;
+  nginx: HealthComponent;
+  aiGateway: HealthComponent;
+  checkedAt: string;
+};
+
+export type RuleProblem = {
+  code: string;
+  severity: "warning" | "critical";
+  title: string;
+  explanation: string;
+};
+
+export type RuleAction = {
+  priority: number;
+  action: string;
+  reason: string;
+};
+
+export type RuleResults = {
+  positiveSignals: string[];
+  problems: RuleProblem[];
+  actions: RuleAction[];
+};
+
+export type AiAnalysis = {
+  summary: string;
+  positiveSignals: string[];
+  problems: Array<{
+    severity: "warning" | "critical";
+    title: string;
+    explanation: string;
+  }>;
+  actions: RuleAction[];
+};
