@@ -2,7 +2,7 @@
 Description=Расписание ежедневного отчёта SkazKIDS Analytics
 
 [Timer]
-OnCalendar=*-*-* 10:00:00 Europe/Moscow
+OnCalendar=*-*-* 18:00:00 Europe/Moscow
 Persistent=true
 AccuracySec=1m
 Unit=skazkids-analytics-report.service

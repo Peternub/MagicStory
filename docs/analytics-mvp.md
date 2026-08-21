@@ -144,7 +144,7 @@ sudo systemctl enable --now skazkids-analytics-alerts.timer
 
 Шаблон environment нужно заполнить реальными secrets до запуска. Пользователю `skazkids-analytics` нужен read-only Unix-доступ к каталогу backup. Не выдавать ему членство в `postgres`, sudo или доступ на запись в `/opt/skazkids`.
 
-Время отчёта задаётся конфигурацией systemd timer. По умолчанию — 10:00 `Europe/Moscow`. Изменение без правки кода:
+Время отчёта задаётся конфигурацией systemd timer. По умолчанию — 18:00 `Europe/Moscow`. Изменение без правки кода:
 
 ```bash
 sudo systemctl edit skazkids-analytics-report.timer
