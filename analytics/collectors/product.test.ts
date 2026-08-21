@@ -72,4 +72,21 @@ describe("сбор продуктовых метрик", () => {
     expect(metrics.users.active.current).toBe(20);
     expect(metrics.collectionWarnings).toContain("content_metrics_unavailable");
   });
+
+  test("делит базовые агрегаты на скалярное число дней", async () => {
+    const queries: string[] = [];
+    const query = fakeQuery();
+
+    await collectProductMetrics(async <Row>(sql: string, values: unknown[]) => {
+      queries.push(sql);
+      return query<Row>(sql, values);
+    }, periods);
+
+    const usersSql = queries.find((sql) => sql.includes("analytics:users")) ?? "";
+    const aiSql = queries.find((sql) => sql.includes("analytics:ai */")) ?? "";
+    expect(/\/ baseline_days/.test(usersSql)).toBe(false);
+    expect(/\/ baseline_days/.test(aiSql)).toBe(false);
+    expect(usersSql).toContain("/ (select baseline_days from bounds)");
+    expect(aiSql.match(/\/ \(select baseline_days from bounds\)/g)?.length).toBe(3);
+  });
 });
